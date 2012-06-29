@@ -1,0 +1,32 @@
+html,
+body {
+ 	margin: 0;
+ 	padding: 0;
+}
+
+body {
+	font: 14px Helvetica, Arial, sans-serif;
+	line-height: 1.4em;
+	background: #eeeeee;
+	color: #333333;
+	width: 520px;
+	margin: 0 auto;
+}
+
+#playground-app {
+	background: white;
+	padding: 20px;
+	margin-bottom: 40px;
+	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+	border-radius: 0 0 5px 5px;
+}
+
+/* initially hidden */
+#main {
+	display: none;
+}
+
+#data-table {
+	background: white;
+	border: 1px solid #333333;
+}
