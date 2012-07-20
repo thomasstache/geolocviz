@@ -14,7 +14,7 @@ define(
 
 			// ensure to remove the pin from the map and release GoogleMaps Marker object
 			clear: function() {
-				if (this.get('marker')) {
+				if (this.has('marker')) {
 					this.get('marker').setMap(null);
 					this.set('marker', null);
 				}

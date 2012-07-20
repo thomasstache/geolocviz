@@ -19,6 +19,10 @@ define(
 				// the list of candidate locations from the algorithms
 				this.locationCandidates = new LocationCandidateList();
 			},
+
+			getBestLocationCandidate: function() {
+				return this.locationCandidates.at(0);
+			},
 		});
 
 		return AccuracyResult;

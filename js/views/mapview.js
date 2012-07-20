@@ -13,6 +13,21 @@ define(
 			ACTIX: 		{ bgcolor: "006983", color: "CCCCCC", smb: "A", category: "Home" },
 		});
 
+		var OverlayTypes = Object.freeze({
+			REFERENCEMARKER: "refMarker",
+			GEOLOCMARKER: "geoMarker",
+			CANDIDATEMARKER: "candidateMarker",
+			REFERENCELINE: "refLine",
+			SESSIONVIZ: "sessionViz",
+			SELECTIONVIZ: "selectionViz"
+		});
+
+		// a percentage formatter assuming values [0,1], omitting unit for NaNs
+		function asPercent(val) {
+			return isNaN(val) ? val
+							  : Math.round(val * 100) + "%";
+		}
+
 		var MapView = Backbone.View.extend({
 
 			el: $("#mapContainer"),
@@ -70,15 +85,32 @@ define(
 
 			drawSession: function(session) {
 
-				var that = this;
+				var that = this, color;
 				session.results.each(function(sample) {
+
 					that.bounds.extend(sample.get('latLngRef'));
+
 					that.createMarker(sample.get('latLngRef'),
 									  "#" + sample.get('msgId'),
 									  "Session: " + session.id +
 									  "<br>Messages: " + session.results.length,
 									  MarkerColors.REFERENCE,
-									  sample);
+									  sample, OverlayTypes.REFERENCEMARKER);
+
+					var bestLoc = sample.getBestLocationCandidate();
+					color = (bestLoc.category() == "S") ? MarkerColors.STATIONARY
+						  : (bestLoc.category() == "I") ? MarkerColors.INDOOR
+						  : MarkerColors.GEOLOCATED;
+
+					that.createMarker(bestLoc.get('latLng'),
+										  "#" + sample.id,
+										  "Distance: " + bestLoc.get('distance') + "m" +
+										  "<br>Confidence: " + asPercent(bestLoc.get('confidence')) +
+										  "<br>P_mobile: " + asPercent(bestLoc.get('probMobility')) +
+										  "<br>P_indoor: " + asPercent(bestLoc.get('probIndoor')) +
+										  "<br>Candidates: " + sample.locationCandidates.length,
+										  color,
+										  sample, OverlayTypes.GEOLOCMARKER);
 				});
 			},
 

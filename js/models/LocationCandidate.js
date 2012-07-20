@@ -18,6 +18,15 @@ define(
 				// indoor probability as decimal
 				probIndoor: 0.0,
 			},
+
+			category: function() {
+				var cat = "M";
+				if (this.get('probMobility') <= 0.5) // stationary
+					cat = "S";
+				if (this.get('probIndoor') > 0.5) // indoor
+					cat = "I";
+				return cat;
+			},
 		});
 
 		return LocationCandidate;
