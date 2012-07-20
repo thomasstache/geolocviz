@@ -1,6 +1,7 @@
 define(
-	["underscore", "backbone"],
-	function(_, Backbone) {
+	["underscore", "backbone",
+	 "models/marker"],
+	function(_, Backbone, Marker) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -17,6 +18,8 @@ define(
 			el: $("#mapContainer"),
 
 			bounds: null,
+
+			markers: null,
 
 			initialize: function() {
 
@@ -37,6 +40,11 @@ define(
 
 				this.collection.on("add", this.drawMarkers, this);
 				this.collection.on("reset", this.clearMarkers, this);
+
+				var Markers = Backbone.Collection.extend({
+					model: Marker
+				});
+				this.markers = new Markers();
 			},
 
 			drawMarkers: function() {
@@ -53,7 +61,11 @@ define(
 			},
 
 			clearMarkers: function() {
-				//
+
+				this.markers.each(function(marker) {
+					marker.clear();
+				});
+				this.markers.reset();
 			},
 
 			drawSession: function(session) {
@@ -105,10 +117,12 @@ define(
 					if (sample.get('sessionId') !== undefined)
 						md.sessionId = sample.get('sessionId');
 				}
-				if (type !== undefined) {
-					md.type = type;
-					registerOverlay(type, marker);
-				}
+
+				// register the marker
+				this.markers.add({
+					type: type,
+					marker: marker
+				});
 
 				// click event to the for the marker
 				google.maps.event.addListener(marker, 'click',
