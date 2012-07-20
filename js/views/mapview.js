@@ -16,6 +16,8 @@ define(
 
 			el: $("#mapContainer"),
 
+			bounds: null,
+
 			initialize: function() {
 
 				var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
@@ -38,8 +40,16 @@ define(
 			},
 
 			drawMarkers: function() {
-				//
-				_.each(this.collection, createMarker);
+
+				this.bounds = new google.maps.LatLngBounds();
+				// capture the this scope
+				var that = this;
+				this.collection.each(function(session) {
+					that.drawSession(session)
+				});
+
+				if (!this.bounds.isEmpty())
+					this.map.fitBounds(this.bounds);
 			},
 
 			clearMarkers: function() {
@@ -47,7 +57,17 @@ define(
 			},
 
 			drawSession: function(session) {
-				;
+
+				var that = this;
+				session.results.each(function(sample) {
+					that.bounds.extend(sample.get('latLngRef'));
+					that.createMarker(sample.get('latLngRef'),
+									  "#" + sample.get('msgId'),
+									  "Session: " + session.id +
+									  "<br>Messages: " + session.results.length,
+									  MarkerColors.REFERENCE,
+									  sample);
+				});
 			},
 
 			/**
@@ -70,36 +90,36 @@ define(
 				var marker = new google.maps.Marker(
 					{
 						position: latlng,
-						map: map,
+						map: this.map,
 						icon: new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(8, 34)),
-						title: label,
-						zIndex: Math.round(latlng.lat()*-100000)<<5
+						title: label
 					}
 				);
 
 				// store some extra data on the marker
-				marker.metaData = {};
-				if (sample && sample.id !== undefined)
-					marker.metaData.sampleId = sample.id;
-				if (sample && sample.sessionId !== undefined)
-					marker.metaData.sessionId = sample.sessionId;
+				var md = marker.metaData = {};
+				if (sample) {
+					md.id = sample.cid;
+					if(sample.get('msgId') !== undefined)
+						md.sampleId = sample.get('msgId');
+					if (sample.get('sessionId') !== undefined)
+						md.sessionId = sample.get('sessionId');
+				}
 				if (type !== undefined) {
-					marker.metaData.type = type;
+					md.type = type;
 					registerOverlay(type, marker);
 				}
 
 				// click event to the for the marker
 				google.maps.event.addListener(marker, 'click',
 					function() {
-						infowindow.setContent(contentString);
-						infowindow.open(map,marker);
-						onMarkerClick(this);
+//						onMarkerClick(this);
 					}
 				);
 				google.maps.event.addListener(marker, 'dblclick',
 					function() {
 						// "this" is bound to the marker
-						onMarkerDblClick(this);
+//						onMarkerDblClick(this);
 					}
 				);
 
