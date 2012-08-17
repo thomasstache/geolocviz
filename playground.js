@@ -67,7 +67,7 @@ $(function(){
 		el: $("#playground-app"),
 
 		events: {
-			"change #file-input": "loadFile"
+			"change #fileInput": "loadFile"
 		},
 
 		initialize: function() {
@@ -76,7 +76,7 @@ $(function(){
 			DataPoints.bind('all', this.render, this);
 
 			this.main = this.$('#main');
-			this.fileInput = this.$('#file-input')[0];
+			this.fileInput = this.$('#fileInput')[0];
 		},
 
 		/** ***************************************************************

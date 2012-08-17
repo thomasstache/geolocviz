@@ -56,16 +56,22 @@ define(
 				this.collection.on("add", this.drawMarkers, this);
 				this.collection.on("reset", this.clearMarkers, this);
 
+				// a collection to keep our markers in sight
 				var Markers = Backbone.Collection.extend({
 					model: Marker
 				});
 				this.markers = new Markers();
+
+				// listen for settings changes
+				this.appsettings = this.options.settings;
+				this.appsettings.on("change", this.updateFeatures, this);
 			},
 
+			// draw all markers for all sessions
 			drawMarkers: function() {
 
 				this.bounds = new google.maps.LatLngBounds();
-				// capture the this scope
+				// capture the "this" scope
 				var that = this;
 				this.collection.each(function(session) {
 					that.drawSession(session)
@@ -83,6 +89,13 @@ define(
 				this.markers.reset();
 			},
 
+			updateFeatures: function() {
+				// show or hide reference lines
+				var connectReference = this.appsettings.get("drawReferenceLines");
+				var connectSession = this.appsettings.get("drawSessionLines");
+			},
+
+			// draw reference and geolocated markers for the given session
 			drawSession: function(session) {
 
 				var that = this, color;

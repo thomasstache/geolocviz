@@ -1,24 +1,32 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	"views/mapview", "collections/sessions", "FileLoader"],
+	"views/mapview", "views/settingsview", "collections/sessions", "models/settings", "FileLoader"],
 
-	function($, _, Backbone, MapView, SessionList, FileLoader) {
+	function($, _, Backbone, MapView, SettingsView, SessionList, Settings, FileLoader) {
 
 		var AppView = Backbone.View.extend({
 			el: $("#playground-app"),
 
 			events: {
-				"change #file-input": "loadFile"
+				"change #fileInput": "loadFile"
 			},
 
 			sessions: null,
 
+			settings: null,
+
 			initialize: function() {
 				this.sessions = new SessionList();
 
+				// setup settings
+				this.settings = new Settings();
+				this.settingsview = new SettingsView({ model: this.settings });
+
+				// setup map
 				this.mapview = new MapView({
-					collection: this.sessions
+					collection: this.sessions,
+					settings: this.settings
 				});
 
 				this.mapview.render();

@@ -14,12 +14,20 @@
 		</header>
 
 		<section>
-			<label for="file-input">Select a .distance file:</label>
-			<input type="file" id="file-input" accept="*.distances" autocomplete="off"/>
+			<label for="fileInput">Select a .distance file:</label>
+			<input type="file" id="fileInput" accept="*.distances" autocomplete="off"/>
 		</section>
 
 		<section id="mapContainer"></section>
 
+		<section id="settings">
+			<ul>
+				<li><input type="checkbox" id="checkConnectMarkers" />
+					<label for="checkConnectMarkers">Connect markers with reference</li>
+				<li><input type="checkbox" id="checkConnectSessions" />
+					<label for="checkConnectSessions">Connect markers in sessions</li>
+			</ul>
+		</section>
 <!-- 		<section id="main">
 			<table id="data-table">
 				<thead>

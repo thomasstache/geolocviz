@@ -12,6 +12,9 @@ body {
 	width: 640px;
 	height: 100%;
 	margin: 0 auto;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
 }
 
 #playground-app {
@@ -29,9 +32,13 @@ body {
 	height: 500px;
 }
 
-/* initially hidden */
+#settings ul {
+	list-style: none;
+}
+
+/* data table stuff */
 #main {
-	display: none;
+	display: none; /* initially hidden */
 }
 
 #data-table {
