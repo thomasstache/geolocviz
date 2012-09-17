@@ -7,7 +7,7 @@ define(
 
 			defaults: {
 				// connect geolocated and reference markers with lines
-				drawReferenceLines: false,
+				drawReferenceLines: true,
 				// connect markers in a session with lines
 				drawSessionLines: false,
 			}

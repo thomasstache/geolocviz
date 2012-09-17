@@ -14,6 +14,9 @@ define(
 			initialize: function() {
 				this.$checkConnectMarkers = $("#checkConnectMarkers");
 				this.$checkConnectSessions = $("#checkConnectSessions");
+
+				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
+				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
 			},
 
 			toggleReferenceLines: function() {
