@@ -3,24 +3,25 @@ define(
 
 	function(_, Backbone) {
 
-		var Marker = Backbone.Model.extend({
+		var Overlay = Backbone.Model.extend({
 
 			defaults: {
 				// marker type
 				type: "",
-				// reference to the GoogleMaps Marker
-				marker: null,
+				// reference to the GoogleMaps object
+				ref: null,
 			},
 
-			// ensure to remove the pin from the map and release GoogleMaps Marker object
+			// ensure to remove the pin from the map and release GoogleMaps object
 			clear: function() {
-				if (this.has('marker')) {
-					this.get('marker').setMap(null);
-					this.set('marker', null);
+
+				if (this.has('ref')) {
+					this.get('ref').setMap(null);
+					this.set('ref', null);
 				}
 			}
 		});
 
-		return Marker;
+		return Overlay;
 	}
 );

@@ -1,16 +1,16 @@
 define(
 	["underscore", "backbone",
-	 "models/marker"],
-	function(_, Backbone, Marker) {
+	 "collections/overlays"],
+	function(_, Backbone, OverlayList) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
-			REFERENCE: 	{ bgcolor: "0000FF", color: "FFFFFF", smb: "R", category: "Reference Marker" }, // blue
+			REFERENCE:	{ bgcolor: "0000FF", color: "FFFFFF", smb: "R", category: "Reference Marker" }, // blue
 			GEOLOCATED: { bgcolor: "FF0000", color: "FFFFFF", smb: "M", category: "Geolocated" }, // red
-			INDOOR: 	{ bgcolor: "FBEC5D", color: "000000", smb: "I", category: "Indoor" }, // yellow
+			INDOOR:		{ bgcolor: "FBEC5D", color: "000000", smb: "I", category: "Indoor" }, // yellow
 			STATIONARY: { bgcolor: "FF9900", color: "000000", smb: "S", category: "Stationary" }, // orange
-			CANDIDATE: 	{ bgcolor: "CCFFFF", color: "000000", smb: "C", category: "Location Candidate" }, // skyblue
-			ACTIX: 		{ bgcolor: "006983", color: "CCCCCC", smb: "A", category: "Home" },
+			CANDIDATE:	{ bgcolor: "CCFFFF", color: "000000", smb: "C", category: "Location Candidate" }, // skyblue
+			ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", category: "Home" },
 		});
 
 		var OverlayTypes = Object.freeze({
@@ -34,7 +34,8 @@ define(
 
 			bounds: null,
 
-			markers: null,
+			// collection of all map objects
+			overlays: null,
 
 			initialize: function() {
 
@@ -56,11 +57,8 @@ define(
 				this.collection.on("add", this.drawMarkers, this);
 				this.collection.on("reset", this.clearMarkers, this);
 
-				// a collection to keep our markers in sight
-				var Markers = Backbone.Collection.extend({
-					model: Marker
-				});
-				this.markers = new Markers();
+				// a collection to keep our overlays in sight
+				this.overlays = new OverlayList();
 
 				// listen for settings changes
 				this.appsettings = this.options.settings;
@@ -74,7 +72,7 @@ define(
 				// capture the "this" scope
 				var that = this;
 				this.collection.each(function(session) {
-					that.drawSession(session)
+					that.drawSession(session);
 				});
 
 				if (!this.bounds.isEmpty())
@@ -83,16 +81,33 @@ define(
 
 			clearMarkers: function() {
 
-				this.markers.each(function(marker) {
+				this.overlays.each(function(marker) {
 					marker.clear();
 				});
-				this.markers.reset();
+				this.overlays.reset();
 			},
 
+			/**
+			 * Update map overlay visibility according to current settings.
+			 */
 			updateFeatures: function() {
-				// show or hide reference lines
+
 				var connectReference = this.appsettings.get("drawReferenceLines");
 				var connectSession = this.appsettings.get("drawSessionLines");
+
+				// make ref to capture in inner function
+				var map = this.map;
+
+				// show or hide reference lines
+				var lineOverlays = this.overlays.byType(OverlayTypes.REFERENCELINE);
+				_.each(
+					lineOverlays,
+					function(overlay) {
+						var marker = overlay.get("ref");
+						if (marker)
+							marker.setMap(connectReference ? map : null);
+					}
+				);
 			},
 
 			// draw reference and geolocated markers for the given session
@@ -101,29 +116,46 @@ define(
 				var that = this, color;
 				session.results.each(function(sample) {
 
-					that.bounds.extend(sample.get('latLngRef'));
+					var refLoc = sample.get('latLngRef');
+					that.bounds.extend(refLoc);
 
-					that.createMarker(sample.get('latLngRef'),
+					that.createMarker(refLoc,
 									  "#" + sample.get('msgId'),
 									  "Session: " + session.id +
 									  "<br>Messages: " + session.results.length,
 									  MarkerColors.REFERENCE,
 									  sample, OverlayTypes.REFERENCEMARKER);
 
-					var bestLoc = sample.getBestLocationCandidate();
-					color = (bestLoc.category() == "S") ? MarkerColors.STATIONARY
-						  : (bestLoc.category() == "I") ? MarkerColors.INDOOR
+					var bestCand = sample.getBestLocationCandidate();
+					var bestLoc = bestCand.get('latLng');
+					color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
+						  : (bestCand.category() == "I") ? MarkerColors.INDOOR
 						  : MarkerColors.GEOLOCATED;
 
-					that.createMarker(bestLoc.get('latLng'),
+					that.createMarker(bestLoc,
 										  "#" + sample.id,
-										  "Distance: " + bestLoc.get('distance') + "m" +
-										  "<br>Confidence: " + asPercent(bestLoc.get('confidence')) +
-										  "<br>P_mobile: " + asPercent(bestLoc.get('probMobility')) +
-										  "<br>P_indoor: " + asPercent(bestLoc.get('probIndoor')) +
+										  "Distance: " + bestCand.get('distance') + "m" +
+										  "<br>Confidence: " + asPercent(bestCand.get('confidence')) +
+										  "<br>P_mobile: " + asPercent(bestCand.get('probMobility')) +
+										  "<br>P_indoor: " + asPercent(bestCand.get('probIndoor')) +
 										  "<br>Candidates: " + sample.locationCandidates.length,
 										  color,
 										  sample, OverlayTypes.GEOLOCMARKER);
+
+					that.bounds.extend(bestLoc);
+
+					// connect measured and calculated points with lines
+					that.createReferenceLine(refLoc, bestLoc);
+				});
+			},
+
+			/**
+			 *
+			 */
+			registerOverlay: function(type, overlay) {
+				this.overlays.add({
+					type: type,
+					ref: overlay
 				});
 			},
 
@@ -155,6 +187,7 @@ define(
 
 				// store some extra data on the marker
 				var md = marker.metaData = {};
+				md.infoText = contentString;
 				if (sample) {
 					md.id = sample.cid;
 					if(sample.get('msgId') !== undefined)
@@ -164,10 +197,7 @@ define(
 				}
 
 				// register the marker
-				this.markers.add({
-					type: type,
-					marker: marker
-				});
+				this.registerOverlay(type, marker);
 
 				// click event to the for the marker
 				google.maps.event.addListener(marker, 'click',
@@ -184,6 +214,39 @@ define(
 
 				return marker;
 			},
+
+			/**
+			 * Creates a line overlay connecting measured and calculated points.
+			 * @param {LatLng} startLatLng: the geographical position for the start of the line
+			 * @param {LatLng} endLatLng: the geographical position for the end of the line
+			 */
+			createReferenceLine: function(startLatLng, endLatLng) {
+				return this.createLine(startLatLng, endLatLng, "#FF0000", 1, OverlayTypes.REFERENCELINE);
+			},
+
+			/**
+			 * Creates a line marker and adds it to the map.
+			 * @param {LatLng} startLatLng: the geographical position for the start of the line
+			 * @param {LatLng} endLatLng: the geographical position for the end of the line
+			 * @param {String} color: a hexadecimal HTML color of the format "#FFFFFF"
+			 * @param {int} weight: line weight in pixels
+			 * @param {OverlayTypes} type: the type of the overlay
+			 */
+			createLine: function(startLatLng, endLatLng, color, weight, type) {
+
+				var line = new google.maps.Polyline(
+					{
+						path: [startLatLng, endLatLng],
+						strokeColor: color,
+						strokeOpacity: 0.8,
+						strokeWeight: weight
+					}
+				);
+				line.setMap(this.map);
+
+				this.registerOverlay(type, line);
+				return line;
+			}
 		});
 
 		return MapView;
