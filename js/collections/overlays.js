@@ -7,6 +7,13 @@ define(
 		var OverlayList = Backbone.Collection.extend({
 			model: Overlay,
 
+			removeAll: function() {
+				this.each(function(overlay) {
+					overlay.removeFromMap();
+				});
+				this.reset();
+			},
+
 			// returns the subset of items matching the given type
 			byType: function(type) {
 

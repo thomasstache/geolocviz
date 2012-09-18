@@ -9,7 +9,7 @@ define(
 				// connect geolocated and reference markers with lines
 				drawReferenceLines: true,
 				// connect markers in a session with lines
-				drawSessionLines: false,
+				drawSessionLines: true,
 			}
 		});
 

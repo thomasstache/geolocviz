@@ -13,7 +13,7 @@ define(
 			},
 
 			// ensure to remove the pin from the map and release GoogleMaps object
-			clear: function() {
+			removeFromMap: function() {
 
 				if (this.has('ref')) {
 					this.get('ref').setMap(null);
