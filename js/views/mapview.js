@@ -259,25 +259,18 @@ define(
 				    session.results &&
 					session.results.length > 1) {
 
-/*					var sample = null,
-						refLocations = [],
-						bestLocations = [];
-
-					for (var i = 0; i < session.results.length; i++) {
-
-						sample = session.results.at(i);
-
-						// only for AccuracyResult
-						refLocations.push(sample.get("latLngRef"));
-						bestLocations.push(sample.getBestLocationCandidate().get("latLng"));
-					}
-*/
 					var refLocations = [],
 						bestLocations = [];
 
+					// extract the non-NaN locations
 					session.results.each(function(sample) {
-						refLocations.push(sample.get("latLngRef"));
-						bestLocations.push(sample.getBestLocationCandidate().get("latLng"));
+
+						var latLng = sample.get("latLngRef");
+						if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+							refLocations.push(latLng);
+						latLng = sample.getBestLocationCandidate().get("latLng");
+						if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+							bestLocations.push(latLng);
 					});
 
 					this.createLine(refLocations, "#4AB0F5", 10, OverlayTypes.SESSIONVIZ);
