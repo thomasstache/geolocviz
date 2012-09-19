@@ -16,7 +16,7 @@
 
 		<section>
 			<label for="fileInput">Select a .distance file:</label>
-			<input type="file" id="fileInput" accept="*.distances" autocomplete="off"/>
+			<input type="file" id="fileInput" multiple accept="*.distances" autocomplete="off"/>
 		</section>
 
 		<section id="mapContainer"></section>
@@ -29,33 +29,18 @@
 					<label for="checkConnectSessions">Connect markers in sessions</li>
 			</ul>
 		</section>
-<!-- 		<section id="main">
-			<table id="data-table">
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Lon/Lat</th>
-						<th>Distance</th>
-						<th>Confidence</th>
-					</tr>
-				</thead>
-				<tbody id="data-view-body"></tbody>
-			</table>
+
+		<section id="mapLegend" style="display: none" ></section>
+
+		<section id="sessionInfo">
+			<!-- -->
 		</section>
- -->
+
 		<footer>
 			<div id="stats-footer"></div>
+			<div id="status"></div>
 		</footer>
 	</div>
-
-	<!-- Templates -->
-
-	<script type="text/template" id="record-template">
-		<td><%= id %></td>
-		<td><%= lon %>/<%= lat %></td>
-		<td><%= dist %></td>
-		<td><%= confidence %></td>
-	</script>
 </body>
 
 </html>

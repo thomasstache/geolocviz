@@ -17,9 +17,15 @@ requirejs.config({
 	},
 	paths: {
 		'jquery.csv': 'lib/jquery.csv',
+		json2: 'lib/hbs/json2',
+		i18nprecompile: 'lib/hbs/i18nprecompile',
+		hbs: 'lib/hbs/hbs',
 		handlebars: 'lib/handlebars',
 		underscore: 'lib/underscore',
 		backbone: 'lib/backbone',
+	},
+	hbs: {
+		disableI18n: true
 	}
 });
 

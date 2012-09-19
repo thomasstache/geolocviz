@@ -322,6 +322,8 @@ define(
 					}
 				}
 			},
+
+			colors: function() { return MarkerColors; }
 		});
 
 		return MapView;
