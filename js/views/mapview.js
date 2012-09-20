@@ -19,7 +19,8 @@ define(
 			CANDIDATEMARKER: "candidateMarker",
 			REFERENCELINE: "refLine",
 			SESSIONVIZ: "sessionViz",
-			SELECTIONVIZ: "selectionViz"
+			SELECTIONVIZ: "selectionViz",
+			DEBUG: "debug"
 		});
 
 		// a percentage formatter assuming values [0,1], omitting unit for NaNs
@@ -70,13 +71,16 @@ define(
 
 				this.bounds = new google.maps.LatLngBounds();
 				// capture the "this" scope
-				var that = this;
+				var view = this;
 				this.collection.each(function(session) {
-					that.drawSession(session);
+					view.drawSession(session);
 				});
 
 				if (!this.bounds.isEmpty())
 					this.map.fitBounds(this.bounds);
+
+				// debug code
+				//this.drawBBox();
 			},
 
 			/**
@@ -145,25 +149,30 @@ define(
 			// draw reference and geolocated markers for the given session
 			drawSession: function(session) {
 
-				var view = this, color;
+				var view = this;
 
 				session.results.each(function(sample) {
 
 					var refLoc = sample.get('latLngRef');
-					view.bounds.extend(refLoc);
 
-					view.createMarker(refLoc,
-									  "#" + sample.get('msgId'),
-									  "Session: " + session.id +
-									  "<br>Messages: " + session.results.length,
-									  MarkerColors.REFERENCE,
-									  sample, OverlayTypes.REFERENCEMARKER);
+					// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
+					if (!isNaN(refLoc.lat()) && !isNaN(refLoc.lng())) {
+
+						view.bounds.extend(refLoc);
+
+						view.createMarker(refLoc,
+										  "#" + sample.get('msgId'),
+										  "Session: " + session.id +
+										  "<br>Messages: " + session.results.length,
+										  MarkerColors.REFERENCE,
+										  sample, OverlayTypes.REFERENCEMARKER);
+					}
 
 					var bestCand = sample.getBestLocationCandidate();
 					var bestLoc = bestCand.get('latLng');
-					color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
-						  : (bestCand.category() == "I") ? MarkerColors.INDOOR
-						  : MarkerColors.GEOLOCATED;
+					var color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
+							  : (bestCand.category() == "I") ? MarkerColors.INDOOR
+							  : MarkerColors.GEOLOCATED;
 
 					view.createMarker(bestLoc,
 									  "#" + sample.get('msgId'),
@@ -323,6 +332,24 @@ define(
 				}
 			},
 
+			/**
+			 * Helper method for visual inspection of the bounding box.
+			 */
+			drawBBox: function() {
+
+				// draw a green shaded box
+				var rect = new google.maps.Rectangle({
+					bounds: this.bounds,
+					map: this.map,
+					strokeColor: "#00FF00",
+					strokeWeight: 3,
+					strokeOpacity: 0.8
+				});
+
+				this.registerOverlay(OverlayTypes.DEBUG, rect);
+			},
+
+			// returns the colors dictionary
 			colors: function() { return MarkerColors; }
 		});
 
