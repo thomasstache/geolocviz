@@ -21,7 +21,7 @@ body {
 #playground-app {
 	background: white;
 	padding: 20px;
-	margin-bottom: 40px;
+	margin-bottom: 10px;
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
 	border-radius: 0 0 5px 5px;
 }
@@ -33,13 +33,15 @@ body {
 	height: 760px;
 }
 
-#settings ul,
-ul.legend {
+ul {
 	list-style: none;
 }
 
 /* Legend */
 
+#mapLegend {
+	margin: 10px 0 -10px 0; /* this is the last element on the page, pull up the bottom border with - margin */
+}
 ul.legend {
 	font-size: 80%;
 	padding: 0 20px;
@@ -62,4 +64,38 @@ ul.legend li .colorswatch {
 	border-radius: 2.5px;
 	width: 30px;
 	height: 2.5ex;
+}
+
+/* Session Info Display */
+
+#sessionInfo {
+	position: relative;
+	min-height: 5em;
+	padding: 10px;
+	border: 1px solid rgba(152, 180, 152, .8);
+	border-radius: 5px;
+	background: rgba(210,230,190,.6);
+	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+}
+
+#sessionInfo .caption {
+
+	position: absolute;
+	right: 1em;
+	color: rgba(38, 48, 16, 0.51);
+	text-shadow: rgb(255, 255, 255) 0 2px 1px;
+	font-size: 1em;
+	font-weight: normal;
+	margin: 0 3px;
+}
+
+.propertyList {
+	font-family: Consolas, "Courier New", Courier, monospace;
+	margin: 0; padding: 0;
+}
+.propertyList .label {
+	font-weight: bold;
+}
+.propertyList .value {
+	font-size: 0.9em;
 }

@@ -64,6 +64,8 @@ define(
 				// listen for settings changes
 				this.appsettings = this.options.settings;
 				this.appsettings.on("change", this.updateOverlays, this);
+
+				this.render();
 			},
 
 			// draw all markers for all sessions
@@ -327,6 +329,7 @@ define(
 						var session = this.collection.get(md.sessionId);
 						if (session) {
 							this.drawSessionLines(session);
+							this.trigger("session:selected", session);
 						}
 					}
 				}

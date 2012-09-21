@@ -1,11 +1,11 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	 "views/mapview", "views/settingsview", "views/legendview",
+	 "views/mapview", "views/settingsview", "views/legendview", "views/sessioninfoview",
 	 "collections/sessions", "models/settings", "FileLoader"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView,
+			 MapView, SettingsView, LegendView, SessionInfoView,
 			 SessionList, Settings, FileLoader) {
 
 		var AppView = Backbone.View.extend({
@@ -36,10 +36,10 @@ define(
 					settings: this.settings
 				});
 
-				this.mapview.render();
+				this.mapview.on("session:selected", this.sessionSelected, this);
 
 				this.legendview = new LegendView({ colors: this.mapview.colors() });
-				this.legendview.render();
+				this.sessioninfoview = new SessionInfoView();
 			},
 
 			render: function() {
@@ -66,6 +66,10 @@ define(
 				FileLoader.loadFiles(files, this.sessions);
 			},
 
+			sessionSelected: function(session) {
+
+				this.sessioninfoview.update(session);
+			}
 		});
 
 		return AppView;

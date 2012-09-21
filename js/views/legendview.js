@@ -20,6 +20,8 @@ define(
 				for (var prop in colorDict) {
 					this.colorData.colors.push(colorDict[prop]);
 				}
+
+				this.render();
 			},
 
 			render: function() {
