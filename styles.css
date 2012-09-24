@@ -37,6 +37,28 @@ ul {
 	list-style: none;
 }
 
+.button {
+	display: inline-block;
+	padding: 4px 10px;
+	font-size: 0.9em;
+	text-decoration: none;
+	cursor: pointer;
+	color: rgb(105,105,105);
+	background-color: rgba(220,220,220,0.7);
+	border: 1px solid rgb(175,175,175);
+	border-radius: 3px;
+	box-shadow: rgba(0,0,0,0.1) 0 1px 3px 0, inset rgba(255,255,255,0.8) 0 1px 1px 0;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+}
+.transl {
+	border-color: rgba(145,145,145,0.7);
+	background-color: rgba(0,0,0,0.1);
+}
+.button.tiny {
+	font-size: 11px; line-height: 14px;
+	padding: 1px 4px;
+}
+
 /* Legend */
 
 #mapLegend {

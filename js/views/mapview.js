@@ -38,6 +38,9 @@ define(
 			// collection of all map objects
 			overlays: null,
 
+			// returns the colors dictionary
+			colors: function() { return MarkerColors; },
+
 			initialize: function() {
 
 				var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
@@ -68,22 +71,19 @@ define(
 				this.render();
 			},
 
-			// draw all markers for all sessions
-			drawMarkers: function() {
-
-				this.bounds = new google.maps.LatLngBounds();
-				// capture the "this" scope
-				var view = this;
-				this.collection.each(function(session) {
-					view.drawSession(session);
-				});
+			zoomToBounds: function() {
 
 				if (!this.bounds.isEmpty())
 					this.map.fitBounds(this.bounds);
-
-				// debug code
-				//this.drawBBox();
 			},
+
+
+
+
+
+			/**
+			 * Overlay handling
+			 */
 
 			/**
 			 * Removes all overlays from the map and destroys them.
@@ -148,6 +148,30 @@ define(
 				);
 			},
 
+
+
+
+
+			/**
+			 * Drawing stuff
+			 */
+
+			// draw all markers for all sessions
+			drawMarkers: function() {
+
+				this.bounds = new google.maps.LatLngBounds();
+				// capture the "this" scope
+				var view = this;
+				this.collection.each(function(session) {
+					view.drawSession(session);
+				});
+
+				this.zoomToBounds();
+
+				// debug code
+				//this.drawRectangle(this.bounds, "#00FF00");
+			},
+
 			// draw reference and geolocated markers for the given session
 			drawSession: function(session) {
 
@@ -198,8 +222,7 @@ define(
 			 * @param {LatLng} latlng: the geographical position for the marker
 			 * @param {String} label: headline for the info popup
 			 * @param {String} detailHtml: body for the info popup
-			 * @param {MarkerColors} color: the color definition to use
-			 * @param {String} letter: the letter to be drawn on the marker symbol
+			 * @param {MarkerColors} colorDef: the color definition to use
 			 * @param {AccuracyResult} sample: reference to the AccuracyResult for which the marker is created
 			 * @param {OverlayTypes} type: the type of the marker
 			 */
@@ -315,6 +338,25 @@ define(
 			},
 
 			/**
+			 * Helper method for visual inspection of the bounding box.
+			 * @param {LatLngBounds} bounds
+			 * @param {String} color The stroke color as HTML color of the format "#FFFFFF"
+			 */
+			drawRectangle: function(bounds, color) {
+
+				// draw a green shaded box
+				var rect = new google.maps.Rectangle({
+					bounds: bounds,
+					map: this.map,
+					strokeColor: color,
+					strokeWeight: 3,
+					strokeOpacity: 0.8
+				});
+
+				this.registerOverlay(OverlayTypes.DEBUG, rect);
+			},
+
+			/**
 			 * Highlights the records associated with the session of the marker.
 			 */
 			onMarkerDblClick: function(marker) {
@@ -336,24 +378,24 @@ define(
 			},
 
 			/**
-			 * Helper method for visual inspection of the bounding box.
+			 * Focus on a session by zooming to its bounds.
+			 * @param {Session} session The session model.
 			 */
-			drawBBox: function() {
+			focusSession: function(session) {
 
-				// draw a green shaded box
-				var rect = new google.maps.Rectangle({
-					bounds: this.bounds,
-					map: this.map,
-					strokeColor: "#00FF00",
-					strokeWeight: 3,
-					strokeOpacity: 0.8
+				// determine the extents of the session
+				var sessionRect = new google.maps.LatLngBounds();
+
+				session.results.each(function(sample) {
+
+					sessionRect.extend(sample.get('latLngRef'));
+					var bestCand = sample.getBestLocationCandidate();
+					sessionRect.extend(bestCand.get('latLng'));
 				});
 
-				this.registerOverlay(OverlayTypes.DEBUG, rect);
-			},
-
-			// returns the colors dictionary
-			colors: function() { return MarkerColors; }
+				if (!sessionRect.isEmpty())
+					this.map.fitBounds(sessionRect);
+			}
 		});
 
 		return MapView;

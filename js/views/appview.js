@@ -36,10 +36,12 @@ define(
 					settings: this.settings
 				});
 
-				this.mapview.on("session:selected", this.sessionSelected, this);
-
 				this.legendview = new LegendView({ colors: this.mapview.colors() });
 				this.sessioninfoview = new SessionInfoView();
+
+				this.mapview.on("session:selected", this.sessionSelected, this);
+				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
+				this.sessioninfoview.on("session:unfocussed", this.sessionUnfocussed, this);
 			},
 
 			render: function() {
@@ -66,9 +68,22 @@ define(
 				FileLoader.loadFiles(files, this.sessions);
 			},
 
+			// Handler for "session:selected" event. Update the info display.
 			sessionSelected: function(session) {
 
 				this.sessioninfoview.update(session);
+			},
+
+			// Handler for "session:focussed" event. Zoom the map view.
+			sessionFocussed: function(session) {
+
+				this.mapview.focusSession(session);
+			},
+
+			// Handler for "session:unfocussed" event. Zoom the map view.
+			sessionUnfocussed: function() {
+
+				this.mapview.zoomToBounds();
 			}
 		});
 
