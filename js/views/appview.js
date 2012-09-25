@@ -54,6 +54,7 @@ define(
 
 			clearData: function() {
 				this.sessions.reset();
+				this.sessioninfoview.update();
 			},
 
 			loadFile: function(evt) {

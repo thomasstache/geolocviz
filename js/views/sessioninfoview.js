@@ -5,18 +5,26 @@ define(
 	function($, _, Backbone, tmplFct) {
 
 		var SessionInfoView = Backbone.View.extend({
-			el: $("#sessionInfo"),
+			el: $("#infoView"),
 
 			events: {
 				"click .focus-session": "onFocusSessionClicked",
 				"click .unfocus-session": "onUnfocusSessionClicked"
 			},
 
-			context: {},
+			// the template input data, a Session model
+			session: null,
+
+			// id of the last focussed session
+			focussedSessionId: -1,
 
 			initialize: function() {
 
 				this.render();
+
+				this.$toolbar = $(".toolbar");
+				this.$focusBtn = $(".button.focus-session");
+				this.$unfocusBtn = $(".button.unfocus-session");
 			},
 
 			/**
@@ -24,43 +32,60 @@ define(
 			 */
 			update: function(session) {
 
-				if (session) {
+				if (session &&
+				    (this.session === null || session.id !== this.session.id)) {
 
-					this.context = session;
+					this.session = session;
 				}
 				else {
 					// clear the view
-					this.context = {};
+					this.session = null;
+					this.focussedSessionId = -1;
 				}
+
+				this.updateControls();
 				this.render();
 			},
 
 			// Render the template with the current context data.
 			render: function() {
 
-				this.$el.html(tmplFct(this.context));
+				$("#sessionInfo").html(tmplFct(this.session ? this.session : {}));
 				return this;
 			},
 
 			/**
 			 * Click handler for the "focus session" button. Trigger "focus" event.
 			 */
-			onFocusSessionClicked: function(evt) {
+			onFocusSessionClicked: function() {
 
-				evt.preventDefault(); // don't navigate
-				if (this.context) {
-					this.trigger("session:focussed", this.context);
+				if (this.session) {
+					this.trigger("session:focussed", this.session);
+					this.focussedSessionId = this.session.id;
 				}
+				this.updateControls();
 			},
 
 			/**
 			 * Click handler for the "done" button. Trigger "unfocus" event.
 			 */
-			onUnfocusSessionClicked: function(evt) {
+			onUnfocusSessionClicked: function() {
 
-				evt.preventDefault(); // don't navigate
 				this.trigger("session:unfocussed");
-			}
+				this.focussedSessionId = -1;
+				this.updateControls();
+			},
+
+			updateControls: function() {
+
+				var canFocus = (this.session !== null &&
+				                       this.focussedSessionId !== this.session.id);
+
+				this.$focusBtn.prop("disabled", !canFocus);
+				this.$unfocusBtn.prop("disabled", this.focussedSessionId < 0);
+
+				this.$toolbar.toggleClass("hidden", this.session === null);
+			},
 		});
 
 		return SessionInfoView;
