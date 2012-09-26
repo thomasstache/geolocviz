@@ -2,14 +2,16 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/sessioninfoview",
-	 "collections/sessions", "models/settings", "FileLoader"],
+	 "collections/sessions", "models/settings", "models/appstate", "FileLoader"],
 
 	function($, _, Backbone,
 			 MapView, SettingsView, LegendView, SessionInfoView,
-			 SessionList, Settings, FileLoader) {
+			 SessionList, Settings, AppState, FileLoader) {
 
 		var AppView = Backbone.View.extend({
 			el: $("#playground-app"),
+
+			model: new AppState(),
 
 			events: {
 				"change #fileInput": "loadFile"
@@ -37,7 +39,7 @@ define(
 				});
 
 				this.legendview = new LegendView({ colors: this.mapview.colors() });
-				this.sessioninfoview = new SessionInfoView();
+				this.sessioninfoview = new SessionInfoView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
@@ -54,7 +56,8 @@ define(
 
 			clearData: function() {
 				this.sessions.reset();
-				this.sessioninfoview.update();
+				// revert all attributes to defaults
+				this.model.set(this.model.defaults);
 			},
 
 			loadFile: function(evt) {
@@ -66,24 +69,27 @@ define(
 					return;
 				}
 
+				this.model.set("files", _.map(files, function(f) { return f.name; }));
 				FileLoader.loadFiles(files, this.sessions);
 			},
 
 			// Handler for "session:selected" event. Update the info display.
 			sessionSelected: function(session) {
 
-				this.sessioninfoview.update(session);
+				this.model.set("selectedSession", session);
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.
 			sessionFocussed: function(session) {
 
+				this.model.set("focussedSessionId", session.id);
 				this.mapview.focusSession(session);
 			},
 
 			// Handler for "session:unfocussed" event. Zoom the map view.
 			sessionUnfocussed: function() {
 
+				this.model.set("focussedSessionId", -1);
 				this.mapview.zoomToBounds();
 			}
 		});
