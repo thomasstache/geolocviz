@@ -226,7 +226,7 @@ define(
 				if (this.highlightedSampleCid != sample.cid) {
 
 					// remove old markers
-					this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
+					this.deleteCandidateMarkers();
 
 					this.highlightedSampleCid = sample.cid;
 
@@ -242,6 +242,12 @@ define(
 										  candidate.category());
 					}
 				}
+			},
+
+			deleteCandidateMarkers: function() {
+
+				this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
+				this.highlightedSampleCid = -1;
 			},
 
 			/**
@@ -444,6 +450,10 @@ define(
 									// draw location candidates
 									this.drawCandidateMarkers(sample);
 								}
+							}
+							else {
+								// type unknown or "not geoloc"
+								this.deleteCandidateMarkers();
 							}
 						}
 					}
