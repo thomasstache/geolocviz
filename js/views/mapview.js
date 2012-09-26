@@ -188,9 +188,9 @@ define(
 
 						view.createMarker(refLoc,
 										  "#" + sample.get('msgId'),
-										  "Session: " + session.id +
+/*										  "Session: " + session.id +
 										  "<br>Messages: " + session.results.length,
-										  MarkerColors.REFERENCE,
+*/										  MarkerColors.REFERENCE,
 										  sample, OverlayTypes.REFERENCEMARKER);
 					}
 
@@ -202,11 +202,6 @@ define(
 
 					view.createMarker(bestLoc,
 									  "#" + sample.get('msgId'),
-									  "Distance: " + bestCand.get('distance') + "m" +
-									  "<br>Confidence: " + asPercent(bestCand.get('confidence')) +
-									  "<br>P_mobile: " + asPercent(bestCand.get('probMobility')) +
-									  "<br>P_indoor: " + asPercent(bestCand.get('probIndoor')) +
-									  "<br>Candidates: " + sample.locationCandidates.length,
 									  color,
 									  sample, OverlayTypes.GEOLOCMARKER);
 
@@ -220,17 +215,15 @@ define(
 			/**
 			 * Creates a marker pin and adds it to the map.
 			 * @param {LatLng} latlng: the geographical position for the marker
-			 * @param {String} label: headline for the info popup
-			 * @param {String} detailHtml: body for the info popup
+			 * @param {String} label: tooltip for the marker
 			 * @param {MarkerColors} colorDef: the color definition to use
 			 * @param {AccuracyResult} sample: reference to the AccuracyResult for which the marker is created
 			 * @param {OverlayTypes} type: the type of the marker
 			 */
-			createMarker: function(latlng, label, detailHtml, colorDef, sample, type) {
+			createMarker: function(latlng, label, colorDef, sample, type) {
 
 				var view = this;
-				var contentString = '<b>' + label + '</b><br>' + detailHtml,
-					color = colorDef.bgcolor + "|" + colorDef.color,
+				var color = colorDef.bgcolor + "|" + colorDef.color,
 					letter = colorDef.smb;
 
 				var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
@@ -245,9 +238,8 @@ define(
 
 				// store some extra data on the marker
 				var md = marker.metaData = {};
-				md.infoText = contentString;
 				if (sample) {
-					md.sampleId = sample.cid;
+					md.sampleCid = sample.cid;
 					if(sample.get('msgId') !== undefined)
 						md.msgId = sample.get('msgId');
 					if (sample.get('sessionId') !== undefined)
@@ -260,7 +252,7 @@ define(
 				// click event to the for the marker
 				google.maps.event.addListener(marker, 'click',
 					function() {
-//						onMarkerClick(this);
+						view.onMarkerClick(this);
 					}
 				);
 				google.maps.event.addListener(marker, 'dblclick',
@@ -357,7 +349,30 @@ define(
 			},
 
 			/**
-			 * Highlights the records associated with the session of the marker.
+			 * Handler for clicks on map markers.
+			 */
+			onMarkerClick: function(marker) {
+
+				if (marker && marker.metaData) {
+
+					var md = marker.metaData;
+					if (md.sessionId !== undefined &&
+						md.sessionId > 0) {
+
+						var session = this.collection.get(md.sessionId);
+						if (session) {
+							var sample = session.getByCid(md.sampleCid);
+							if (sample) {
+								this.trigger("result:selected", sample);
+							}
+							this.trigger("session:selected", session);
+						}
+					}
+				}
+			},
+
+			/**
+			 * Handler for double-clicks on map markers.
 			 */
 			onMarkerDblClick: function(marker) {
 
@@ -371,7 +386,6 @@ define(
 						var session = this.collection.get(md.sessionId);
 						if (session) {
 							this.drawSessionLines(session);
-							this.trigger("session:selected", session);
 						}
 					}
 				}

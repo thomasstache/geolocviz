@@ -42,6 +42,7 @@ define(
 				this.sessioninfoview = new SessionInfoView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
+				this.mapview.on("result:selected", this.resultSelected, this);
 				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
 				this.sessioninfoview.on("session:unfocussed", this.sessionUnfocussed, this);
 			},
@@ -77,6 +78,12 @@ define(
 			sessionSelected: function(session) {
 
 				this.model.set("selectedSession", session);
+			},
+
+			// Handler for "result:selected" event. Update the info display.
+			resultSelected: function(result) {
+
+				this.model.set("selectedResult", result);
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.

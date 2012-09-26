@@ -1,8 +1,8 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/sessioninfo"],
+	 "hbs!../../templates/sessioninfo", "hbs!../../templates/accuracyresultinfo"],
 
-	function($, _, Backbone, tmplFct) {
+	function($, _, Backbone, sessionTemplate, resultTemplate) {
 
 		var SessionInfoView = Backbone.View.extend({
 			el: $("#infoView"),
@@ -15,6 +15,7 @@ define(
 			initialize: function() {
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
+				this.model.on("change:selectedResult", this.onResultChanged, this);
 				this.model.on("change:focussedSessionId", this.updateControls, this);
 
 				this.$toolbar = $(".toolbar");
@@ -22,17 +23,37 @@ define(
 				this.$unfocusBtn = $(".button.unfocus-session");
 			},
 
-			onSessionChanged: function(model, value, options) {
+			onSessionChanged: function() {
 
 				this.updateControls();
 				this.render();
 			},
 
-			// Render the template with the current context data.
+			onResultChanged: function() {
+
+				this.renderResultInfo();
+			},
+
+			// Render the templates with the current context data.
 			render: function() {
 
+				this.renderSessionInfo();
+				this.renderResultInfo();
+				return this;
+			},
+
+			renderSessionInfo: function() {
+
 				var context = this.model.get("selectedSession");
-				$("#sessionInfo").html(tmplFct(context !== null ? context : {}));
+				$("#sessionInfo").html(sessionTemplate(context !== null ? context : {}));
+				return this;
+			},
+
+			// Render the templates with the current context data.
+			renderResultInfo: function() {
+
+				var result = this.model.get("selectedResult");
+				$("#resultInfo").html(resultTemplate(result !== null ? result.getInfo() : {}));
 				return this;
 			},
 

@@ -1,0 +1,12 @@
+{{#if distance}}
+<ul class="propertyList">
+	<li><span class="label">Result:</span> <span class="value">{{num}}/{{resultCount}}</span></li>
+	<li><span class="label">Distance:</span> <span class="value">{{distance}}m</span></li>
+	{{#if confidence}}
+	<li><span class="label">Confidence:</span> <span class="value">{{confidence}}</span></li>
+	{{/if}}
+	<li><span class="label">P_mobile:</span> <span class="value">{{probMobility}}</span></li>
+	<li><span class="label">P_indoor:</span> <span class="value">{{probIndoor}}</span></li>
+	<li><span class="label">Candidates:</span> <span class="value">{{candidateCount}}</span></li>
+</ul>
+{{/if}}

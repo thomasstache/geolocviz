@@ -122,9 +122,11 @@ ul.legend li .colorswatch {
 	bottom: 0.5em;
 }
 
+#infoView output { float: left; }
+
 .propertyList {
 	font-family: Consolas, "Courier New", Courier, monospace;
-	margin: 0; padding: 0;
+	margin: 0 10px; padding: 0;
 }
 .propertyList .label {
 	font-weight: bold;
@@ -133,5 +135,6 @@ ul.legend li .colorswatch {
 	font-size: 0.9em;
 }
 
+.clearfix {clear: both; }
 .invisible { visibility: hidden; }
 .hidden { display: none; }
