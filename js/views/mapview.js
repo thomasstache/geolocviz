@@ -23,20 +23,21 @@ define(
 			DEBUG: "debug"
 		});
 
-		// a percentage formatter assuming values [0,1], omitting unit for NaNs
-		function asPercent(val) {
-			return isNaN(val) ? val
-							  : Math.round(val * 100) + "%";
-		}
-
 		var MapView = Backbone.View.extend({
 
 			el: $("#mapContainer"),
 
+			// bounding rectangle around all reference and geolocated markers
 			bounds: null,
 
 			// collection of all map objects
 			overlays: null,
+
+			// id of the currently highlighted session (see drawSessionLines())
+			highlightedSessionId: -1,
+
+			// id of the currently highlighted sample/result (see drawCandidateMarkers())
+			highlightedSampleCid: -1,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -92,6 +93,8 @@ define(
 
 				this.overlays.removeAll();
 
+				this.highlightedSessionId = -1;
+				this.highlightedSampleCid = -1;
 			},
 
 			/**
@@ -186,12 +189,13 @@ define(
 
 						view.bounds.extend(refLoc);
 
-						view.createMarker(refLoc,
+						view.createMarker(OverlayTypes.REFERENCEMARKER,
+										  refLoc,
 										  "#" + sample.get('msgId'),
 /*										  "Session: " + session.id +
 										  "<br>Messages: " + session.results.length,
 */										  MarkerColors.REFERENCE,
-										  sample, OverlayTypes.REFERENCEMARKER);
+										  sample);
 					}
 
 					var bestCand = sample.getBestLocationCandidate();
@@ -200,10 +204,11 @@ define(
 							  : (bestCand.category() == "I") ? MarkerColors.INDOOR
 							  : MarkerColors.GEOLOCATED;
 
-					view.createMarker(bestLoc,
+					view.createMarker(OverlayTypes.GEOLOCMARKER,
+									  bestLoc,
 									  "#" + sample.get('msgId'),
 									  color,
-									  sample, OverlayTypes.GEOLOCMARKER);
+									  sample);
 
 					view.bounds.extend(bestLoc);
 
@@ -213,18 +218,46 @@ define(
 			},
 
 			/**
+			 * Draws markers for all candidate locations for the AccuracyResult.
+			 * @param {AccuracyResult} sample
+			 */
+			drawCandidateMarkers: function(sample) {
+
+				if (this.highlightedSampleCid != sample.cid) {
+
+					// remove old markers
+					this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
+
+					this.highlightedSampleCid = sample.cid;
+
+					// start at "1" to skip best candidate
+					for (var i = 1; i < sample.locationCandidates.length; i++) {
+
+						var candidate = sample.locationCandidates.at(i);
+						this.createMarker(OverlayTypes.CANDIDATEMARKER,
+										  candidate.get('latLng'),
+										  "#" + sample.get('msgId'),
+										  MarkerColors.CANDIDATE,
+										  sample,
+										  candidate.category());
+					}
+				}
+			},
+
+			/**
 			 * Creates a marker pin and adds it to the map.
 			 * @param {LatLng} latlng: the geographical position for the marker
+			 * @param {AccuracyResult} sample: reference to the AccuracyResult for which the marker is created
 			 * @param {String} label: tooltip for the marker
 			 * @param {MarkerColors} colorDef: the color definition to use
-			 * @param {AccuracyResult} sample: reference to the AccuracyResult for which the marker is created
 			 * @param {OverlayTypes} type: the type of the marker
+			 * @param {char} symbol: (optional) the letter for the marker, override the one in colorDef
 			 */
-			createMarker: function(latlng, label, colorDef, sample, type) {
+			createMarker: function(type, latlng, label, colorDef, sample, symbol) {
 
 				var view = this;
 				var color = colorDef.bgcolor + "|" + colorDef.color,
-					letter = colorDef.smb;
+					letter = symbol ? symbol : colorDef.smb;
 
 				var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
 				var marker = new google.maps.Marker(
@@ -247,11 +280,15 @@ define(
 				}
 
 				// register the marker
-				this.registerOverlay(type, marker);
+				if (type !== undefined) {
+					this.registerOverlay(type, marker);
+					md.type = type;
+				}
 
 				// click event to the for the marker
 				google.maps.event.addListener(marker, 'click',
 					function() {
+						// in here "this" is bound to the marker
 						view.onMarkerClick(this);
 					}
 				);
@@ -281,26 +318,37 @@ define(
 			 */
 			drawSessionLines: function(session) {
 
-				if (this.appsettings.get("drawSessionLines") &&
-				    session.results &&
-					session.results.length > 1) {
+				// check if the session actually changed
+				if (this.highlightedSessionId !== session.id) {
 
-					var refLocations = [],
-						bestLocations = [];
+					// remove old lines and markers
+					this.deleteOverlaysForType(OverlayTypes.SESSIONVIZ);
+					this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
 
-					// extract the non-NaN locations
-					session.results.each(function(sample) {
+					this.highlightedSessionId = session.id;
 
-						var latLng = sample.get("latLngRef");
-						if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
-							refLocations.push(latLng);
-						latLng = sample.getBestLocationCandidate().get("latLng");
-						if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
-							bestLocations.push(latLng);
-					});
+					// draw new lines
+					if (this.appsettings.get("drawSessionLines") &&
+						session.results &&
+						session.results.length > 1) {
 
-					this.createLine(refLocations, "#4AB0F5", 10, OverlayTypes.SESSIONVIZ);
-					this.createLine(bestLocations, "#B479FF", 7, OverlayTypes.SESSIONVIZ);
+						var refLocations = [],
+							bestLocations = [];
+
+						// extract the non-NaN locations
+						session.results.each(function(sample) {
+
+							var latLng = sample.get("latLngRef");
+							if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+								refLocations.push(latLng);
+							latLng = sample.getBestLocationCandidate().get("latLng");
+							if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+								bestLocations.push(latLng);
+						});
+
+						this.createLine(refLocations, "#4AB0F5", 10, OverlayTypes.SESSIONVIZ);
+						this.createLine(bestLocations, "#B479FF", 7, OverlayTypes.SESSIONVIZ);
+					}
 				}
 			},
 
@@ -376,7 +424,6 @@ define(
 			 */
 			onMarkerDblClick: function(marker) {
 
-				this.deleteOverlaysForType(OverlayTypes.SESSIONVIZ);
 				if (marker && marker.metaData) {
 
 					var md = marker.metaData;
@@ -385,7 +432,19 @@ define(
 
 						var session = this.collection.get(md.sessionId);
 						if (session) {
+							// connect session results
 							this.drawSessionLines(session);
+
+							if (md.type !== undefined &&
+								md.type === OverlayTypes.GEOLOCMARKER &&
+								md.sampleCid !== undefined) {
+
+								var sample = session.getByCid(md.sampleCid);
+								if (sample) {
+									// draw location candidates
+									this.drawCandidateMarkers(sample);
+								}
+							}
 						}
 					}
 				}
