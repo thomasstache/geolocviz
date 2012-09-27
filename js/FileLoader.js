@@ -1,7 +1,8 @@
 define(
-	["collections/sessions", "collections/results", "models/AccuracyResult", "jquery.csv"],
+	["collections/sessions", "collections/results",
+	 "models/AccuracyResult", "models/axfresult", "jquery.csv"],
 
-	function(SessionList, ResultList, AccuracyResult) {
+	function(SessionList, ResultList, AccuracyResult, AxfResult) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -12,6 +13,14 @@ define(
 				ACCURACY: "accuracy",
 				AXF: "axf",
 			});
+
+			// line/header lengths of the supported CSV files
+			var LineLengths = Object.freeze({
+				ACCURACY: 11,
+				AXF: 11,
+				AXF_XT: 12
+			});
+
 			var currentFileType = "";
 			// dummy session ID for records from files that don't provide it.
 			var SESSION_ID_DEFAULT = 0;
@@ -37,7 +46,7 @@ define(
 					processCSV(rowData);
 
 					// notify about completion
-					if (callbackFct != null)
+					if (callbackFct !== null)
 						callbackFct("ok", currentFileType);
 				}
 			}
@@ -51,8 +60,11 @@ define(
 				// identify file format (rudimentary by no. columns)
 				var header = rowData[0];
 
-				if (currentFileType == FileTypes.ACCURACY && header.length == 11) {
+				if (currentFileType == FileTypes.ACCURACY && header.length == LineLengths.ACCURACY) {
 					parsingFct = parseAccuracyRecordV3;
+				}
+				else if (currentFileType == FileTypes.AXF) {
+					parsingFct = parseAxfRecord;
 				}
 				else {
 					alert("I do not recognize this file format!");
@@ -91,7 +103,7 @@ define(
 				var sessId = record[IDX.SESSIONID];
 
 				// when the CT message ID changes, create a new AccuracyResult
-				if (currentAccuracyResult == null ||
+				if (currentAccuracyResult === null ||
 					currentAccuracyResult.get('msgId') != msgId) {
 
 					// reference marker location
@@ -99,19 +111,12 @@ define(
 														   parseFloat(record[IDX.REF_LON]));
 
 					// get the session if existing
-					var session = sessionList.get(sessId);
-					if (session == null) {
-						// create missing session
-						sessionList.add({
-							id: sessId
-						}, { silent: true });
+					var session = getSession(sessId);
 
-						session = sessionList.at(sessionList.length - 1);
-					}
 					currentAccuracyResult = new AccuracyResult({
 						msgId: msgId,
 						sessionId: sessId,
-						latLngRef: refLatLng
+						latLng: refLatLng
 					});
 					session.results.add(currentAccuracyResult, { silent: true });
 				}
@@ -132,6 +137,77 @@ define(
 					probMobility: probMobile,
 					probIndoor: probIndoor
 				}, { silent: true });
+			}
+
+			/* Parses a line from the new (v6.1) file format:
+			 * Headers:
+			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId
+			 */
+			function parseAxfRecord(record) {
+				//to do: Replace column numbers by link related to col headings
+				var IDX = Object.freeze({
+					MSGID: 0,
+					TIMEOFFSET: 1,
+					GEO_LAT: 2,
+					GEO_LON: 3,
+					GPS_CONF: 4,
+					CONF: 5,
+					PROB_MOB: 6,
+					MOBILE_YN: 7,
+					INDOOR_YN: 8,
+					MEAS_REPORT: 9,
+					PROB_INDOOR: 10,
+					SESSIONID: 11
+				});
+
+				function percent2Decimal(value) {
+					var parsedVal = parseInt(value);
+					if (typeof parsedVal === "number")
+						value = parsedVal / 100.0;
+					return value;
+				}
+
+				var msgId = record[IDX.MSGID];
+				var timestamp = record[IDX.TIMEOFFSET];
+				var confidence = record[IDX.CONF];
+				var probMobile = percent2Decimal(record[IDX.PROB_MOB]);
+				var probIndoor = percent2Decimal(record[IDX.PROB_INDOOR]);
+
+				// assume we don't have a session id
+				var sessionId = SESSION_ID_DEFAULT;
+				if (record.length == LineLengths.AXF_XT)
+					sessionId = record[IDX.SESSIONID];
+
+				var geoLatLng = new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
+													   parseFloat(record[IDX.GEO_LON]));
+
+				var props = {
+					msgId: msgId,
+					sessionId: sessionId,
+					timestamp: timestamp,
+					latLng: geoLatLng,
+					confidence: confidence,
+					probMobility: probMobile,
+					probIndoor: probIndoor
+				};
+
+				var session = getSession(sessionId);
+				session.results.add(new AxfResult(props), { silent: true });
+			}
+
+			function getSession(sessId) {
+
+				// get the session if existing
+				var session = sessionList.get(sessId);
+				if (!session) {
+					// create missing session
+					sessionList.add({
+						id: sessId
+					}, { silent: true });
+
+					session = sessionList.at(sessionList.length - 1);
+				}
+				return session;
 			}
 
 			// return the external API
@@ -159,10 +235,6 @@ define(
 				 * Parse and load a file. Supported types are .axf and .distances
 				 */
 				loadFile: function(file) {
-
-					var start = 0;
-					var stop = file.size - 1;
-					var blob;
 
 					var reader = new FileReader();
 					// If we use onloadend, we need to check the readyState.

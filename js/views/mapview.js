@@ -1,7 +1,8 @@
 define(
 	["underscore", "backbone",
-	 "collections/overlays"],
-	function(_, Backbone, OverlayList) {
+	 "collections/overlays",
+	 "models/AccuracyResult", "models/axfresult"],
+	function(_, Backbone, OverlayList, AccuracyResult, AxfResult) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -182,38 +183,54 @@ define(
 
 				session.results.each(function(sample) {
 
-					var refLoc = sample.get('latLngRef');
+					var color = null;
+					if (sample instanceof AccuracyResult) {
+						var refLoc = sample.get('latLng');
 
-					// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
-					if (!isNaN(refLoc.lat()) && !isNaN(refLoc.lng())) {
+						// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
+						if (!isNaN(refLoc.lat()) && !isNaN(refLoc.lng())) {
 
-						view.bounds.extend(refLoc);
+							view.bounds.extend(refLoc);
 
-						view.createMarker(OverlayTypes.REFERENCEMARKER,
-										  refLoc,
-										  "#" + sample.get('msgId'),
-/*										  "Session: " + session.id +
-										  "<br>Messages: " + session.results.length,
-*/										  MarkerColors.REFERENCE,
-										  sample);
-					}
+							view.createMarker(OverlayTypes.REFERENCEMARKER,
+											  refLoc,
+											  "#" + sample.get('msgId'),
+											  MarkerColors.REFERENCE,
+											  sample);
+						}
 
-					var bestCand = sample.getBestLocationCandidate();
-					var bestLoc = bestCand.get('latLng');
-					var color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
+						var bestCand = sample.getBestLocationCandidate();
+						var bestLoc = bestCand.get('latLng');
+						color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
 							  : (bestCand.category() == "I") ? MarkerColors.INDOOR
 							  : MarkerColors.GEOLOCATED;
 
-					view.createMarker(OverlayTypes.GEOLOCMARKER,
-									  bestLoc,
-									  "#" + sample.get('msgId'),
-									  color,
-									  sample);
+						view.createMarker(OverlayTypes.GEOLOCMARKER,
+										  bestLoc,
+										  "#" + sample.get('msgId'),
+										  color,
+										  sample);
 
-					view.bounds.extend(bestLoc);
+						view.bounds.extend(bestLoc);
 
-					// connect measured and calculated points with lines
-					view.drawReferenceLine(refLoc, bestLoc);
+						// connect measured and calculated points with lines
+						view.drawReferenceLine(refLoc, bestLoc);
+					}
+					else if (sample instanceof AxfResult) {
+
+						var location = sample.get('latLng');
+						color = (sample.category() == "S") ? MarkerColors.STATIONARY
+							  : (sample.category() == "I") ? MarkerColors.INDOOR
+							  : MarkerColors.GEOLOCATED;
+
+						view.createMarker(OverlayTypes.GEOLOCMARKER,
+										  location,
+										  "#" + sample.get('msgId'),
+										  color,
+										  sample);
+
+						view.bounds.extend(location);
+					}
 				});
 			},
 
@@ -222,6 +239,9 @@ define(
 			 * @param {AccuracyResult} sample
 			 */
 			drawCandidateMarkers: function(sample) {
+
+				if (!(sample instanceof AccuracyResult))
+					return;
 
 				if (this.highlightedSampleCid != sample.cid) {
 
@@ -344,12 +364,15 @@ define(
 						// extract the non-NaN locations
 						session.results.each(function(sample) {
 
-							var latLng = sample.get("latLngRef");
+							var latLng = sample.get("latLng");
 							if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
 								refLocations.push(latLng);
-							latLng = sample.getBestLocationCandidate().get("latLng");
-							if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
-								bestLocations.push(latLng);
+
+							if (sample instanceof AccuracyResult) {
+								latLng = sample.getBestLocationCandidate().get("latLng");
+								if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+									bestLocations.push(latLng);
+							}
 						});
 
 						this.createLine(refLocations, "#4AB0F5", 10, OverlayTypes.SESSIONVIZ);
@@ -445,9 +468,9 @@ define(
 								md.type === OverlayTypes.GEOLOCMARKER &&
 								md.sampleCid !== undefined) {
 
+								// draw location candidates
 								var sample = session.getByCid(md.sampleCid);
-								if (sample) {
-									// draw location candidates
+								if (sample && sample instanceof AccuracyResult) {
 									this.drawCandidateMarkers(sample);
 								}
 							}
@@ -471,9 +494,12 @@ define(
 
 				session.results.each(function(sample) {
 
-					sessionRect.extend(sample.get('latLngRef'));
-					var bestCand = sample.getBestLocationCandidate();
-					sessionRect.extend(bestCand.get('latLng'));
+					sessionRect.extend(sample.get('latLng'));
+
+					if (sample instanceof AccuracyResult) {
+						var bestCand = sample.getBestLocationCandidate();
+						sessionRect.extend(bestCand.get('latLng'));
+					}
 				});
 
 				if (!sessionRect.isEmpty())

@@ -1,11 +1,11 @@
 define(
 	["underscore", "backbone",
-	"models/AccuracyResult"],
+	 "models/baseresult"],
 
-	function(_, Backbone, AccuracyResult) {
+	function(_, Backbone, BaseResult) {
 
 		var ResultList = Backbone.Collection.extend({
-			model: AccuracyResult,
+			model: BaseResult,
 		});
 
 		return ResultList;

@@ -1,10 +1,10 @@
 define(
 	["underscore", "backbone",
-	"collections/locationcandidates"],
+	 "models/baseresult", "collections/locationcandidates"],
 
-	function(_, Backbone, LocationCandidateList) {
+	function(_, Backbone, BaseResult, LocationCandidateList) {
 
-		var AccuracyResult = Backbone.Model.extend({
+		var AccuracyResult = BaseResult.extend({
 
 			defaults: {
 				// id of the original CT message
@@ -12,7 +12,7 @@ define(
 				// id of the "call" session
 				sessionId: -1,
 				// reference position
-				latLngRef: null,
+				latLng: null,
 			},
 
 			locationCandidates: null,
