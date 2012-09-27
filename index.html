@@ -20,20 +20,25 @@
 			<input type="file" id="fileInput" multiple accept="*.distances" autocomplete="off"/>
 		</section>
 
-		<section id="mapContainer"></section>
+		<!-- container for flexible box layout model -->
+		<div class="mainContent">
+			<section id="mapView">
+				<div id="mapContainer"></div>
+			</section>
 
-		<section id="infoView">
-			<h2 class="caption">Selected Session</h2>
+			<section id="infoView">
+				<h2 class="caption">Selected Session</h2>
 
-			<output id="sessionInfo"></output>
-			<output id="resultInfo"></output>
-			<hr class="invisible clearfix" />
+				<output id="sessionInfo"></output>
+				<output id="resultInfo"></output>
+				<hr class="invisible clearfix" />
 
-			<div class="toolbar hidden">
-				<button class="button transl tiny focus-session" disabled>Focus</button>
-				<button class="button transl tiny unfocus-session" disabled>Done</button>
-			</div>
-		</section>
+				<div class="toolbar hidden">
+					<button class="button transl tiny focus-session" disabled>Focus</button>
+					<button class="button transl tiny unfocus-session" disabled>Done</button>
+				</div>
+			</section>
+		</div>
 
 		<section id="settings">
 			<ul>

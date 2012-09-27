@@ -4,6 +4,9 @@ body {
  	padding: 0;
 }
 
+/* apply a natural box layout model to all elements */
+* { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+
 body {
 	font: 14px "Segoe UI", Helvetica, Arial, sans-serif;
 	line-height: 1.4em;
@@ -27,8 +30,10 @@ body {
 }
 
 /* main map container */
-#mapContainer {
+#mapView {
 	margin: 10px 0;
+}
+#mapContainer {
 	width: 100%;
 	height: 760px;
 }
@@ -96,6 +101,7 @@ ul.legend li .colorswatch {
 #infoView {
 	position: relative;
 	min-height: 3.5em;
+	margin: 10px 0;
 	padding: 8px;
 	padding-bottom: 2.2em;
 	border: 1px solid rgba(152, 180, 152, .8);
@@ -138,3 +144,20 @@ ul.legend li .colorswatch {
 .clearfix {clear: both; }
 .invisible { visibility: hidden; }
 .hidden { display: none; }
+
+@media screen and (min-width: 1000px) {
+	.mainContent {
+		display: -webkit-flex; /* Chrome uses new (2012) spec draft */
+		display: -moz-box; /* Firefox uses previous (2009) draft */
+		width: 100%;
+	}
+	#mapView {
+		-webkit-flex: 1;
+		-moz-box-flex: 1;
+		margin-right: 10px;
+	}
+	#infoView {
+		width: 300px;
+		margin-left: 10px;
+	}
+}
