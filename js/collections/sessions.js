@@ -1,6 +1,6 @@
 define(
 	["underscore", "backbone",
-	"models/Session"],
+	"models/session"],
 
 	function(_, Backbone, Session) {
 
