@@ -12,7 +12,7 @@ body {
 	line-height: 1.4em;
 	background: #eeeeee;
 	color: #333333;
-	width: 80%;
+	width: 90%;
 	height: 100%;
 	margin: 0 auto;
 	-webkit-user-select: none;
@@ -100,7 +100,7 @@ ul.legend li .colorswatch {
 
 #infoView {
 	position: relative;
-	min-height: 3.5em;
+	min-height: 6em;
 	margin: 10px 0;
 	padding: 8px;
 	padding-bottom: 2.2em;
