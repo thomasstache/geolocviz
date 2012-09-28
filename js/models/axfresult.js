@@ -31,10 +31,14 @@ define(
 
 			getInfo: function() {
 
-				var info = this.toJSON();
-				info.num = this.collection.indexOf(this) + 1;
-				info.resultCount = this.collection.length;
-				return info;
+				return {
+					num: this.collection.indexOf(this) + 1,
+					resultCount: this.collection.length,
+					msgId: this.get('msgId'),
+					confidence: this.get('confidence'),
+					probMobility: this.get('probMobility'),
+					probIndoor: this.get('probIndoor'),
+				};
 			}
 		});
 

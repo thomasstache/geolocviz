@@ -20,6 +20,18 @@ define(
 				probIndoor: 0.0,
 			},
 
+			getInfo: function() {
+
+				return {
+					num: this.collection.indexOf(this) + 1,
+					resultCount: this.collection.length,
+					distance: this.get('distance'),
+					confidence: this.get('confidence'),
+					probMobility: this.get('probMobility'),
+					probIndoor: this.get('probIndoor'),
+					isCandidate: true
+				};
+			}
 		});
 
 		return LocationCandidate;

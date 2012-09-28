@@ -259,7 +259,7 @@ define(
 										  "#" + sample.get('msgId'),
 										  MarkerColors.CANDIDATE,
 										  sample,
-										  candidate.category());
+										  candidate);
 					}
 				}
 			},
@@ -272,18 +272,18 @@ define(
 
 			/**
 			 * Creates a marker pin and adds it to the map.
+			 * @param {OverlayTypes} type: the type of the marker
 			 * @param {LatLng} latlng: the geographical position for the marker
-			 * @param {AccuracyResult} sample: reference to the AccuracyResult for which the marker is created
 			 * @param {String} label: tooltip for the marker
 			 * @param {MarkerColors} colorDef: the color definition to use
-			 * @param {OverlayTypes} type: the type of the marker
-			 * @param {char} symbol: (optional) the letter for the marker, override the one in colorDef
+			 * @param {BaseResult} sample: reference to the result for which the marker is created
+			 * @param {LocationCandidate} candidate: (optional) reference to the subresult/locationCandidate for which the marker is created
 			 */
-			createMarker: function(type, latlng, label, colorDef, sample, symbol) {
+			createMarker: function(type, latlng, label, colorDef, sample, candidate) {
 
 				var view = this;
 				var color = colorDef.bgcolor + "|" + colorDef.color,
-					letter = symbol ? symbol : colorDef.smb;
+					letter = candidate ? candidate.category() : colorDef.smb;
 
 				var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
 				var marker = new google.maps.Marker(
@@ -298,9 +298,9 @@ define(
 				// store some extra data on the marker
 				var md = marker.metaData = {};
 				if (sample) {
-					md.sampleCid = sample.cid;
-					if(sample.get('msgId') !== undefined)
-						md.msgId = sample.get('msgId');
+					md.model = candidate ? candidate
+										 : sample;
+
 					if (sample.get('sessionId') !== undefined)
 						md.sessionId = sample.get('sessionId');
 				}
@@ -438,10 +438,10 @@ define(
 
 						var session = this.collection.get(md.sessionId);
 						if (session) {
-							var sample = session.getByCid(md.sampleCid);
-							if (sample) {
-								this.trigger("result:selected", sample);
-							}
+
+							if (md.model)
+								this.trigger("result:selected", md.model);
+
 							this.trigger("session:selected", session);
 						}
 					}
@@ -466,10 +466,10 @@ define(
 
 							if (md.type !== undefined &&
 								md.type === OverlayTypes.GEOLOCMARKER &&
-								md.sampleCid !== undefined) {
+								md.model !== undefined) {
 
 								// draw location candidates
-								var sample = session.getByCid(md.sampleCid);
+								var sample = md.model;
 								if (sample && sample instanceof AccuracyResult) {
 									this.drawCandidateMarkers(sample);
 								}

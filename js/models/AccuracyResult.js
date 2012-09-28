@@ -31,6 +31,7 @@ define(
 				return {
 					num: this.collection.indexOf(this) + 1,
 					resultCount: this.collection.length,
+					msgId: this.get('msgId'),
 					distance: bestCand.get('distance'),
 					confidence: bestCand.get('confidence'),
 					probMobility: bestCand.get('probMobility'),
