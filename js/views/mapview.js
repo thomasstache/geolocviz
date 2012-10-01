@@ -433,17 +433,20 @@ define(
 				if (marker && marker.metaData) {
 
 					var md = marker.metaData;
+					if (md.model)
+						this.trigger("result:selected", md.model);
+
 					if (md.sessionId !== undefined &&
 						md.sessionId > 0) {
 
 						var session = this.collection.get(md.sessionId);
 						if (session) {
 
-							if (md.model)
-								this.trigger("result:selected", md.model);
-
 							this.trigger("session:selected", session);
 						}
+					}
+					else {
+						this.trigger("session:selected", null);
 					}
 				}
 			},
