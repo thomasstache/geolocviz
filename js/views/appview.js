@@ -70,8 +70,12 @@ define(
 					return;
 				}
 
-				this.model.set("files", _.map(files, function(f) { return f.name; }));
-				FileLoader.loadFiles(files, this.sessions);
+				FileLoader.loadFiles(files, this.sessions, this.filesLoaded);
+			},
+
+			// Callback for FileLoader
+			filesLoaded: function(resultCode, stats) {
+				console.log(stats);
 			},
 
 			// Handler for "session:selected" event. Update the info display.
