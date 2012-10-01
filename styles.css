@@ -103,7 +103,6 @@ ul.legend li .colorswatch {
 	min-height: 6em;
 	margin: 10px 0;
 	padding: 8px;
-	padding-bottom: 2.2em;
 	border: 1px solid rgba(152, 180, 152, .8);
 	border-radius: 5px;
 	background: -webkit-linear-gradient(top, rgba(226, 236, 217, 0.8) 5%, rgba(202, 221, 183, 0.8) 100%);
@@ -112,27 +111,32 @@ ul.legend li .colorswatch {
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0, inset rgb(241, 247, 236) 0 1px 0 0;
 }
 
-#infoView .caption {
-
-	position: absolute;
-	right: 1em;
+.etched {
 	color: rgba(38, 48, 16, 0.51);
 	text-shadow: rgb(255, 255, 255) 0 1px 1px;
-	font-size: 1em;
 	font-weight: normal;
+}
+
+#infoView .caption {
+	font-size: 1.1em;
 	margin: 0 3px;
 }
 #infoView .toolbar {
-	position: absolute;
-	left: 0.5em;
-	bottom: 0.5em;
+	margin: 0.5em 0;
 }
 
-#infoView output { float: left; }
+#infoView .infoBlock {
+	margin: 0 10px;
+}
+
+#infoView output h3 {
+	margin: 0 0 3px 0;
+	font-size: 1em;
+}
 
 .propertyList {
 	font-family: Consolas, "Courier New", Courier, monospace;
-	margin: 0 10px; padding: 0;
+	margin: 0; padding: 0;
 }
 .propertyList .label {
 	font-weight: bold;
@@ -141,7 +145,7 @@ ul.legend li .colorswatch {
 	font-size: 0.9em;
 }
 
-.clearfix {clear: both; }
+.clearfix {clear: both; margin: 0; }
 .invisible { visibility: hidden; }
 .hidden { display: none; }
 
@@ -159,5 +163,21 @@ ul.legend li .colorswatch {
 	#infoView {
 		width: 300px;
 		margin-left: 10px;
+	}
+	#infoView .infoBlock {
+		margin: 10px;
+	}
+	#infoView .caption, #infoView output h3 {
+		text-align: center;
+	}
+}
+
+@media screen and (max-width: 1000px) {
+	#infoView .caption {
+		position: absolute;
+		right: 1em;
+	}
+	#infoView .infoBlock {
+		float: left;
 	}
 }
