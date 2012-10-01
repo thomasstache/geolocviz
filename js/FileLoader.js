@@ -21,7 +21,6 @@ define(
 				AXF_XT: 12
 			});
 
-			var currentFileType = "";
 			// dummy session ID for records from files that don't provide it.
 			var SESSION_ID_DEFAULT = 0;
 
@@ -33,26 +32,57 @@ define(
 			// reference to the accuracy result while we parse the records with the location candidates
 			var currentAccuracyResult = null;
 
+			// Handler for the loadend event of the FileReader
 			function onFileLoaded(evt) {
 				// evt: ProgressEvent, target is the FileReader
 				var rdr = evt.target;
 				var rowData = [];
-				var separator = (currentFileType == FileTypes.ACCURACY) ? "\t" : ",";
+				var filename = rdr.file ? rdr.file.name : "";
 
 				if (rdr.readyState == FileReader.DONE) {
+
+					var fileStatistics = {
+						name: filename,
+						numRows: 0,
+						numSessions: 0,
+						numResults: 0,
+						numResultsAndCandidates: 0
+					};
+
+					// check which type of file we're dealing with
+					var currentFileType = "";
+					var ext = filename.substr(filename.lastIndexOf(".") + 1);
+					switch (ext)
+					{
+						case "distances":
+							currentFileType = FileTypes.ACCURACY;
+							break;
+						case "axf":
+							currentFileType = FileTypes.AXF;
+							break;
+						default:
+							currentFileType = null;
+					}
+
+					var separator = (currentFileType === FileTypes.ACCURACY) ? "\t" : ",";
+
 					// decompose the blob
 					rowData = jQuery.csv(separator)(rdr.result);
-					// parse the data
-					processCSV(rowData);
 
-					// notify about completion
+					// parse the data
+					processCSV(rowData, currentFileType, fileStatistics);
+
+					// notify about completion of this file (TODO: notify when whole batch is completed!)
 					if (callbackFct !== null)
-						callbackFct("ok", currentFileType);
+						callbackFct("ok", fileStatistics);
+				}
+				else {
+					console.log("onFileLoaded: readyState not 'DONE'! (" + rdr.readyState + ")");
 				}
 			}
 
 			// this function set all markers  to the map
-			function processCSV(rowData) {
+			function processCSV(rowData, currentFileType, stats) {
 
 				currentAccuracyResult = null;
 
@@ -72,8 +102,9 @@ define(
 				}
 
 				for (var ct = 1; ct < rowData.length; ct++) {
-					parsingFct(rowData[ct]);
+					parsingFct(rowData[ct], stats);
 				}
+				stats.numRows = rowData.length - 1;
 
 				currentAccuracyResult = null; // release
 				sessionList.trigger('add');
@@ -83,7 +114,7 @@ define(
 			 * Headers:
 			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId
 			 */
-			function parseAccuracyRecordV3(record) {
+			function parseAccuracyRecordV3(record, stats) {
 
 				var IDX = Object.freeze({
 					FILEID: 0,
@@ -119,6 +150,7 @@ define(
 						latLng: refLatLng
 					});
 					session.results.add(currentAccuracyResult, { silent: true });
+					stats.numResults++;
 				}
 
 				var confidence = record[IDX.CONF];
@@ -137,13 +169,14 @@ define(
 					probMobility: probMobile,
 					probIndoor: probIndoor
 				}, { silent: true });
+				stats.numResultsAndCandidates++;
 			}
 
 			/* Parses a line from the new (v6.1) file format:
 			 * Headers:
 			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId
 			 */
-			function parseAxfRecord(record) {
+			function parseAxfRecord(record, stats) {
 				//to do: Replace column numbers by link related to col headings
 				var IDX = Object.freeze({
 					MSGID: 0,
@@ -169,14 +202,13 @@ define(
 
 				var msgId = record[IDX.MSGID];
 				var timestamp = record[IDX.TIMEOFFSET];
-				var confidence = record[IDX.CONF];
+				var confidence = percent2Decimal(record[IDX.CONF]);
 				var probMobile = percent2Decimal(record[IDX.PROB_MOB]);
 				var probIndoor = percent2Decimal(record[IDX.PROB_INDOOR]);
 
 				// assume we don't have a session id
-				var sessionId = SESSION_ID_DEFAULT;
-				if (record.length == LineLengths.AXF_XT)
-					sessionId = record[IDX.SESSIONID];
+				var sessionId = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID]
+																	  : SESSION_ID_DEFAULT;
 
 				var geoLatLng = new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
 													   parseFloat(record[IDX.GEO_LON]));
@@ -193,6 +225,7 @@ define(
 
 				var session = getSession(sessionId);
 				session.results.add(new AxfResult(props), { silent: true });
+				stats.numResults++;
 			}
 
 			function getSession(sessId) {
@@ -239,20 +272,7 @@ define(
 					var reader = new FileReader();
 					// If we use onloadend, we need to check the readyState.
 					reader.onloadend = onFileLoaded;
-
-					// check which type of file we're dealing with
-					var ext = file.name.substr(file.name.lastIndexOf(".") + 1);
-					switch (ext)
-					{
-						case "distances":
-							currentFileType = FileTypes.ACCURACY;
-							break;
-						case "axf":
-							currentFileType = FileTypes.AXF;
-							break;
-						default:
-							currentFileType = null;
-					}
+					reader.file = file;
 
 					reader.readAsBinaryString(file);
 				}
