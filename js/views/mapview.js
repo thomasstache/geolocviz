@@ -337,7 +337,7 @@ define(
 			drawReferenceLine: function(startLatLng, endLatLng) {
 
 				if (this.appsettings.get("drawReferenceLines"))
-					this.createLine([startLatLng, endLatLng], "#FF0000", 1, OverlayTypes.REFERENCELINE);
+					this.createLine([startLatLng, endLatLng], "#FF0000", 2, 0.3, OverlayTypes.REFERENCELINE);
 			},
 
 			/**
@@ -376,8 +376,8 @@ define(
 							}
 						});
 
-						this.createLine(refLocations, "#4AB0F5", 10, OverlayTypes.SESSIONVIZ);
-						this.createLine(bestLocations, "#B479FF", 7, OverlayTypes.SESSIONVIZ);
+						this.createLine(refLocations, "#4AB0F5", 6, 0.8, OverlayTypes.SESSIONVIZ);
+						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONVIZ);
 					}
 				}
 			},
@@ -385,22 +385,39 @@ define(
 			/**
 			 * Creates a polyline overlay and adds it to the map.
 			 * @param {Array} points: array of LatLng positions for the polyline
-			 * @param {String} color: a hexadecimal HTML color of the format "#FFFFFF"
+			 * @param {string} color: a hexadecimal HTML color of the format "#FFFFFF"
 			 * @param {int} weight: line weight in pixels
+			 * @param {number} opacity: opacity
 			 * @param {OverlayTypes} type: the type of the overlay
 			 */
-			createLine: function(points, color, weight, type) {
+			createLine: function(points, color, weight, opacity, type) {
 
 				if (points && points.length > 1) {
 
-					var line = new google.maps.Polyline(
-						{
-							path: points,
-							strokeColor: color,
-							strokeOpacity: 0.8,
-							strokeWeight: weight
-						}
-					);
+					var options = {
+						path: points,
+						strokeColor: color,
+						strokeOpacity: opacity,
+						strokeWeight: weight
+					};
+
+					// apply line symbols for session lines
+					if (type === OverlayTypes.SESSIONVIZ) {
+						options.icons = [{
+							icon: {
+								path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+								strokeColor: "#000",
+								strokeOpacity: "0.6",
+								strokeWeight: 1,
+								fillOpacity: opacity,
+								scale: 4
+							},
+							offset: '30px',
+							repeat: '60px'
+						}];
+					}
+
+					var line = new google.maps.Polyline(options);
 					line.setMap(this.map);
 
 					this.registerOverlay(type, line);
