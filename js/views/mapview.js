@@ -121,35 +121,36 @@ define(
 			/**
 			 * Update map overlay visibility according to current settings.
 			 */
-			updateOverlays: function() {
-
-				var connectReference = this.appsettings.get("drawReferenceLines");
-				var connectSession = this.appsettings.get("drawSessionLines");
+			updateOverlays: function(event) {
 
 				// make ref to capture in inner function
 				var map = this.map;
 
-				// show or hide reference lines
-				var lineOverlays = this.overlays.byType(OverlayTypes.REFERENCELINE);
-				_.each(
-					lineOverlays,
-					function(overlay) {
-						var marker = overlay.get("ref");
-						if (marker)
-							marker.setMap(connectReference ? map : null);
-					}
-				);
+				if (event.changed.drawReferenceLines !== undefined) {
+					// show or hide reference lines
+					var lineOverlays = this.overlays.byType(OverlayTypes.REFERENCELINE);
+					_.each(
+						lineOverlays,
+						function(overlay) {
+							var marker = overlay.get("ref");
+							if (marker)
+								marker.setMap(event.changed.drawReferenceLines ? map : null);
+						}
+					);
+				}
 
-				// show or hide session lines
-				var sessionOverlays = this.overlays.byType(OverlayTypes.SESSIONVIZ);
-				_.each(
-					sessionOverlays,
-					function(overlay) {
-						var marker = overlay.get("ref");
-						if (marker)
-							marker.setMap(connectSession ? map : null);
-					}
-				);
+				if (event.changed.drawSessionLines !== undefined) {
+					// show or hide session lines
+					var sessionOverlays = this.overlays.byType(OverlayTypes.SESSIONVIZ);
+					_.each(
+						sessionOverlays,
+						function(overlay) {
+							var marker = overlay.get("ref");
+							if (marker)
+								marker.setMap(event.changed.drawSessionLines ? map : null);
+						}
+					);
+				}
 			},
 
 
