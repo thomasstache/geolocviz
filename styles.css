@@ -38,6 +38,8 @@ body {
 	height: 760px;
 }
 
+/* general styles */
+
 ul {
 	list-style: none;
 }
@@ -125,8 +127,15 @@ ul.legend li .colorswatch {
 	margin: 0.5em 0;
 }
 
-#infoView .infoBlock {
+.infoBlock {
 	margin: 0 10px;
+}
+
+.infoBlock output {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 }
 
 #infoView output h3 {
@@ -164,7 +173,7 @@ ul.legend li .colorswatch {
 		width: 300px;
 		margin-left: 10px;
 	}
-	#infoView .infoBlock {
+	.infoBlock {
 		margin: 10px;
 	}
 	#infoView .caption, #infoView output h3 {
