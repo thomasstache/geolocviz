@@ -473,12 +473,12 @@ define(
 						// extract the non-NaN locations
 						session.results.each(function(sample) {
 
-							var latLng = sample.get("latLng");
+							var latLng = sample.get('latLng');
 							if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
 								refLocations.push(latLng);
 
 							if (sample instanceof AccuracyResult) {
-								latLng = sample.getBestLocationCandidate().get("latLng");
+								latLng = sample.getBestLocationCandidate().get('latLng');
 								if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
 									bestLocations.push(latLng);
 							}
@@ -623,14 +623,18 @@ define(
 
 				session.results.each(function(sample) {
 
-					sessionRect.extend(sample.get('latLng'));
+					var latLng = sample.get('latLng');
+					if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+						sessionRect.extend(latLng);
 
 					if (sample instanceof AccuracyResult) {
-						var bestCand = sample.getBestLocationCandidate();
-						sessionRect.extend(bestCand.get('latLng'));
+						latLng = sample.getBestLocationCandidate().get('latLng');
+						if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+							sessionRect.extend(latLng);
 					}
 				});
 
+				console.log(sessionRect);
 				if (!sessionRect.isEmpty())
 					this.map.fitBounds(sessionRect);
 			}
