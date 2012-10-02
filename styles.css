@@ -15,10 +15,6 @@ body {
 	width: 90%;
 	height: 100%;
 	margin: 0 auto;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
 }
 
 #playground-app {
@@ -40,9 +36,10 @@ body {
 
 /* general styles */
 
-ul {
-	list-style: none;
-}
+ul { list-style: none; }
+.clearfix {clear: both; margin: 0; }
+.invisible { visibility: hidden; }
+.hidden { display: none; }
 
 .button {
 	display: inline-block;
@@ -141,13 +138,6 @@ ul.legend li .colorswatch {
 	margin: 0 10px;
 }
 
-.infoBlock output {
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text;
-}
-
 #infoView output h3 {
 	margin: 0 0 3px 0;
 	font-size: 1em;
@@ -164,9 +154,14 @@ ul.legend li .colorswatch {
 	font-size: 0.9em;
 }
 
-.clearfix {clear: both; margin: 0; }
-.invisible { visibility: hidden; }
-.hidden { display: none; }
+header, footer, #mapView, #mapLegend, #settings, #mainToolbar {
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* Expand layout for widescreen displays */
 
 @media screen and (min-width: 1000px) {
 	.mainContent {
@@ -190,6 +185,8 @@ ul.legend li .colorswatch {
 		text-align: center;
 	}
 }
+
+/* InfoView LCD layout for narrow screens */
 
 @media screen and (max-width: 1000px) {
 	#infoView .caption {
