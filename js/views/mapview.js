@@ -46,6 +46,13 @@ define(
 				]
 			},
 			{
+				featureType: "road",
+				elementType: "labels.text.fill",
+				stylers: [
+					{ saturation: -75 }
+				]
+			},
+			{
 				featureType: "road.local",
 				elementType: "labels",
 				stylers: [
@@ -56,7 +63,7 @@ define(
 				featureType: "transit",
 				elementType: "labels.icon",
 				stylers: [
-					{ saturation: "-100" }
+					{ saturation: -100 }
 				]
 			}
 		];
