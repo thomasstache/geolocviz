@@ -14,7 +14,8 @@ define(
 			model: new AppState(),
 
 			events: {
-				"change #fileInput": "loadFile"
+				"change #fileInput": "loadFile",
+				"change #searchSessionInput": "searchSessionInputChanged"
 			},
 
 			sessions: null,
@@ -76,6 +77,22 @@ define(
 			// Callback for FileLoader
 			filesLoaded: function(resultCode, stats) {
 				console.log(stats);
+			},
+
+			// Handler for "change" event from the session search field.
+			searchSessionInputChanged: function(evt) {
+
+				var searchText = evt.target.value;
+				var session = this.sessions.get(searchText);
+				if (session) {
+					this.sessionSelected(session);
+					this.sessionFocussed(session);
+				}
+				else {
+					this.sessionSelected(null);
+					this.sessionUnfocussed();
+				}
+				this.resultSelected(null);
 			},
 
 			// Handler for "session:selected" event. Update the info display.
