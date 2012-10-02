@@ -49,7 +49,14 @@ define(
 				featureType: "road.local",
 				elementType: "labels",
 				stylers: [
-					{ "visibility": "simplified" }
+					{ visibility: "simplified" }
+				]
+			},
+			{
+				featureType: "transit",
+				elementType: "labels.icon",
+				stylers: [
+					{ saturation: "-100" }
 				]
 			}
 		];
