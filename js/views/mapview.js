@@ -17,6 +17,7 @@ define(
 		var OverlayTypes = Object.freeze({
 			REFERENCEMARKER: "refMarker",
 			GEOLOCMARKER: "geoMarker",
+			AXFMARKER: "axfMarker",
 			CANDIDATEMARKER: "candidateMarker",
 			REFERENCELINE: "refLine",
 			SESSIONVIZ: "sessionViz",
@@ -273,7 +274,7 @@ define(
 							  : (sample.category() == "I") ? MarkerColors.INDOOR
 							  : MarkerColors.GEOLOCATED;
 
-						view.createMarker(OverlayTypes.GEOLOCMARKER,
+						view.createMarker(OverlayTypes.AXFMARKER,
 										  location,
 										  "#" + sample.get('msgId'),
 										  color,
@@ -332,15 +333,33 @@ define(
 			createMarker: function(type, latlng, label, colorDef, sample, candidate) {
 
 				var view = this;
-				var color = colorDef.bgcolor + "|" + colorDef.color,
-					letter = candidate ? candidate.category() : colorDef.smb;
 
-				var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
+				var icon;
+
+				if (type === OverlayTypes.AXFMARKER) {
+					icon = {
+						path: google.maps.SymbolPath.CIRCLE,
+						fillColor: "#" + colorDef.bgcolor,
+						fillOpacity: 1,
+						scale: 5,
+						strokeColor: "#333",
+						strokeOpacity: "0.6",
+						strokeWeight: 1,
+					};
+				}
+				else {
+					var color = colorDef.bgcolor + "|" + colorDef.color,
+						letter = candidate ? candidate.category() : colorDef.smb;
+
+					var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
+					icon = new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(8, 34));
+				}
+
 				var marker = new google.maps.Marker(
 					{
 						position: latlng,
 						map: this.map,
-						icon: new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(8, 34)),
+						icon: icon,
 						title: label
 					}
 				);
