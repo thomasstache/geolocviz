@@ -68,6 +68,8 @@ define(
 			}
 		];
 
+		var AxfMarkerImages = {};
+
 		var MapView = Backbone.View.extend({
 
 			el: $("#mapContainer"),
@@ -347,11 +349,13 @@ define(
 			createMarker: function(type, latlng, label, colorDef, sample, candidate) {
 
 				var view = this;
-
+				var letter = candidate ? candidate.category() : colorDef.smb;
 				var icon;
 
 				if (type === OverlayTypes.AXFMARKER) {
-					icon = {
+
+					icon = this.getAxfMarkerImage(letter);
+/*					icon = {
 						path: google.maps.SymbolPath.CIRCLE,
 						fillColor: "#" + colorDef.bgcolor,
 						fillOpacity: 1,
@@ -360,10 +364,9 @@ define(
 						strokeOpacity: "0.6",
 						strokeWeight: 1,
 					};
-				}
+*/				}
 				else {
-					var color = colorDef.bgcolor + "|" + colorDef.color,
-						letter = candidate ? candidate.category() : colorDef.smb;
+					var color = colorDef.bgcolor + "|" + colorDef.color;
 
 					var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
 					icon = new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(8, 34));
@@ -409,6 +412,29 @@ define(
 				);
 
 				return marker;
+			},
+
+			getAxfMarkerImage: function(letter) {
+
+				if (AxfMarkerImages[letter] === undefined) {
+
+					var imagePath = null;
+					if (letter =="M") {
+						imagePath = 'images/circle_red.png';
+					}
+					else if (letter =="I") {
+						imagePath = 'images/circle_yellow.png';
+					}
+					else if (letter =="S") {
+						imagePath = 'images/circle_orange.png';
+					}
+
+					AxfMarkerImages[letter] = new google.maps.MarkerImage(imagePath,
+																		  new google.maps.Size(10,10),
+																		  new google.maps.Point(0,0),
+																		  new google.maps.Point(5,5));
+				}
+				return AxfMarkerImages[letter];
 			},
 
 			/**
