@@ -70,6 +70,15 @@ define(
 
 		var AxfMarkerImages = {};
 
+		/**
+		 * Validate LatLngs. Returns false if one of the coordinates is NaN.
+		 * @param {LatLng} latLng
+		 */
+		function isValidLatLng(latLng) {
+			return !isNaN(latLng.lat()) &&
+				   !isNaN(latLng.lng());
+		}
+
 		var MapView = Backbone.View.extend({
 
 			el: $("#mapContainer"),
@@ -80,11 +89,14 @@ define(
 			// collection of all map objects
 			overlays: null,
 
+			// reference to the overlay used to highlight result markers
+			selectedMarkerHighlight: null,
+
 			// id of the currently highlighted session (see drawSessionLines())
 			highlightedSessionId: -1,
 
-			// id of the currently highlighted sample/result (see drawCandidateMarkers())
-			highlightedSampleCid: -1,
+			// cid of the sample/result for which candidate markers are drawn (see drawCandidateMarkers())
+			highlightedCandidateSampleCid: -1,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -161,7 +173,9 @@ define(
 				this.overlays.removeAll();
 
 				this.highlightedSessionId = -1;
-				this.highlightedSampleCid = -1;
+				this.highlightedCandidateSampleCid = -1;
+
+				this.selectedMarkerHighlight = null;
 			},
 
 			/**
@@ -255,7 +269,7 @@ define(
 						var refLoc = sample.get('latLng');
 
 						// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
-						if (!isNaN(refLoc.lat()) && !isNaN(refLoc.lng())) {
+						if (isValidLatLng(refLoc)) {
 
 							view.bounds.extend(refLoc);
 
@@ -310,12 +324,12 @@ define(
 				if (!(sample instanceof AccuracyResult))
 					return;
 
-				if (this.highlightedSampleCid != sample.cid) {
+				if (this.highlightedCandidateSampleCid != sample.cid) {
 
 					// remove old markers
 					this.deleteCandidateMarkers();
 
-					this.highlightedSampleCid = sample.cid;
+					this.highlightedCandidateSampleCid = sample.cid;
 
 					// start at "1" to skip best candidate
 					for (var i = 1; i < sample.locationCandidates.length; i++) {
@@ -334,7 +348,7 @@ define(
 			deleteCandidateMarkers: function() {
 
 				this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
-				this.highlightedSampleCid = -1;
+				this.highlightedCandidateSampleCid = -1;
 			},
 
 			/**
@@ -474,12 +488,12 @@ define(
 						session.results.each(function(sample) {
 
 							var latLng = sample.get('latLng');
-							if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+							if (isValidLatLng(latLng))
 								refLocations.push(latLng);
 
 							if (sample instanceof AccuracyResult) {
 								latLng = sample.getBestLocationCandidate().get('latLng');
-								if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+								if (isValidLatLng(latLng))
 									bestLocations.push(latLng);
 							}
 						});
@@ -624,19 +638,67 @@ define(
 				session.results.each(function(sample) {
 
 					var latLng = sample.get('latLng');
-					if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+					if (isValidLatLng(latLng))
 						sessionRect.extend(latLng);
 
 					if (sample instanceof AccuracyResult) {
 						latLng = sample.getBestLocationCandidate().get('latLng');
-						if (!(isNaN(latLng.lat()) || isNaN(latLng.lng())))
+						if (isValidLatLng(latLng))
 							sessionRect.extend(latLng);
 					}
 				});
 
-				console.log(sessionRect);
 				if (!sessionRect.isEmpty())
 					this.map.fitBounds(sessionRect);
+			},
+
+			/**
+			 * Highlight the given result by drawing a overlay around it.
+			 * @param {BaseResult} result
+			 */
+			highlightResult: function(result) {
+
+				if (result !== null &&
+				    result !== undefined &&
+				    isValidLatLng(result.get('latLng'))) {
+
+					var latLng = result.get('latLng');
+					// draw a highlight around the result
+
+					if (!this.selectedMarkerHighlight) {
+
+						// create a circle shape for reuse for all result highlighting needs
+						this.selectedMarkerHighlight = new google.maps.Marker({
+							position: latLng,
+							icon: {
+								path: google.maps.SymbolPath.CIRCLE,
+								fillColor: "#CCCCCC",
+								fillOpacity: 0.5,
+								scale: 15,
+								strokeColor: "#666",
+								strokeOpacity: 0.8,
+								strokeWeight: 1,
+							},
+							map: this.map,
+							zIndex: -10 // TS: only negative values really put the highlight under the result markers
+						});
+						this.registerOverlay(OverlayTypes.SELECTIONVIZ, this.selectedMarkerHighlight);
+					}
+					else {
+						// just update the position
+						this.selectedMarkerHighlight.setPosition(latLng);
+					}
+
+					if (result instanceof AccuracyResult) {
+
+					}
+				}
+				else {
+					// hide the highlight
+					if (this.selectedMarkerHighlight) {
+						this.selectedMarkerHighlight.map = null;
+					}
+				}
 			}
 		});
 

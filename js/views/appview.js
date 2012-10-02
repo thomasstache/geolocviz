@@ -105,6 +105,7 @@ define(
 			resultSelected: function(result) {
 
 				this.model.set("selectedResult", result);
+				this.mapview.highlightResult(result);
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.
