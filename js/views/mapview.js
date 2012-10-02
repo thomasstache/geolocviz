@@ -24,6 +24,35 @@ define(
 			DEBUG: "debug"
 		});
 
+		var STYLED_MAPTYPE_ID = "styled_map";
+		var simpleMapStyles = [
+			{
+				stylers: [
+					{ gamma: 2 }
+				]
+			},
+			{
+				featureType: "poi",
+				stylers: [
+					{ visibility: "off" }
+				]
+			},
+			{
+				featureType: "road",
+				stylers: [
+					{ saturation: -25 },
+					{ gamma: 1.75 }
+				]
+			},
+			{
+				featureType: "road.local",
+				elementType: "labels",
+				stylers: [
+					{ "visibility": "simplified" }
+				]
+			}
+		];
+
 		var MapView = Backbone.View.extend({
 
 			el: $("#mapContainer"),
@@ -51,14 +80,34 @@ define(
 					zoom: 16,
 					center: mapCenter,
 					scaleControl: true,
+					mapTypeControlOptions: {
+						mapTypeIds: [
+							STYLED_MAPTYPE_ID,
+							google.maps.MapTypeId.ROADMAP,
+							google.maps.MapTypeId.HYBRID,
+							google.maps.MapTypeId.SATELLITE,
+						]
+					},
 					mapTypeId: google.maps.MapTypeId.ROADMAP
 				};
+
+				// (from https://developers.google.com/maps/documentation/javascript/styling)
+				// Create a new StyledMapType object, passing it the array of styles,
+				// as well as the name to be displayed on the map type control.
+				var styledMapType = new google.maps.StyledMapType(simpleMapStyles, {name: "Simplified"});
+
+				// Create a map object, and include the MapTypeId to add
+				// to the map type control.
 
 				// Force the height of the map to fit the window
 				//this.$el.height($(window).height() - $("header").height());
 
 				// setup Google Maps component
 				this.map = new google.maps.Map(this.el, mapOptions);
+
+				//Associate the styled map with the MapTypeId and set it to display.
+				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
+				this.map.setMapTypeId(STYLED_MAPTYPE_ID);
 
 				this.collection.on("add", this.drawMarkers, this);
 				this.collection.on("reset", this.deleteAllOverlays, this);
