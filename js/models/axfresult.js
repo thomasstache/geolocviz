@@ -21,6 +21,8 @@ define(
 				// indoor probability as decimal
 				probIndoor: 0.0,
 
+				// id of the serving cell
+				primaryCellId: -1,
 				// time offset
 				timestamp: 0,
 			},

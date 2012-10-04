@@ -18,7 +18,7 @@ define(
 			var LineLengths = Object.freeze({
 				ACCURACY: 11,
 				AXF: 11,
-				AXF_XT: 12
+				AXF_XT: 14
 			});
 
 			// dummy session ID for records from files that don't provide it.
@@ -92,7 +92,8 @@ define(
 				if (currentFileType == FileTypes.ACCURACY && header.length == LineLengths.ACCURACY) {
 					parsingFct = parseAccuracyRecordV3;
 				}
-				else if (currentFileType == FileTypes.AXF) {
+				else if (currentFileType == FileTypes.AXF &&
+						 (header.length == LineLengths.AXF || header.length == LineLengths.AXF_XT)) {
 					parsingFct = parseAxfRecord;
 				}
 				else {
@@ -189,7 +190,9 @@ define(
 					INDOOR_YN: 8,
 					MEAS_REPORT: 9,
 					PROB_INDOOR: 10,
-					SESSIONID: 11
+					SESSIONID: 11,
+					CONTROLLER: 12,
+					CELL_ID: 13
 				});
 
 				function percent2Decimal(value) {
@@ -199,27 +202,24 @@ define(
 					return value;
 				}
 
-				var msgId = record[IDX.MSGID];
-				var timestamp = record[IDX.TIMEOFFSET];
-				var confidence = percent2Decimal(record[IDX.CONF]);
-				var probMobile = percent2Decimal(record[IDX.PROB_MOB]);
-				var probIndoor = percent2Decimal(record[IDX.PROB_INDOOR]);
-
 				// assume we don't have a session id
 				var sessionId = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID]
 																	  : SESSION_ID_DEFAULT;
+
+				var primaryCellId = (record.length == LineLengths.AXF_XT) ? record[IDX.CELL_ID] : -1;
 
 				var geoLatLng = new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
 													   parseFloat(record[IDX.GEO_LON]));
 
 				var props = {
-					msgId: msgId,
+					msgId: record[IDX.MSGID],
 					sessionId: sessionId,
-					timestamp: timestamp,
+					timestamp: record[IDX.TIMEOFFSET],
 					latLng: geoLatLng,
-					confidence: confidence,
-					probMobility: probMobile,
-					probIndoor: probIndoor
+					confidence: percent2Decimal(record[IDX.CONF]),
+					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
+					probIndoor: percent2Decimal(record[IDX.PROB_INDOOR]),
+					primaryCellId: primaryCellId
 				};
 
 				var session = getSession(sessionId);
