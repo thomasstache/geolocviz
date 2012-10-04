@@ -531,7 +531,8 @@ define(
 						path: points,
 						strokeColor: color,
 						strokeOpacity: opacity,
-						strokeWeight: weight
+						strokeWeight: weight,
+						map: this.map
 					};
 
 					// apply line symbols for session lines
@@ -551,7 +552,6 @@ define(
 					}
 
 					var line = new google.maps.Polyline(options);
-					line.setMap(this.map);
 
 					this.registerOverlay(type, line);
 				}
