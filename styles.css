@@ -121,7 +121,7 @@ ul.legend li .colorswatch {
 }
 
 .etched {
-	color: rgba(38, 48, 16, 0.51);
+	color: rgb(152, 180, 152);
 	text-shadow: rgb(255, 255, 255) 0 1px 1px;
 	font-weight: normal;
 }

@@ -394,7 +394,7 @@ define(
 					var color = colorDef.bgcolor + "|" + colorDef.color;
 
 					var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
-					icon = new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(8, 34));
+					icon = new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(10, 34));
 				}
 
 				var marker = new google.maps.Marker(
