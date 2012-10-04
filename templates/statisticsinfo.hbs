@@ -1,0 +1,12 @@
+<h3 class="etched">Data Statistics</h3>
+<ul class="propertyList">
+<!-- 	{{#each files}}
+		<li class="fileitem" title="{{name}}">{{name}}</li>
+	{{/each}}
+ -->
+	<li><span class="label">Sessions:</span> <span class="value">{{numSessions}}</span></li>
+	<li><span class="label">Results:</span> <span class="value">{{numResults}}</span></li>
+	{{#if hasCandidates}}
+	<li title="Including location candidates"><span class="label">Total Results:</span> <span class="value">{{numResultsAndCandidates}}</span></li>
+	{{/if}}
+</ul>

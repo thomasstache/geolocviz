@@ -15,7 +15,8 @@ define(
 				// id of the last focussed session
 				focussedSessionId: -1,
 
-				files: []
+				// statistics about loaded files and records
+				statistics: null
 			},
 		});
 

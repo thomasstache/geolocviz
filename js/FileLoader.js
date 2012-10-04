@@ -44,7 +44,6 @@ define(
 					var fileStatistics = {
 						name: filename,
 						numRows: 0,
-						numSessions: 0,
 						numResults: 0,
 						numResultsAndCandidates: 0
 					};

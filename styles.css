@@ -154,6 +154,12 @@ ul.legend li .colorswatch {
 	font-size: 0.9em;
 }
 
+.propertyList .fileitem {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 header, footer, #mapView, #mapLegend, #settings, #mainToolbar {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;

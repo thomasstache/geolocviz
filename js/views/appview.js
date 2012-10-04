@@ -2,21 +2,21 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/sessioninfoview",
-	 "collections/sessions", "models/settings", "models/appstate", "FileLoader"],
+	 "collections/sessions", "models/settings", "models/appstate", "models/statistics", "FileLoader"],
 
 	function($, _, Backbone,
 			 MapView, SettingsView, LegendView, SessionInfoView,
-			 SessionList, Settings, AppState, FileLoader) {
+			 SessionList, Settings, AppState, Statistics, FileLoader) {
 
 		var AppView = Backbone.View.extend({
 			el: $("#playground-app"),
-
-			model: new AppState(),
 
 			events: {
 				"change #fileInput": "loadFile",
 				"change #searchSessionInput": "searchSessionInputChanged"
 			},
+
+			model: null,
 
 			sessions: null,
 
@@ -25,6 +25,7 @@ define(
 			initialize: function() {
 
 				// init model
+				this.model = new AppState();
 				this.sessions = new SessionList();
 				// listen to changes
 				this.sessions.on("all", this.render, this);
@@ -71,12 +72,19 @@ define(
 					return;
 				}
 
-				FileLoader.loadFiles(files, this.sessions, this.filesLoaded);
+				FileLoader.loadFiles(files, this.sessions, this.fileLoaded.bind(this));
 			},
 
 			// Callback for FileLoader
-			filesLoaded: function(resultCode, stats) {
-				console.log(stats);
+			fileLoaded: function(resultCode, filestats) {
+
+				if (!this.model.has("statistics"))
+					this.model.set("statistics", new Statistics());
+
+				var stats = this.model.get("statistics");
+				stats.addFileStats(filestats);
+				stats.set("numSessions", this.sessions.length);
+				this.model.trigger("change:statistics");
 			},
 
 			// Handler for "change" event from the session search field.

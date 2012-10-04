@@ -1,8 +1,8 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/sessioninfo", "hbs!../../templates/accuracyresultinfo"],
+	 "hbs!../../templates/sessioninfo", "hbs!../../templates/accuracyresultinfo", "hbs!../../templates/statisticsinfo"],
 
-	function($, _, Backbone, sessionTemplate, resultTemplate) {
+	function($, _, Backbone, sessionTemplate, resultTemplate, statisticsTemplate) {
 
 		var SessionInfoView = Backbone.View.extend({
 			el: $("#infoView"),
@@ -16,7 +16,8 @@ define(
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
 				this.model.on("change:selectedResult", this.onResultChanged, this);
-				this.model.on("change:focussedSessionId", this.updateControls, this);
+				this.model.on("change:statistics", this.onStatisticsChanged, this);
+				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 
 				this.$toolbar = $(".toolbar");
 				this.$focusBtn = $(".button.focus-session");
@@ -25,8 +26,9 @@ define(
 
 			onSessionChanged: function() {
 
-				this.updateControls();
-				this.render();
+				this.updateSessionControls();
+				this.renderSessionInfo();
+				this.renderResultInfo();
 			},
 
 			onResultChanged: function() {
@@ -34,11 +36,16 @@ define(
 				this.renderResultInfo();
 			},
 
+			onStatisticsChanged: function() {
+				this.renderStatistics();
+			},
+
 			// Render the templates with the current context data.
 			render: function() {
 
 				this.renderSessionInfo();
 				this.renderResultInfo();
+				this.renderStatistics();
 				return this;
 			},
 
@@ -49,11 +56,24 @@ define(
 				return this;
 			},
 
-			// Render the templates with the current context data.
+			// Render the result template.
 			renderResultInfo: function() {
 
 				var result = this.model.get("selectedResult");
 				$("#resultInfo").html(resultTemplate(result !== null ? result.getInfo() : {}));
+				return this;
+			},
+
+			// Render the statistics template.
+			renderStatistics: function() {
+
+				var stats = this.model.get("statistics");
+				var context = stats !== null ? stats.toJSON() : {};
+				if (context.numResultsAndCandidates &&
+					context.numResultsAndCandidates > 0)
+					context.hasCandidates = true;
+
+				$("#statistics").html(statisticsTemplate(context));
 				return this;
 			},
 
@@ -73,7 +93,7 @@ define(
 				this.trigger("session:unfocussed");
 			},
 
-			updateControls: function() {
+			updateSessionControls: function() {
 
 				var session = this.model.get("selectedSession");
 				var focussedSessionId = this.model.get("focussedSessionId");
