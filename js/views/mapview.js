@@ -83,6 +83,8 @@ define(
 
 			el: $("#mapContainer"),
 
+			map: null,
+
 			// bounding rectangle around all reference and geolocated markers
 			bounds: null,
 
@@ -91,6 +93,7 @@ define(
 
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
+			selectedMarkerHighlightBestLoc: null,
 
 			// id of the currently highlighted session (see drawSessionLines())
 			highlightedSessionId: -1,
@@ -166,6 +169,15 @@ define(
 			 */
 
 			/**
+			 * Update the visibility of the given marker.
+			 * @param {boolean} bShow
+			 */
+			showOverlay: function(marker, bShow) {
+				if (marker)
+					marker.setMap(bShow ? this.map : null);
+			},
+
+			/**
 			 * Removes all overlays from the map and destroys them.
 			 */
 			deleteAllOverlays: function() {
@@ -176,6 +188,7 @@ define(
 				this.highlightedCandidateSampleCid = -1;
 
 				this.selectedMarkerHighlight = null;
+				this.selectedMarkerHighlightBestLoc = null;
 			},
 
 			/**
@@ -204,7 +217,7 @@ define(
 			updateOverlays: function(event) {
 
 				// make ref to capture in inner function
-				var map = this.map;
+				var view = this;
 
 				if (event.changed.drawReferenceLines !== undefined) {
 					// show or hide reference lines
@@ -213,8 +226,7 @@ define(
 						lineOverlays,
 						function(overlay) {
 							var marker = overlay.get("ref");
-							if (marker)
-								marker.setMap(event.changed.drawReferenceLines ? map : null);
+							view.showOverlay(marker, event.changed.drawReferenceLines);
 						}
 					);
 				}
@@ -226,8 +238,7 @@ define(
 						sessionOverlays,
 						function(overlay) {
 							var marker = overlay.get("ref");
-							if (marker)
-								marker.setMap(event.changed.drawSessionLines ? map : null);
+							view.showOverlay(marker, event.changed.drawSessionLines);
 						}
 					);
 				}
@@ -546,6 +557,26 @@ define(
 				}
 			},
 
+			createHighlightCircle: function() {
+
+				var marker = new google.maps.Marker({
+					icon: {
+						path: google.maps.SymbolPath.CIRCLE,
+						fillColor: "#CCCCCC",
+						fillOpacity: 0.5,
+						scale: 15,
+						strokeColor: "#666",
+						strokeOpacity: 0.8,
+						strokeWeight: 1,
+					},
+					map: this.map,
+					zIndex: -10 // TS: only negative values really put the highlight under the result markers
+				});
+				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
+
+				return marker;
+			},
+
 			/**
 			 * Helper method for visual inspection of the bounding box.
 			 * @param {LatLngBounds} bounds
@@ -659,45 +690,47 @@ define(
 			highlightResult: function(result) {
 
 				if (result !== null &&
-				    result !== undefined &&
-				    isValidLatLng(result.get('latLng'))) {
+				    result !== undefined) {
 
 					var latLng = result.get('latLng');
 					// draw a highlight around the result
 
 					if (!this.selectedMarkerHighlight) {
-
 						// create a circle shape for reuse for all result highlighting needs
-						this.selectedMarkerHighlight = new google.maps.Marker({
-							position: latLng,
-							icon: {
-								path: google.maps.SymbolPath.CIRCLE,
-								fillColor: "#CCCCCC",
-								fillOpacity: 0.5,
-								scale: 15,
-								strokeColor: "#666",
-								strokeOpacity: 0.8,
-								strokeWeight: 1,
-							},
-							map: this.map,
-							zIndex: -10 // TS: only negative values really put the highlight under the result markers
-						});
-						this.registerOverlay(OverlayTypes.SELECTIONVIZ, this.selectedMarkerHighlight);
+						this.selectedMarkerHighlight = this.createHighlightCircle();
 					}
-					else {
-						// just update the position
+
+					// some AccuracyResults have an invalid reference location
+					var bShow = isValidLatLng(latLng);
+					if (bShow) {
+						// update the position
 						this.selectedMarkerHighlight.setPosition(latLng);
 					}
+					this.showOverlay(this.selectedMarkerHighlight, bShow);
 
 					if (result instanceof AccuracyResult) {
+						// for AccuracyResults draw a second circle for the best candidate
 
+						if (!this.selectedMarkerHighlightBestLoc) {
+							this.selectedMarkerHighlightBestLoc = this.createHighlightCircle();
+						}
+
+						latLng = result.getBestLocationCandidate().get('latLng');
+						bShow = isValidLatLng(latLng);
+						if (bShow) {
+							this.selectedMarkerHighlightBestLoc.setPosition(latLng);
+						}
+
+						this.showOverlay(this.selectedMarkerHighlightBestLoc, bShow);
+					}
+					else {
+						this.showOverlay(this.selectedMarkerHighlightBestLoc, false);
 					}
 				}
 				else {
-					// hide the highlight
-					if (this.selectedMarkerHighlight) {
-						this.selectedMarkerHighlight.map = null;
-					}
+					// hide the highlights
+					this.showOverlay(this.selectedMarkerHighlight, false);
+					this.showOverlay(this.selectedMarkerHighlightBestLoc, false);
 				}
 			}
 		});
