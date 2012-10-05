@@ -159,6 +159,8 @@ ul.legend li .colorswatch {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	max-width: 20em;
+	padding-left: 5px;
 }
 
 header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
@@ -204,13 +206,12 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	.infoBlock {
 		-webkit-flex: 1;
 		-moz-box-flex: 1;
+		font-size: .9em;
+		line-height: 1.1em;
 	}
 
 	#infoView .caption {
 		position: absolute;
 		right: 1em;
-	}
-	#infoView .infoBlock {
-		float: left;
 	}
 }
