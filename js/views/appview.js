@@ -12,7 +12,7 @@ define(
 			el: $("#playground-app"),
 
 			events: {
-				"change #fileInput": "loadFile",
+				"change #fileInput": "loadFiles",
 				"change #searchSessionInput": "searchSessionInputChanged"
 			},
 
@@ -22,12 +22,16 @@ define(
 
 			settings: null,
 
+			// the counter tracking file loads
+			numFilesQueued: 0,
+
 			initialize: function() {
 
 				// init model
 				this.model = new AppState();
 				this.sessions = new SessionList();
 				// listen to changes
+				this.model.on("change:busy", this.busyStateChanged, this);
 				this.sessions.on("all", this.render, this);
 
 				// setup settings
@@ -63,7 +67,8 @@ define(
 				this.model.set(this.model.defaults);
 			},
 
-			loadFile: function(evt) {
+			// Handler for the "change" event of the file input. Kick of load process.
+			loadFiles: function(evt) {
 
 				this.clearData();
 
@@ -72,7 +77,15 @@ define(
 					return;
 				}
 
+				this.numFilesQueued = files.length;
+				this.model.set("busy", true);
 				FileLoader.loadFiles(files, this.sessions, this.fileLoaded.bind(this));
+			},
+
+			// Called when all files have been loaded. Triggers marker rendering.
+			loadComplete: function() {
+				this.model.set("busy", false);
+				this.mapview.drawMarkers();
 			},
 
 			// Callback for FileLoader
@@ -85,6 +98,10 @@ define(
 				stats.addFileStats(filestats);
 				stats.set("numSessions", this.sessions.length);
 				this.model.trigger("change:statistics");
+
+				this.numFilesQueued--;
+				if (this.numFilesQueued === 0)
+					this.loadComplete();
 			},
 
 			// Handler for "change" event from the session search field.
@@ -131,6 +148,12 @@ define(
 
 				this.model.set("focussedSessionId", -1);
 				this.mapview.zoomToBounds();
+			},
+
+			// Handler for changes to the "busy" attribute in AppState. Updates the wait cursor.
+			busyStateChanged: function(event) {
+
+				$("html").toggleClass("wait", event.changed.busy);
 			}
 		});
 

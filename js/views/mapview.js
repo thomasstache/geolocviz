@@ -11,7 +11,7 @@ define(
 			INDOOR:		{ bgcolor: "FBEC5D", color: "000000", smb: "I", category: "Indoor" }, // yellow
 			STATIONARY: { bgcolor: "FF9900", color: "000000", smb: "S", category: "Stationary" }, // orange
 			CANDIDATE:	{ bgcolor: "CCFFFF", color: "000000", smb: "C", category: "Location Candidate" }, // skyblue
-			ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", category: "Home" },
+			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", category: "Home" },*/
 		});
 
 		var OverlayTypes = Object.freeze({
@@ -141,7 +141,6 @@ define(
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 				this.map.setMapTypeId(STYLED_MAPTYPE_ID);
 
-				this.collection.on("add", this.drawMarkers, this);
 				this.collection.on("reset", this.deleteAllOverlays, this);
 
 				// a collection to keep our overlays in sight

@@ -6,6 +6,9 @@ define(
 		var AppState = Backbone.Model.extend({
 
 			defaults: {
+				// if the app is busy/waiting
+				busy: false,
+
 				// the model of the selected/active session
 				selectedSession: null,
 
