@@ -17,7 +17,8 @@ define(
 			// line/header lengths of the supported CSV files
 			var LineLengths = Object.freeze({
 				ACCURACY: 11,
-				AXF: 11,
+				AXF_60: 10,
+				AXF_61: 11,
 				AXF_XT: 14
 			});
 
@@ -93,7 +94,9 @@ define(
 					parsingFct = parseAccuracyRecordV3;
 				}
 				else if (currentFileType == FileTypes.AXF &&
-						 (header.length == LineLengths.AXF || header.length == LineLengths.AXF_XT)) {
+						 (header.length == LineLengths.AXF_60 ||
+						  header.length == LineLengths.AXF_61 ||
+						  header.length == LineLengths.AXF_XT)) {
 					parsingFct = parseAxfRecord;
 				}
 				else {
@@ -189,10 +192,10 @@ define(
 					MOBILE_YN: 7,
 					INDOOR_YN: 8,
 					MEAS_REPORT: 9,
-					PROB_INDOOR: 10,
-					SESSIONID: 11,
-					CONTROLLER: 12,
-					CELL_ID: 13
+					PROB_INDOOR: 10, // 6.1
+					SESSIONID: 11, // XT
+					CONTROLLER: 12, // XT
+					CELL_ID: 13 // XT
 				});
 
 				function percent2Decimal(value) {
@@ -202,10 +205,11 @@ define(
 					return value;
 				}
 
-				// assume we don't have a session id
-				var sessionId = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID]
-																	  : SESSION_ID_DEFAULT;
+				// indoor probability only in 6.1+
+				var probIndoor    = (record.length >= LineLengths.AXF_61) ? record[IDX.PROB_INDOOR] : NaN;
 
+				// session id and primary cell only in extended (XT) files
+				var sessionId     = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID] : SESSION_ID_DEFAULT;
 				var primaryCellId = (record.length == LineLengths.AXF_XT) ? record[IDX.CELL_ID] : -1;
 
 				var geoLatLng = new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
@@ -218,7 +222,7 @@ define(
 					latLng: geoLatLng,
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
-					probIndoor: percent2Decimal(record[IDX.PROB_INDOOR]),
+					probIndoor: percent2Decimal(probIndoor),
 					primaryCellId: primaryCellId
 				};
 
