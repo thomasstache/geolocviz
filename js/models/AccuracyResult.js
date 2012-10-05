@@ -29,7 +29,7 @@ define(
 			getInfo: function() {
 				var bestCand = this.getBestLocationCandidate();
 				return {
-					num: this.collection.indexOf(this) + 1,
+					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
 					msgId: this.get('msgId'),
 					distance: bestCand.get('distance'),

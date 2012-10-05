@@ -34,7 +34,7 @@ define(
 			getInfo: function() {
 
 				return {
-					num: this.collection.indexOf(this) + 1,
+					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
 					msgId: this.get('msgId'),
 					confidence: this.get('confidence'),

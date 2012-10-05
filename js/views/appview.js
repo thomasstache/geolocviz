@@ -55,8 +55,13 @@ define(
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
+
 				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
 				this.sessioninfoview.on("session:unfocussed", this.sessionUnfocussed, this);
+				this.sessioninfoview.on("result:nav-first", this.resultsNavigateToFirst, this);
+				this.sessioninfoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
+				this.sessioninfoview.on("result:nav-next", this.resultsNavigateToNext, this);
+				this.sessioninfoview.on("result:nav-last", this.resultsNavigateToLast, this);
 			},
 
 			render: function() {
@@ -166,6 +171,52 @@ define(
 
 				this.model.set("focussedSessionId", -1);
 				this.mapview.zoomToBounds();
+			},
+
+			// Handler for "result:nav-first" event.
+			resultsNavigateToFirst: function(result) {
+
+				if (result &&
+					result.hasPrevious()) {
+
+					var newResult = result.collection.first();
+					this.resultSelected(newResult);
+				}
+			},
+
+			// Handler for "result:nav-next" event.
+			resultsNavigateToNext: function(result) {
+
+				if (result &&
+					result.hasNext()) {
+
+					var index = result.getIndex();
+					var newResult = result.collection.at(index + 1);
+					this.resultSelected(newResult);
+				}
+			},
+
+			// Handler for "result:nav-prev" event.
+			resultsNavigateToPrevious: function(result) {
+
+				if (result &&
+					result.hasPrevious()) {
+
+					var index = result.getIndex();
+					var newResult = result.collection.at(index - 1);
+					this.resultSelected(newResult);
+				}
+			},
+
+			// Handler for "result:nav-last" event.
+			resultsNavigateToLast: function(result) {
+
+				if (result &&
+					result.hasNext()) {
+
+					var newResult = result.collection.last();
+					this.resultSelected(newResult);
+				}
 			},
 
 			// Handler for changes to the "busy" attribute in AppState. Updates the wait cursor.

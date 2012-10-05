@@ -25,6 +25,28 @@ define(
 
 			getInfo: function() {
 				return this.toJSON();
+			},
+
+			/**
+			 * Returns the index of the result in its collection.
+			 * Returns -1 if there is no collection.
+			 */
+			getIndex: function() {
+				return this.collection ? this.collection.indexOf(this) : -1;
+			},
+
+			/**
+			 * Returns whether there is a successor item in the collection.
+			 */
+			hasNext: function() {
+				return this.collection && this.getIndex() < this.collection.length - 1;
+			},
+
+			/**
+			 * Returns whether there is a predecessor item in the collection.
+			 */
+			hasPrevious: function() {
+				return this.collection && this.getIndex() > 0;
 			}
 		});
 

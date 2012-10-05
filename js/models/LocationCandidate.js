@@ -23,7 +23,7 @@ define(
 			getInfo: function() {
 
 				return {
-					num: this.collection.indexOf(this) + 1,
+					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
 					distance: this.get('distance'),
 					confidence: this.get('confidence'),

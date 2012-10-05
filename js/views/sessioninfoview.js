@@ -9,7 +9,11 @@ define(
 
 			events: {
 				"click .focus-session": "onFocusSessionClicked",
-				"click .unfocus-session": "onUnfocusSessionClicked"
+				"click .unfocus-session": "onUnfocusSessionClicked",
+				"click .results-first": "onFirstResultClicked",
+				"click .results-prev": "onPrevResultClicked",
+				"click .results-next": "onNextResultClicked",
+				"click .results-last": "onLastResultClicked",
 			},
 
 			initialize: function() {
@@ -19,9 +23,15 @@ define(
 				this.model.on("change:statistics", this.onStatisticsChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 
-				this.$toolbar = $(".toolbar");
+				this.$tbSessionToolbar = $(".toolbar.sessionControls");
+				this.$tbResultsToolbar = $(".toolbar.resultControls");
+
 				this.$focusBtn = $(".button.focus-session");
 				this.$unfocusBtn = $(".button.unfocus-session");
+				this.$navFirstBtn = $(".button.results-first");
+				this.$navPrevBtn = $(".button.results-prev");
+				this.$navNextBtn = $(".button.results-next");
+				this.$navLastBtn = $(".button.results-last");
 			},
 
 			onSessionChanged: function() {
@@ -33,6 +43,7 @@ define(
 
 			onResultChanged: function() {
 
+				this.updateResultsControls();
 				this.renderResultInfo();
 			},
 
@@ -103,8 +114,43 @@ define(
 				this.$focusBtn.prop("disabled", !canFocus);
 				this.$unfocusBtn.prop("disabled", focussedSessionId < 0);
 
-				this.$toolbar.toggleClass("hidden", session === null);
+				this.$tbSessionToolbar.toggleClass("hidden", session === null);
 			},
+
+			/**
+			 * Click handlers for the result navigation buttons.
+			 */
+			onFirstResultClicked: function() {
+				this.triggerNavigationEvent("nav-first");
+			},
+			onNextResultClicked: function() {
+				this.triggerNavigationEvent("nav-next");
+			},
+			onPrevResultClicked: function() {
+				this.triggerNavigationEvent("nav-prev");
+			},
+			onLastResultClicked: function() {
+				this.triggerNavigationEvent("nav-last");
+			},
+
+			triggerNavigationEvent: function(eventType) {
+				this.trigger("result:" + eventType, this.model.get("selectedResult"));
+			},
+
+			updateResultsControls: function() {
+
+				var result = this.model.get("selectedResult");
+
+				var canNavigateBwd = result !== null && result.hasPrevious();
+				var canNavigateFwd = result !== null && result.hasNext();
+
+				this.$navFirstBtn.prop("disabled", !canNavigateBwd);
+				this.$navPrevBtn.prop("disabled", !canNavigateBwd);
+				this.$navNextBtn.prop("disabled", !canNavigateFwd);
+				this.$navLastBtn.prop("disabled", !canNavigateFwd);
+
+				this.$tbResultsToolbar.toggleClass("hidden", result === null);
+			}
 		});
 
 		return SessionInfoView;
