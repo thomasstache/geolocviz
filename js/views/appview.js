@@ -27,6 +27,12 @@ define(
 
 			initialize: function() {
 
+				if (!this.checkFileAPIs()) {
+					$("#mainToolbar").hide();
+					$("#mapView").hide();
+					return;
+				}
+
 				// init model
 				this.model = new AppState();
 				this.sessions = new SessionList();
@@ -65,6 +71,18 @@ define(
 				this.sessions.reset();
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
+			},
+
+			// Check for the various File API support.
+			checkFileAPIs: function() {
+
+				if (window.File && window.FileReader && window.FileList && window.Blob) {
+					// Great success! All the File APIs are supported.
+					return true;
+				} else {
+					alert('The File APIs are not fully supported in this browser. Consider using Mozilla Firefox (>8) or Google Chrome (>7)!');
+					return false;
+				}
 			},
 
 			// Handler for the "change" event of the file input. Kick of load process.
