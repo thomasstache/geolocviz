@@ -174,7 +174,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	.mainContent {
 		display: -webkit-flex; /* Chrome uses new (2012) spec draft */
 		display: -moz-box; /* Firefox uses previous (2009) draft */
-		width: 100%;
+		width: 100%; /* necessary for Firefox, otherwise the box is "deflated" */
 	}
 	#mapView {
 		-webkit-flex: 1;
@@ -196,6 +196,16 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 /* InfoView LCD layout for narrow screens */
 
 @media screen and (max-width: 1000px) {
+	#infoView {
+		display: -webkit-flex;
+		display: -moz-box;
+		width: 100%;
+	}
+	.infoBlock {
+		-webkit-flex: 1;
+		-moz-box-flex: 1;
+	}
+
 	#infoView .caption {
 		position: absolute;
 		right: 1em;
