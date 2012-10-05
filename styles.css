@@ -161,7 +161,7 @@ ul.legend li .colorswatch {
 	text-overflow: ellipsis;
 }
 
-header, footer, #mapView, #mapLegend, #settings, #mainToolbar {
+header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-ms-user-select: none;
