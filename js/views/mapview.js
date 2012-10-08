@@ -81,7 +81,7 @@ define(
 
 		var MapView = Backbone.View.extend({
 
-			el: $("#mapContainer"),
+			el: $("#mapView"),
 
 			map: null,
 
@@ -108,6 +108,7 @@ define(
 
 				var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
 
+				// include the custom MapTypeId to add to the map type control.
 				var mapOptions = {
 					zoom: 16,
 					center: mapCenter,
@@ -127,9 +128,6 @@ define(
 				// Create a new StyledMapType object, passing it the array of styles,
 				// as well as the name to be displayed on the map type control.
 				var styledMapType = new google.maps.StyledMapType(simpleMapStyles, {name: "Simplified"});
-
-				// Create a map object, and include the MapTypeId to add
-				// to the map type control.
 
 				// Force the height of the map to fit the window
 				//this.$el.height($(window).height() - $("header").height());

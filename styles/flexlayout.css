@@ -1,0 +1,41 @@
+#playground-app {
+	position: absolute;
+
+	display: -webkit-flex;
+	-webkit-flex-direction: column;
+	display: -moz-flex; /* Fx 18+ */
+	-moz-flex-direction: column;
+}
+
+.mainContent {
+	/* should grow itself */
+	-webkit-flex: 1;
+	-moz-flex: 1; /* Fx 18+ */
+	/* flexbox for children */
+	display: -webkit-flex; /* Chrome uses new (2012) spec draft */
+	display: -moz-flex; /* Firefox 18 uses new draft */
+}
+
+/* Fixed size children of .mainContent */
+header, footer, .mainToolbar, #settings, #mapLegend {
+	-webkit-flex: 0.01 5 auto;
+	-moz-flex: 0;
+}
+
+/* main map container */
+#mapView {
+	-webkit-flex: 1;
+	-moz-flex: 1; /* Fx 18+ */
+	height: auto; /* override default fixed height */
+}
+
+#mapContainer {
+	height: auto;
+}
+
+@media screen and (max-width: 1000px) {
+	.mainContent {
+		-webkit-flex-flow: column;
+		-moz-flex-direction: column;
+	}
+}
