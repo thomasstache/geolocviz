@@ -1,10 +1,10 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/sessioninfo", "hbs!../../templates/accuracyresultinfo", "hbs!../../templates/statisticsinfo"],
+	 "hbs!../../templates/sessioninfo", "hbs!../../templates/resultinfo", "hbs!../../templates/statisticsinfo"],
 
 	function($, _, Backbone, sessionTemplate, resultTemplate, statisticsTemplate) {
 
-		var SessionInfoView = Backbone.View.extend({
+		var InfoView = Backbone.View.extend({
 			el: $("#infoView"),
 
 			events: {
@@ -153,6 +153,6 @@ define(
 			}
 		});
 
-		return SessionInfoView;
+		return InfoView;
 	}
 );

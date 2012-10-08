@@ -1,11 +1,11 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	 "views/mapview", "views/settingsview", "views/legendview", "views/sessioninfoview",
+	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview",
 	 "collections/sessions", "models/settings", "models/appstate", "models/statistics", "FileLoader"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, SessionInfoView,
+			 MapView, SettingsView, LegendView, InfoView,
 			 SessionList, Settings, AppState, Statistics, FileLoader) {
 
 		var AppView = Backbone.View.extend({
@@ -51,7 +51,7 @@ define(
 				});
 
 				this.legendview = new LegendView({ colors: this.mapview.colors() });
-				this.sessioninfoview = new SessionInfoView({ model: this.model });
+				this.sessioninfoview = new InfoView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
