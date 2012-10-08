@@ -16,6 +16,10 @@ define(
 				numResultsAndCandidates: 0
 			},
 
+			initialize: function() {
+				this.set("files", []);
+			},
+
 			addFileStats: function(filestats) {
 				this.get("files").push(filestats);
 				this.addTo("numRows", filestats.numRows);
