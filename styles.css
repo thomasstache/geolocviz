@@ -167,6 +167,34 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	user-select: none;
 }
 
+#fileDropVeil {
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	background: rgba(30, 30, 30, 0.2);
+	font-weight: bold;
+	color: white; text-shadow: 0 2px 3px rgb(70, 70, 70);
+	text-align: center;
+}
+
+#fileDropVeil .dropText {
+	font-size: 150%;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	margin: 0 auto;
+	margin-left: -webkit-calc(-10% / 2);
+	margin-left: -moz-calc(-10% / 2);
+	margin-top: -webkit-calc(-10% / 2);
+	margin-top: -moz-calc(-10% / 2);
+}
+
+/* transparent div covering the drop text */
+#fileDropZone {
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	z-index: 100;
+}
+
 /* Expand layout for widescreen displays */
 
 @media screen and (min-width: 1000px) {

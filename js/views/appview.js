@@ -12,8 +12,9 @@ define(
 			el: $("#playground-app"),
 
 			events: {
-				"change #fileInput": "loadFiles",
-				"change #searchSessionInput": "searchSessionInputChanged"
+				"change #fileInput"          : "fileInputChanged",
+				"change #searchSessionInput" : "searchSessionInputChanged",
+				"drop #fileDropZone"         : "dropHandler"
 			},
 
 			model: null,
@@ -32,6 +33,8 @@ define(
 					$("#mapView").hide();
 					return;
 				}
+
+				this.setupDragDrop();
 
 				// init model
 				this.model = new AppState();
@@ -91,11 +94,16 @@ define(
 			},
 
 			// Handler for the "change" event of the file input. Kick of load process.
-			loadFiles: function(evt) {
+			fileInputChanged: function(evt) {
+
+				var files = evt.target.files;
+				this.loadFiles(files);
+			},
+
+			loadFiles: function(files) {
 
 				this.clearData();
 
-				var files = evt.target.files;
 				if (!files.length) {
 					return;
 				}
@@ -125,6 +133,59 @@ define(
 				this.numFilesQueued--;
 				if (this.numFilesQueued === 0)
 					this.loadComplete();
+			},
+
+			// set up file drag-and-drop event handlers
+			setupDragDrop: function() {
+
+				var view = this;
+
+				// Set up the drop zone.
+				$("#fileDropZone")
+
+					// hide when mouse leaves the overlay (i.e. the window)
+					.on("dragleave", function() {
+						view.hideDropZone();
+						return false;
+					})
+					// Allow drops of any kind into the zone.
+					.on("dragover", function(evt) {
+						evt.originalEvent.dataTransfer.dropEffect = "copy";
+						return false;
+					});
+
+				$(document)
+					// enable drop zone
+					.on("dragenter", function(evt) {
+						evt.stopPropagation();
+						evt.preventDefault();
+						view.showDropZone();
+					})
+					// prevent drop on body
+					.on("dragover", function(evt) {
+						evt.originalEvent.dataTransfer.dropEffect = "none";
+						return false;
+					});
+			},
+
+			// show drop zone
+			showDropZone: function() {
+				$("#fileDropVeil").fadeIn("fast");
+			},
+			hideDropZone: function() {
+				$("#fileDropVeil").fadeOut("fast");
+			},
+
+			dropHandler: function (evt) {
+				evt.stopPropagation();
+				evt.preventDefault();
+
+				var dt = evt.originalEvent.dataTransfer;
+				var files = dt.files; // FileList object.
+
+				this.hideDropZone();
+
+				this.loadFiles(files);
 			},
 
 			// Handler for "change" event from the session search field.
