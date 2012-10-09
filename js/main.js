@@ -11,6 +11,7 @@ requirejs.config({
 	},
 	paths: {
 		'jquery.csv': 'lib/jquery.csv',
+		'jquery': 'empty:',
 		json2: 'lib/hbs/json2',
 		i18nprecompile: 'lib/hbs/i18nprecompile',
 		hbs: 'lib/hbs/hbs',

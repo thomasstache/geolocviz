@@ -1,10 +1,14 @@
 ({
+	appDir: "../",
 	// url to the scripts folder
-	baseUrl: "./",
-	// name of the main script
-	main: "main",
-	mainConfigFile: "./main.js",
+	baseUrl: "js/",
 	// output dir
-	dir: "../",
-	locale: "en-us"
+	dir: "../../geolocviz-build",
+	// name of the main script
+	name: "main",
+	mainConfigFile: "./main.js",
+
+	//Comment out the optimize line if you want
+	//the code minified by UglifyJS
+	optimize: "none",
 })
