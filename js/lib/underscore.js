@@ -1,3 +1,5 @@
+//>>excludeStart('excludeAfterBuild', pragmas.excludeAfterBuild)
+
 //     Underscore.js 1.3.3
 //     (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
@@ -6,16 +8,10 @@
 //     For all details and documentation:
 //     http://documentcloud.github.com/underscore
 
-(function() {
+define(function() {
 
   // Baseline setup
   // --------------
-
-  // Establish the root object, `window` in the browser, or `global` on the server.
-  var root = this;
-
-  // Save the previous value of the `_` variable.
-  var previousUnderscore = root._;
 
   // Establish the object that gets returned to break out of a loop iteration.
   var breaker = {};
@@ -47,19 +43,6 @@
 
   // Create a safe reference to the Underscore object for use below.
   var _ = function(obj) { return new wrapper(obj); };
-
-  // Export the Underscore object for **Node.js**, with
-  // backwards-compatibility for the old `require()` API. If we're in
-  // the browser, add `_` as a global object via a string identifier,
-  // for Closure Compiler "advanced" mode.
-  if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
-      exports = module.exports = _;
-    }
-    exports._ = _;
-  } else {
-    root['_'] = _;
-  }
 
   // Current version.
   _.VERSION = '1.3.3';
@@ -1056,4 +1039,7 @@
     return this._wrapped;
   };
 
-}).call(this);
+    return _;
+
+});
+//>>excludeEnd('excludeAfterBuild')

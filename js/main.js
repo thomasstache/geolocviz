@@ -3,13 +3,7 @@ requirejs.config({
 		'jquery.csv': {
 			deps: ['jquery']
 		},
-		'handlebars': {
-			exports: 'Handlebars'
-		},
 
-		'underscore': {
-			exports: '_'
-		},
 		'backbone': {
 			deps: ['underscore', 'jquery'],
 			exports: 'Backbone'
