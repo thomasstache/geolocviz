@@ -205,7 +205,7 @@ define(
 				this.overlays.add({
 					type: type,
 					ref: overlay
-				});
+				}, { silent: true });
 			},
 
 			/**
