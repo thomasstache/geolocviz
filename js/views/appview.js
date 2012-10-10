@@ -185,6 +185,9 @@ define(
 
 				this.hideDropZone();
 
+				// reset the form to clear old file names
+				$("#fileForm")[0].reset();
+
 				this.loadFiles(files);
 			},
 
