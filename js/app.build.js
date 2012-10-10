@@ -5,7 +5,7 @@
 	// output dir
 	dir: "../../geolocviz-build",
 
-	mainConfigFile: "./main.js",
+	mainConfigFile: "./app-main.js",
 
 	//Comment out the optimize line if you want
 	//the code minified by UglifyJS
@@ -28,7 +28,7 @@
 
 	modules: [
 		{
-			name: "main",
+			name: "app-main",
 			// Leave Backbone and dependencies (i.e. underscore) out of concatenation.
 			// This resolves a conflict with the hbs plugin. */
 			exclude: ['backbone']
