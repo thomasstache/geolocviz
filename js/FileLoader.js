@@ -1,8 +1,9 @@
 define(
-	["collections/sessions", "collections/results",
+	["underscore",
+	 "collections/sessions", "collections/results",
 	 "models/AccuracyResult", "models/axfresult", "jquery.csv"],
 
-	function(SessionList, ResultList, AccuracyResult, AxfResult) {
+	function(_, SessionList, ResultList, AccuracyResult, AxfResult) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -12,6 +13,7 @@ define(
 			var FileTypes = Object.freeze({
 				ACCURACY: "accuracy",
 				AXF: "axf",
+				CELLREF: "cells",
 			});
 
 			// line/header lengths of the supported CSV files
@@ -60,6 +62,10 @@ define(
 						case "axf":
 							currentFileType = FileTypes.AXF;
 							break;
+						case "txt":
+							if (filename.substr(0, 8).toLowerCase() === "cellrefs")
+							    currentFileType = FileTypes.CELLREF;
+							break;
 						default:
 							currentFileType = null;
 					}
@@ -77,7 +83,10 @@ define(
 						rowData = jQuery.csv(separator)(rdr.result);
 
 						// parse the data
-						bOk = processCSV(rowData, currentFileType, fileStatistics);
+						if (currentFileType === FileTypes.CELLREF)
+							bOk = processCellrefs(rowData);
+						else
+							bOk = processCSV(rowData, currentFileType, fileStatistics);
 					}
 
 					// notify about completion of this file (TODO: notify when whole batch is completed!)
@@ -133,6 +142,47 @@ define(
 				currentAccuracyResult = null; // release
 				sessionList.trigger('add');
 				return true;
+			}
+
+			/**
+			 * Parse the rows of a cellrefs file
+			 * @returns true if successful, false on error (i.e. unknown file format)
+			 */
+			function processCellrefs(rows) {
+
+				var bOk = true;
+
+				_.each(rows, function _prsRow(rowItems) {
+
+					if (!rowItems || rowItems.length === 0)
+						return;
+
+					var lineTypeId = rowItems[0];
+
+					if (lineTypeId.charAt(0) === ";") {
+						bOk &= parseCellrefComment(rowItems);
+					}
+					else {
+						switch(lineTypeId)
+						{
+							case 'GSM_Site':
+							case 'WCDMA_Site':
+								bOk &= parseCellrefSiteRecord(rowItems);
+								break;
+
+							case 'GSM_Cell':
+							case 'WCDMA_Cell':
+								bOk &= parseCellrefSectorRecord(rowItems);
+								break;
+
+							default:
+								console.log("Unsupported line in file " + lineTypeId);
+								bOk = false;
+						}
+					}
+				});
+
+				return bOk;
 			}
 
 			/* Parses a line from the new (v6.1) file format:
@@ -266,6 +316,19 @@ define(
 					session = sessionList.at(sessionList.length - 1);
 				}
 				return session;
+			}
+
+			function parseCellrefComment(record) {
+				// we could look for the position of the attributes we need: latitude, longitude, azimuth, siteId, sectorId
+				record.length;
+			}
+
+			function parseCellrefSiteRecord(record) {
+				;
+			}
+
+			function parseCellrefSectorRecord(record) {
+				;
 			}
 
 			// return the external API

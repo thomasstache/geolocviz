@@ -2,11 +2,11 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview",
-	 "collections/sessions", "models/settings", "models/appstate", "models/statistics", "FileLoader"],
+	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics", "FileLoader"],
 
 	function($, _, Backbone,
 			 MapView, SettingsView, LegendView, InfoView,
-			 SessionList, Settings, AppState, Statistics, FileLoader) {
+			 SessionList, SiteList, Settings, AppState, Statistics, FileLoader) {
 
 		var AppView = Backbone.View.extend({
 			el: $("#playground-app"),
