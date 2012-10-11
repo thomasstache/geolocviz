@@ -116,11 +116,12 @@ define(
 			// Called when all files have been loaded. Triggers marker rendering.
 			loadComplete: function() {
 				this.model.set("busy", false);
+				// TODO: discern result/cellref file load, only redraw necessary stuff
 				this.mapview.drawMarkers();
 			},
 
 			// Callback for FileLoader
-			fileLoaded: function(resultCode, filestats) {
+			fileLoaded: function(success, filestats) {
 
 				if (!this.model.has("statistics"))
 					this.model.set("statistics", new Statistics());

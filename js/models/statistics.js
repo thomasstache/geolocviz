@@ -22,9 +22,13 @@ define(
 
 			addFileStats: function(filestats) {
 				this.get("files").push(filestats);
-				this.addTo("numRows", filestats.numRows);
-				this.addTo("numResults", filestats.numResults);
-				this.addTo("numResultsAndCandidates", filestats.numResultsAndCandidates);
+				// willfully using '!=' to test against undefined and null
+				if (filestats.numRows != null)
+					this.addTo("numRows", filestats.numRows);
+				if (filestats.numResults != null)
+					this.addTo("numResults", filestats.numResults);
+				if (filestats.numResultsAndCandidates != null)
+					this.addTo("numResultsAndCandidates", filestats.numResultsAndCandidates);
 			},
 
 			addTo: function(attribute, value) {

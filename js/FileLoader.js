@@ -35,23 +35,22 @@ define(
 			var currentAccuracyResult = null;
 
 			// Handler for the loadend event of the FileReader
-			function onFileLoaded(evt) {
+			function onFileReadComplete(evt) {
 				// evt: ProgressEvent, target is the FileReader
 				var rdr = evt.target;
 				var rowData = [];
-				var filename = rdr.file ? rdr.file.name : "";
 
-				if (rdr.readyState == FileReader.DONE) {
+				if (rdr.readyState === FileReader.DONE) {
+
+					// the current file should be tucked on the Reader object
+					var filename = rdr.file ? rdr.file.name : "";
 
 					var fileStatistics = {
-						name: filename,
-						numRows: 0,
-						numResults: 0,
-						numResultsAndCandidates: 0
+						name: filename
 					};
 
 					// check which type of file we're dealing with
-					var currentFileType = "";
+					var currentFileType = null;
 					var ext = filename.substr(filename.lastIndexOf(".") + 1);
 					switch (ext)
 					{
@@ -65,29 +64,44 @@ define(
 							currentFileType = null;
 					}
 
-					var separator = (currentFileType === FileTypes.ACCURACY) ? "\t" : ",";
+					var bOk = false;
 
-					// decompose the blob
-					rowData = jQuery.csv(separator)(rdr.result);
+					if (currentFileType === null) {
+						alert("Could not recognize this file type!");
+					}
+					else {
+						// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
+						var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
 
-					// parse the data
-					processCSV(rowData, currentFileType, fileStatistics);
+						// decompose the blob
+						rowData = jQuery.csv(separator)(rdr.result);
+
+						// parse the data
+						bOk = processCSV(rowData, currentFileType, fileStatistics);
+					}
 
 					// notify about completion of this file (TODO: notify when whole batch is completed!)
 					if (callbackFct !== null)
-						callbackFct("ok", fileStatistics);
+						callbackFct(bOk, fileStatistics);
 				}
 				else {
-					console.log("onFileLoaded: readyState not 'DONE'! (" + rdr.readyState + ")");
+					console.log("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
 				}
 			}
 
-			// this function set all markers  to the map
+			/**
+			 * Parse the array of rows from the file
+			 * @returns true if successful, false on error (i.e. unknown file format)
+			 */
 			function processCSV(rowData, currentFileType, stats) {
 
 				currentAccuracyResult = null;
 
-				var parsingFct;
+				stats.numRows = 0,
+				stats.numResults = 0,
+				stats.numResultsAndCandidates = 0;
+
+				var parsingFct = null;
 				// identify file format (rudimentary by no. columns)
 				var header = rowData[0];
 
@@ -97,7 +111,7 @@ define(
 				else if (currentFileType == FileTypes.ACCURACY &&
 				         header.length == LineLengths.ACCURACY_60) {
 					alert("'Geotagging 1' accuracy results are currently not supported!");
-					return;
+					return false;
 				}
 				else if (currentFileType == FileTypes.AXF &&
 						 (header.length == LineLengths.AXF_60 ||
@@ -105,9 +119,10 @@ define(
 						  header.length == LineLengths.AXF_XT)) {
 					parsingFct = parseAxfRecord;
 				}
-				else {
-					alert("I do not recognize this file format!");
-					return;
+
+				if (!parsingFct) {
+					alert("Could not recognize this file's CSV format!");
+					return false;
 				}
 
 				for (var ct = 1; ct < rowData.length; ct++) {
@@ -117,6 +132,7 @@ define(
 
 				currentAccuracyResult = null; // release
 				sessionList.trigger('add');
+				return true;
 			}
 
 			/* Parses a line from the new (v6.1) file format:
@@ -205,7 +221,7 @@ define(
 				});
 
 				function percent2Decimal(value) {
-					var parsedVal = parseInt(value);
+					var parsedVal = parseInt(value, 10);
 					if (typeof parsedVal === "number")
 						value = parsedVal / 100.0;
 					return value;
@@ -257,8 +273,9 @@ define(
 
 				/**
 				 * Load all files in the array. Supported types are .axf and .distances
-				 * @param files     Array of File objects (e.g. as retrieved from a input[type="file"]).
-				 * @param callback  Callback function to call when done.
+				 * @param {array} files: Array of File objects (e.g. as retrieved from a input[type="file"])
+				 * @param {SessionList} sessions: Session collection
+				 * @param {function} callback: Callback function to call when a file is done
 				 */
 				loadFiles: function(files, sessions, callback) {
 
@@ -280,7 +297,7 @@ define(
 
 					var reader = new FileReader();
 					// If we use onloadend, we need to check the readyState.
-					reader.onloadend = onFileLoaded;
+					reader.onloadend = onFileReadComplete;
 					reader.file = file;
 
 					reader.readAsBinaryString(file);
