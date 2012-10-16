@@ -17,10 +17,16 @@ define(
 				"drop #fileDropZone"         : "dropHandler"
 			},
 
+			/** @type {AppState} model containing shared application state, like selection state or statistics */
 			model: null,
 
+			/** @type {SessionList} session collection containing all result samples */
 			sessions: null,
 
+			/** @type {SiteList} the site collection forming our RAN model */
+			radioNetwork: null,
+
+			/** @type {Settings} model for user controlable settings */
 			settings: null,
 
 			// the counter tracking file loads
@@ -39,6 +45,8 @@ define(
 				// init model
 				this.model = new AppState();
 				this.sessions = new SessionList();
+				this.radioNetwork = new SiteList();
+
 				// listen to changes
 				this.model.on("change:busy", this.busyStateChanged, this);
 				this.sessions.on("all", this.render, this);
@@ -77,6 +85,7 @@ define(
 
 			clearData: function() {
 				this.sessions.reset();
+				this.radioNetwork.reset();
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 			},
@@ -110,7 +119,7 @@ define(
 
 				this.numFilesQueued = files.length;
 				this.model.set("busy", true);
-				FileLoader.loadFiles(files, this.sessions, this.fileLoaded.bind(this));
+				FileLoader.loadFiles(files, this.sessions, this.radioNetwork, this.fileLoaded.bind(this));
 			},
 
 			// Called when all files have been loaded. Triggers marker rendering.

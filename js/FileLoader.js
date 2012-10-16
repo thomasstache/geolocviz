@@ -1,9 +1,9 @@
 define(
 	["underscore",
-	 "collections/sessions", "collections/results",
-	 "models/AccuracyResult", "models/axfresult", "jquery.csv"],
+	 "collections/sessions", "collections/results", "collections/sites",
+	 "models/AccuracyResult", "models/axfresult", "models/site", "jquery.csv"],
 
-	function(_, SessionList, ResultList, AccuracyResult, AxfResult) {
+	function(_, SessionList, ResultList, SiteList, AccuracyResult, AxfResult, Site) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -25,18 +25,27 @@ define(
 				AXF_XT: 14
 			});
 
+			// common Collection.add() options (add silently)
+			var OPT_SILENT = Object.freeze({ silent: true });
+
 			// dummy session ID for records from files that don't provide it.
 			var SESSION_ID_DEFAULT = 0;
 
-			// reference to the Sessions collection
+			/** @type {SessionList} reference to the Sessions collection */
 			var sessionList = null;
+
+			/** @type {SiteList} reference to the Sites collection */
+			var siteList = null;
 
 			var callbackFct = null;
 
 			// reference to the accuracy result while we parse the records with the location candidates
 			var currentAccuracyResult = null;
 
-			// Handler for the loadend event of the FileReader
+			/**
+			 * Handler for the loadend event of the FileReader
+			 * @param  {Event} evt the ProgressEvent
+			 */
 			function onFileReadComplete(evt) {
 				// evt: ProgressEvent, target is the FileReader
 				var rdr = evt.target;
@@ -100,7 +109,10 @@ define(
 
 			/**
 			 * Parse the array of rows from the file
-			 * @returns true if successful, false on error (i.e. unknown file format)
+			 * @param  {Array} rowData          array of row records
+			 * @param  {String} currentFileType see FileTypes
+			 * @param  {Object} stats           statistics object literal
+			 * @return {Boolean} true if successful, false on error (i.e. unknown file format)
 			 */
 			function processCSV(rowData, currentFileType, stats) {
 
@@ -146,7 +158,8 @@ define(
 
 			/**
 			 * Parse the rows of a cellrefs file
-			 * @returns true if successful, false on error (i.e. unknown file format)
+			 * @param {Array} rows Array of row records
+			 * @return {Boolean}   True if successful, false on error (i.e. unknown file format)
 			 */
 			function processCellrefs(rows) {
 
@@ -185,7 +198,8 @@ define(
 				return bOk;
 			}
 
-			/* Parses a line from the new (v6.1) file format:
+			/**
+			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
 			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId
 			 */
@@ -224,7 +238,7 @@ define(
 						sessionId: sessId,
 						latLng: refLatLng
 					});
-					session.results.add(currentAccuracyResult, { silent: true });
+					session.results.add(currentAccuracyResult, OPT_SILENT);
 					stats.numResults++;
 				}
 
@@ -243,13 +257,14 @@ define(
 					confidence: confidence,
 					probMobility: probMobile,
 					probIndoor: probIndoor
-				}, { silent: true });
+				}, OPT_SILENT);
 				stats.numResultsAndCandidates++;
 			}
 
-			/* Parses a line from the new (v6.1) file format:
+			/**
+			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
-			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId
+			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId | Controller | PrimaryCellId
 			 */
 			function parseAxfRecord(record, stats) {
 				//to do: Replace column numbers by link related to col headings
@@ -299,7 +314,7 @@ define(
 				};
 
 				var session = getSession(sessionId);
-				session.results.add(new AxfResult(props), { silent: true });
+				session.results.add(new AxfResult(props), OPT_SILENT);
 				stats.numResults++;
 			}
 
@@ -311,24 +326,132 @@ define(
 					// create missing session
 					sessionList.add({
 						id: sessId
-					}, { silent: true });
+					}, OPT_SILENT);
 
 					session = sessionList.at(sessionList.length - 1);
 				}
 				return session;
 			}
 
+			/**
+			 * Parses a comment line for column format from the Cellref file format:
+			 * Supported Headers:
+			 *  ;ElementTypeName	SiteID	Site_Name	Latitude	Longitude	ElementHandle
+			 *  ;ElementTypeName	GSM_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	State	MSA	EIRP	BCCH	BSIC	MCC	MNC	LAC	CI	Height	Tilt	Antenna_key	AntennaName	TCHList	GSMNeighborList	ElementHandle
+			 *  ;ElementTypeName	WCDMA_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	SC	WCDMA_CI	UARFCN	RNCID	ElementHandle
+			 * @param {Array} record The row items split from the CSV
+			 */
 			function parseCellrefComment(record) {
 				// we could look for the position of the attributes we need: latitude, longitude, azimuth, siteId, sectorId
-				record.length;
+
+				// identify the formatting lines, like ""
+				if (record.length == 1) {
+					// probably a real comment line, ignore
+				}
+				else if (record.length > 1) {
+					var content = record[0].substr(1); // trim ";"
+
+					if (typeof String.prototype.trim == "function") // native trim()
+						content = content.trim();
+					else
+						content = $.trim(content);
+
+					if (content.indexOf("ElementTypeName") === 0) {
+
+						// this is a format line
+
+						var colSiteId = -1,
+							colSiteName = -1,
+							colLat = -1,
+							colLng = -1,
+							colDbid = -1;
+
+						for (var i = 0; i < record.length; i++) {
+							switch (record[i])
+							{
+								case "SiteID":
+									colSiteId = i;
+									break;
+								case "Site_Name":
+									colSiteName = i;
+									break;
+								case "Latitude":
+									colLat = i;
+									break;
+								case "Longitude":
+									colLng = i;
+									break;
+								case "ElementHandle":
+									colDbid = i;
+									break;
+							}
+						}
+
+						console.log("Identified columns: " + colSiteId);
+					}
+				}
 			}
 
+			/**
+			 * Parses a site line from the Cellref file format
+			 * Header:
+			 *  ;ElementTypeName	SiteID	Site_Name	Latitude	Longitude	ElementHandle
+			 *
+			 * @param  {Array} record The row items split from the CSV
+			 * @return {Boolean}      True if successful
+			 */
 			function parseCellrefSiteRecord(record) {
-				;
+
+				// TODO: replace with dynamic map built by parseCellrefComment()
+				var IDX = Object.freeze({
+					ELEMENTTYPE: 0,
+					SITE_ID: 1,
+					SITE_NAME: 2,
+					GEO_LAT: 3,
+					GEO_LON: 4,
+					HANDLE: 5
+				});
+
+				var bOk = true;
+				if (record.length > 1) {
+
+					var siteId = record[IDX.SITE_ID];
+					var tech = Site.TECH_UNKNOWN;
+					var elementType = record[IDX.ELEMENTTYPE];
+					switch (elementType) {
+						case "WCDMA_Site":
+							tech = Site.TECH_UMTS;
+							break;
+						case "GSM_Site":
+							tech = Site.TECH_GSM;
+							break;
+						default:
+							tech = Site.TECH_UNKNOWN;
+					}
+
+					siteList.add({
+						id: siteId,
+						technology: tech,
+						name: record[IDX.SITE_NAME],
+						latLng: new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
+													   parseFloat(record[IDX.GEO_LON]))
+					}, OPT_SILENT);
+				}
+				return bOk;
 			}
 
+			/**
+			 * Parses a sector line from the Cellref file format
+			 * @param  {Array} record The row items split from the CSV
+			 * @return {Boolean}      True if successful
+			 */
 			function parseCellrefSectorRecord(record) {
-				;
+
+				var bOk = true;
+				if (record.length > 1) {
+					;
+				}
+				return bOk;
 			}
 
 			// return the external API
@@ -336,14 +459,18 @@ define(
 
 				/**
 				 * Load all files in the array. Supported types are .axf and .distances
-				 * @param {array} files: Array of File objects (e.g. as retrieved from a input[type="file"])
-				 * @param {SessionList} sessions: Session collection
-				 * @param {function} callback: Callback function to call when a file is done
+				 * @param {Array}       files    Array of File objects (e.g. as retrieved from a input[type="file"])
+				 * @param {SessionList} sessions Session collection
+				 * @param {SiteList}    sites    Site collection
+				 * @param {Function}    callback Callback function to call when a file is done
 				 */
-				loadFiles: function(files, sessions, callback) {
+				loadFiles: function(files, sessions, sites, callback) {
 
 					if (sessions)
 						sessionList = sessions;
+
+					if (sites)
+						siteList = sites;
 
 					if (typeof callback === "function")
 						callbackFct = callback;
@@ -354,7 +481,8 @@ define(
 				},
 
 				/**
-				 * Parse and load a file. Supported types are .axf and .distances
+				 * Parse and load a file. Supported types are *.axf, *.distances and *.txt
+				 * @param {File} file The file to load
 				 */
 				loadFile: function(file) {
 

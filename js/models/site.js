@@ -5,11 +5,6 @@ define(
 
 		var Site = Backbone.Model.extend({
 
-			// known technologies
-			TECH_UNKNOWN: "unknown",
-			TECH_GSM: "gsm",
-			TECH_UMTS: "wcdma",
-
 			defaults: {
 				// SiteID
 				id: -1,
@@ -19,7 +14,7 @@ define(
 				latLng: null,
 				// array of cells
 				cells: null,
-
+				// network system/technology: GSM, WCDMA, LTE...
 				technology: ""
 			},
 
@@ -28,6 +23,12 @@ define(
 					this.set("technology", Site.TECH_UNKNOWN);
 				this.set("cells", []);
 			},
+		},
+		{
+			// known technologies
+			TECH_UNKNOWN: "unknown",
+			TECH_GSM: "gsm",
+			TECH_UMTS: "wcdma",
 		});
 
 		return Site;
