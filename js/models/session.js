@@ -11,6 +11,7 @@ define(
 				id: -1,
 			},
 
+			/** @type {ResultList} collection of results (with base type BaseResult) */
 			results: null,
 
 			initialize: function() {

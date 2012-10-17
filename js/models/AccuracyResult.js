@@ -15,6 +15,7 @@ define(
 				latLng: null,
 			},
 
+			/** @type {LocationCandidateList} collection of LocationCandidates */
 			locationCandidates: null,
 
 			initialize: function() {
