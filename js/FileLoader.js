@@ -436,8 +436,8 @@ define(
 						id: siteId,
 						technology: tech,
 						name: record[IDX.SITE_NAME],
-						latLng: new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
-													   parseFloat(record[IDX.GEO_LON]))
+						latLng: new google.maps.LatLng(parseNumber(record[IDX.GEO_LAT]),
+													   parseNumber(record[IDX.GEO_LON]))
 					}, OPT_SILENT);
 				}
 				return bOk;
@@ -502,6 +502,16 @@ define(
 					}
 				}
 				return bOk;
+			}
+
+			/**
+			 * Helper function to validate and convert numeric values.
+			 */
+			function parseNumber(text) {
+				if (text.indexOf(",") > 0)
+					text = text.replace(",", ".");
+
+				return parseFloat(text);
 			}
 
 			// return the external API
