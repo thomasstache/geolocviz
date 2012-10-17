@@ -9,6 +9,11 @@ define(
 				// if the app is busy/waiting
 				busy: false,
 
+				// if the session list was updated and needs redraw
+				sessionsDirty: false,
+				// if the network was updated and needs redraw
+				radioNetworkDirty: false,
+
 				// the model of the selected/active session
 				selectedSession: null,
 

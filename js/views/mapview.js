@@ -15,6 +15,7 @@ define(
 		});
 
 		var OverlayTypes = Object.freeze({
+			SITE: "siteSymbol",
 			REFERENCEMARKER: "refMarker",
 			GEOLOCMARKER: "geoMarker",
 			AXFMARKER: "axfMarker",
@@ -23,6 +24,12 @@ define(
 			SESSIONVIZ: "sessionViz",
 			SELECTIONVIZ: "selectionViz",
 			DEBUG: "debug"
+		});
+
+		var Z_Index = Object.freeze({
+			HIGHLIGHT: -10, // TS: only negative values really put the highlight under the result markers
+			RESULT: 1,
+			SITE: 100
 		});
 
 		var STYLED_MAPTYPE_ID = "styled_map";
@@ -68,7 +75,8 @@ define(
 			}
 		];
 
-		var AxfMarkerImages = {};
+		// "map" of already created MarkerImages by type
+		var MarkerImages = {};
 
 		/**
 		 * Validate LatLngs. Returns false if one of the coordinates is NaN.
@@ -88,8 +96,11 @@ define(
 			// bounding rectangle around all reference and geolocated markers
 			bounds: null,
 
-			// collection of all map objects
+			/** @type {OverlayList} collection of all map objects */
 			overlays: null,
+
+			/** @type {SiteList} collection of sites */
+			radioNetwork: null,
 
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
@@ -135,18 +146,24 @@ define(
 				// setup Google Maps component
 				this.map = new google.maps.Map(this.el, mapOptions);
 
+				this.bounds = new google.maps.LatLngBounds();
+
 				//Associate the styled map with the MapTypeId and set it to display.
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 				this.map.setMapTypeId(STYLED_MAPTYPE_ID);
 
+				// TODO: 20121017 change to not delete network!
 				this.collection.on("reset", this.deleteAllOverlays, this);
 
 				// a collection to keep our overlays in sight
 				this.overlays = new OverlayList();
 
+				this.radioNetwork = this.options.radioNetwork;
+				this.radioNetwork.on("reset", this.deleteNetworkOverlays, this);
+
 				// listen for settings changes
 				this.appsettings = this.options.settings;
-				this.appsettings.on("change", this.updateOverlays, this);
+				this.appsettings.on("change", this.onSettingsChanged, this);
 
 				this.render();
 			},
@@ -167,11 +184,12 @@ define(
 
 			/**
 			 * Update the visibility of the given marker.
-			 * @param {boolean} bShow
+			 * @param {Marker}  overlay Google Maps Marker or Polyline object
+			 * @param {Boolean} bShow
 			 */
-			showOverlay: function(marker, bShow) {
-				if (marker)
-					marker.setMap(bShow ? this.map : null);
+			showOverlay: function(overlay, bShow) {
+				if (overlay)
+					overlay.setMap(bShow ? this.map : null);
 			},
 
 			/**
@@ -186,6 +204,15 @@ define(
 
 				this.selectedMarkerHighlight = null;
 				this.selectedMarkerHighlightBestLoc = null;
+			},
+
+			/**
+			 * Removes all site/sector overlays from the map.
+			 * @return {void}
+			 */
+			deleteNetworkOverlays: function() {
+
+				this.deleteOverlaysForType(OverlayTypes.SITE);
 			},
 
 			/**
@@ -211,7 +238,7 @@ define(
 			/**
 			 * Update map overlay visibility according to current settings.
 			 */
-			updateOverlays: function(event) {
+			onSettingsChanged: function(event) {
 
 				// make ref to capture in inner function
 				var view = this;
@@ -249,8 +276,44 @@ define(
 			 * Drawing stuff
 			 */
 
+			// Draw the radio network consisting of sites and sectors
+			drawNetwork: function() {
+
+				// only zoom to the whole network if we don't have results displayed
+				var bZoomToNetwork = this.collection.length === 0;
+
+				// capture the "this" scope
+				var view = this;
+				this.radioNetwork.each(function(site) {
+					view.drawSite(site, bZoomToNetwork);
+				});
+
+				if (bZoomToNetwork)
+					this.zoomToBounds();
+			},
+
+			drawSite: function(site, bZoomToNetwork) {
+
+				var latLng = site.get('latLng');
+
+				if (isValidLatLng(latLng)) {
+
+					if (bZoomToNetwork)
+						this.bounds.extend(latLng);
+
+					var marker = new google.maps.Marker({
+						icon: this.getMarkerImage("site"),
+						position: latLng,
+						map: this.map,
+						title: site.get('id'),
+						zIndex: Z_Index.SITE
+					});
+					this.registerOverlay(OverlayTypes.SITE, marker);
+				}
+			},
+
 			// draw all markers for all sessions
-			drawMarkers: function() {
+			drawResultMarkers: function() {
 
 				this.bounds = new google.maps.LatLngBounds();
 				// capture the "this" scope
@@ -376,7 +439,7 @@ define(
 
 				if (type === OverlayTypes.AXFMARKER) {
 
-					icon = this.getAxfMarkerImage(letter);
+					icon = this.getMarkerImage(letter);
 /*					icon = {
 						path: google.maps.SymbolPath.CIRCLE,
 						fillColor: "#" + colorDef.bgcolor,
@@ -436,27 +499,30 @@ define(
 				return marker;
 			},
 
-			getAxfMarkerImage: function(letter) {
+			getMarkerImage: function(code) {
 
-				if (AxfMarkerImages[letter] === undefined) {
+				if (MarkerImages[code] === undefined) {
 
 					var imagePath = null;
-					if (letter =="M") {
+					if (code == "M") {
 						imagePath = 'images/circle_red.png';
 					}
-					else if (letter =="I") {
+					else if (code == "I") {
 						imagePath = 'images/circle_yellow.png';
 					}
-					else if (letter =="S") {
+					else if (code == "S") {
 						imagePath = 'images/circle_orange.png';
 					}
+					else if (code == "site") {
+						imagePath = 'images/site.png';
+					}
 
-					AxfMarkerImages[letter] = new google.maps.MarkerImage(imagePath,
+					MarkerImages[code] = new google.maps.MarkerImage(imagePath,
 																		  new google.maps.Size(10,10),
 																		  new google.maps.Point(0,0),
 																		  new google.maps.Point(5,5));
 				}
-				return AxfMarkerImages[letter];
+				return MarkerImages[code];
 			},
 
 			/**
@@ -554,6 +620,10 @@ define(
 				}
 			},
 
+			/**
+			 * Creates a marker with a circular shape to highlight selections and adds it to the map.
+			 * @return {Marker} reference to the created marker
+			 */
 			createHighlightCircle: function() {
 
 				var marker = new google.maps.Marker({
@@ -567,7 +637,7 @@ define(
 						strokeWeight: 1,
 					},
 					map: this.map,
-					zIndex: -10 // TS: only negative values really put the highlight under the result markers
+					zIndex: Z_Index.HIGHLIGHT
 				});
 				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
 

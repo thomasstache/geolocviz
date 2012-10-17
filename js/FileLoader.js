@@ -56,6 +56,7 @@ define(
 					// the current file should be tucked on the Reader object
 					var filename = rdr.file ? rdr.file.name : "";
 
+					var bOk = false;
 					var fileStatistics = {
 						name: filename
 					};
@@ -72,14 +73,13 @@ define(
 							currentFileType = FileTypes.AXF;
 							break;
 						case "txt":
+							// TODO: 20121017 verify assumption that Cellref files are named cellrefs*.txt!
 							if (filename.substr(0, 8).toLowerCase() === "cellrefs")
 							    currentFileType = FileTypes.CELLREF;
 							break;
 						default:
 							currentFileType = null;
 					}
-
-					var bOk = false;
 
 					if (currentFileType === null) {
 						alert("Could not recognize this file type!");
@@ -194,6 +194,9 @@ define(
 						}
 					}
 				});
+
+				if (siteList)
+					siteList.trigger('add');
 
 				return bOk;
 			}
@@ -402,7 +405,7 @@ define(
 			 */
 			function parseCellrefSiteRecord(record) {
 
-				// TODO: replace with dynamic map built by parseCellrefComment()
+				// TODO: 20121016 replace with dynamic map built by parseCellrefComment()
 				var IDX = Object.freeze({
 					ELEMENTTYPE: 0,
 					SITE_ID: 1,
@@ -420,7 +423,7 @@ define(
 					var elementType = record[IDX.ELEMENTTYPE];
 					switch (elementType) {
 						case "WCDMA_Site":
-							tech = Site.TECH_UMTS;
+							tech = Site.TECH_WCDMA;
 							break;
 						case "GSM_Site":
 							tech = Site.TECH_GSM;
@@ -442,14 +445,61 @@ define(
 
 			/**
 			 * Parses a sector line from the Cellref file format
+			 * Headers:
+			 *  ;ElementTypeName	GSM_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	State	MSA	EIRP	BCCH	BSIC	MCC	MNC	LAC	CI	Height	Tilt	Antenna_key	AntennaName	TCHList	GSMNeighborList	ElementHandle
+			 *  ;ElementTypeName	WCDMA_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	SC	WCDMA_CI	UARFCN	RNCID	ElementHandle
 			 * @param  {Array} record The row items split from the CSV
 			 * @return {Boolean}      True if successful
 			 */
 			function parseCellrefSectorRecord(record) {
 
+				// TODO: 20121017 replace with dynamic map built by parseCellrefComment()
+				var IDX = Object.freeze({
+					ELEMENTTYPE: 0,
+					SITE_ID: 1,
+					SECTOR_ID: 2,
+					AZIMUTH: 3,
+					BEAMWIDTH: 4,
+
+					GSM_BCCH: 8,
+					GSM_BSIC: 9,
+
+					WCDMA_SC: 5,
+					WCDMA_CI: 6,
+					WCDMA_UARFCN: 7,
+				});
+
 				var bOk = true;
 				if (record.length > 1) {
-					;
+
+					var siteId = record[IDX.SITE_ID];
+
+					var site = siteList.get(siteId);
+					if (site) {
+						var sectorId = record[IDX.SECTOR_ID];
+
+						var props = {
+							id: sectorId,
+							azimuth: record[IDX.AZIMUTH],
+							beamwidth: record[IDX.BEAMWIDTH],
+						};
+
+						var elementType = record[IDX.ELEMENTTYPE];
+						if (elementType === "GSM_Cell") {
+							props.bcch = record[IDX.GSM_BCCH];
+							props.bsic = record[IDX.GSM_BSIC];
+						}
+						else if (elementType === "WCDMA_Cell") {
+							props.scramblingCode = record[IDX.WCDMA_SC];
+							props.uarfcn = record[IDX.WCDMA_UARFCN];
+						}
+
+						site.addSector(props, OPT_SILENT);
+					}
+					else {
+						console.log("Sector references unknown site: " + siteId);
+						bOk = false;
+					}
 				}
 				return bOk;
 			}

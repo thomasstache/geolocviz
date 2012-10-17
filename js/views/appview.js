@@ -50,6 +50,8 @@ define(
 				// listen to changes
 				this.model.on("change:busy", this.busyStateChanged, this);
 				this.sessions.on("all", this.render, this);
+				this.sessions.on("add", this.sessionsUpdated, this);
+				this.radioNetwork.on("add", this.networkUpdated, this);
 
 				// setup settings
 				this.settings = new Settings();
@@ -58,6 +60,7 @@ define(
 				// setup map
 				this.mapview = new MapView({
 					collection: this.sessions,
+					radioNetwork: this.radioNetwork,
 					settings: this.settings
 				});
 
@@ -111,13 +114,11 @@ define(
 
 			loadFiles: function(files) {
 
-				this.clearData();
-
 				if (!files.length) {
 					return;
 				}
 
-				this.numFilesQueued = files.length;
+				this.numFilesQueued += files.length;
 				this.model.set("busy", true);
 				FileLoader.loadFiles(files, this.sessions, this.radioNetwork, this.fileLoaded.bind(this));
 			},
@@ -125,8 +126,15 @@ define(
 			// Called when all files have been loaded. Triggers marker rendering.
 			loadComplete: function() {
 				this.model.set("busy", false);
-				// TODO: discern result/cellref file load, only redraw necessary stuff
-				this.mapview.drawMarkers();
+
+				if (this.model.get("sessionsDirty") === true) {
+					this.mapview.drawResultMarkers();
+					this.model.set("sessionsDirty", false);
+				}
+				if (this.model.get("radioNetworkDirty") === true) {
+					this.mapview.drawNetwork();
+					this.model.set("radioNetworkDirty", false);
+				}
 			},
 
 			// Callback for FileLoader
@@ -199,6 +207,16 @@ define(
 				$("#fileForm")[0].reset();
 
 				this.loadFiles(files);
+			},
+
+			// Handler for the "add" event from the sessions collection.
+			sessionsUpdated: function() {
+				this.model.set("sessionsDirty", true);
+			},
+
+			// Handler for the "add" event from the sites collection.
+			networkUpdated: function() {
+				this.model.set("radioNetworkDirty", true);
 			},
 
 			// Handler for "change" event from the session search field.
