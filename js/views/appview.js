@@ -14,6 +14,7 @@ define(
 			events: {
 				"change #fileInput"          : "fileInputChanged",
 				"change #searchSessionInput" : "searchSessionInputChanged",
+				"click #cmdClearData"        : "clearData",
 				"drop #fileDropZone"         : "dropHandler"
 			},
 
@@ -91,6 +92,13 @@ define(
 				this.radioNetwork.reset();
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
+
+				this.clearFileForm();
+			},
+
+			// reset the form to clear old file names
+			clearFileForm: function() {
+				$("#fileForm")[0].reset();
 			},
 
 			// Check for the various File API support.
@@ -204,7 +212,7 @@ define(
 				this.hideDropZone();
 
 				// reset the form to clear old file names
-				$("#fileForm")[0].reset();
+				this.clearFileForm();
 
 				this.loadFiles(files);
 			},

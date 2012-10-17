@@ -69,6 +69,9 @@ html.wait, html.wait * { cursor: wait; }
 #mainToolbar {
 	position: relative;
 }
+#fileForm {
+	display: inline-block;
+}
 #searchSessionInput {
 	position: absolute;
 	top: 0; right: 0;
