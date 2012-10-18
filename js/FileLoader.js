@@ -1,9 +1,9 @@
 define(
 	["underscore",
 	 "collections/sessions", "collections/results", "collections/sites",
-	 "models/AccuracyResult", "models/axfresult", "models/site", "jquery.csv"],
+	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "models/site", "jquery.csv"],
 
-	function(_, SessionList, ResultList, SiteList, AccuracyResult, AxfResult, Site) {
+	function(_, SessionList, ResultList, SiteList, AccuracyResult, AxfResult, LocationCandidate, Site) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -254,13 +254,15 @@ define(
 
 				var distReported = record[IDX.DIST];
 
-				currentAccuracyResult.locationCandidates.add({
-					latLng: geoLatLng,
-					distance: distReported,
-					confidence: confidence,
-					probMobility: probMobile,
-					probIndoor: probIndoor
-				}, OPT_SILENT);
+				currentAccuracyResult.locationCandidates.add(
+					new LocationCandidate({
+						msgId: msgId,
+						latLng: geoLatLng,
+						distance: distReported,
+						confidence: confidence,
+						probMobility: probMobile,
+						probIndoor: probIndoor
+					}), OPT_SILENT);
 				stats.numResultsAndCandidates++;
 			}
 

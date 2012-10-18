@@ -25,6 +25,7 @@ define(
 				return {
 					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
+					msgId: this.get('msgId'),
 					distance: this.get('distance'),
 					confidence: this.get('confidence'),
 					probMobility: this.get('probMobility'),
