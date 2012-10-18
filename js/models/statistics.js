@@ -13,7 +13,12 @@ define(
 				// total number of results ("best candidates" for .distances files)
 				numResults: 0,
 				// total number of results (including candidates)
-				numResultsAndCandidates: 0
+				numResultsAndCandidates: 0,
+
+				// number of loaded sites
+				numSites: 0,
+				// number of loaded sectors
+				numSectors: 0,
 			},
 
 			initialize: function() {
@@ -22,6 +27,7 @@ define(
 
 			addFileStats: function(filestats) {
 				this.get("files").push(filestats);
+
 				// willfully using '!=' to test against undefined and null
 				if (filestats.numRows != null)
 					this.addTo("numRows", filestats.numRows);

@@ -154,6 +154,12 @@ define(
 				var stats = this.model.get("statistics");
 				stats.addFileStats(filestats);
 				stats.set("numSessions", this.sessions.length);
+
+				// count sectors
+				var numSectors = this.radioNetwork.reduce(function(memo, site) { return memo + site.getSectors().length; }, 0);
+				stats.set("numSectors", numSectors);
+				stats.set("numSites", this.radioNetwork.length);
+
 				this.model.trigger("change:statistics");
 
 				this.numFilesQueued--;

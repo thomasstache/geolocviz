@@ -6,6 +6,10 @@
 	{{#if hasCandidates}}
 	<li title="Including location candidates"><span class="label">Total Results:</span> <span class="value">{{numResultsAndCandidates}}</span></li>
 	{{/if}}
+	{{#if hasNetwork}}
+	<li><span class="label">Sites:</span> <span class="value">{{numSites}}</span></li>
+	<li><span class="label">Sectors:</span> <span class="value">{{numSectors}}</span></li>
+	{{/if}}
 	<li><span class="label">Files:</span></li>
 	{{#each files}}
 		<li class="fileitem" title="{{name}}">{{name}}</li>

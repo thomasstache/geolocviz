@@ -80,9 +80,14 @@ define(
 
 				var stats = this.model.get("statistics");
 				var context = stats !== null ? stats.toJSON() : {};
+
+				// add some flags to be used in template
 				if (context.numResultsAndCandidates &&
 					context.numResultsAndCandidates > 0)
 					context.hasCandidates = true;
+
+				if (context.numSites && context.numSites > 0)
+					context.hasNetwork = true;
 
 				$("#statistics").html(statisticsTemplate(context));
 				return this;
