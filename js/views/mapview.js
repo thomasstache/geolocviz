@@ -296,6 +296,16 @@ define(
 
 				var latLng = site.get('latLng');
 
+				// helper function to collect and format tooltip data
+				function makeTooltip(site) {
+
+					var lines = site.getSectors().map(function(sector){
+						return sector.getTooltipText();
+					});
+					lines.unshift(site.get('id'));
+					return lines.join("\n");
+				}
+
 				if (isValidLatLng(latLng)) {
 
 					if (bZoomToNetwork)
@@ -305,7 +315,7 @@ define(
 						icon: this.getMarkerImage("site"),
 						position: latLng,
 						map: this.map,
-						title: site.get('id'),
+						title: makeTooltip(site),
 						zIndex: Z_Index.SITE
 					});
 					this.registerOverlay(OverlayTypes.SITE, marker);
