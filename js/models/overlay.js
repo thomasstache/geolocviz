@@ -8,6 +8,8 @@ define(
 			defaults: {
 				// marker type
 				type: "",
+				// marker category
+				category: "",
 				// reference to the GoogleMaps object
 				ref: null,
 			},

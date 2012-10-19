@@ -65,7 +65,7 @@ define(
 					settings: this.settings
 				});
 
-				this.legendview = new LegendView({ colors: this.mapview.colors() });
+				this.legendview = new LegendView({ settings: this.settings, colors: this.mapview.colors() });
 				this.sessioninfoview = new InfoView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);

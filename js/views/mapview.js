@@ -6,12 +6,12 @@ define(
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
-			REFERENCE:	{ bgcolor: "0000FF", color: "FFFFFF", smb: "R", category: "Reference Marker" }, // blue
-			GEOLOCATED: { bgcolor: "FF0000", color: "FFFFFF", smb: "M", category: "Mobile" }, // red
-			STATIONARY: { bgcolor: "FF9900", color: "000000", smb: "S", category: "Stationary" }, // orange
-			INDOOR:		{ bgcolor: "FBEC5D", color: "000000", smb: "I", category: "Indoor" }, // yellow
-			CANDIDATE:	{ bgcolor: "CCFFFF", color: "000000", smb: "C", category: "Location Candidate" }, // skyblue
-			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", category: "Home" },*/
+			REFERENCE:	{ bgcolor: "0000FF", color: "FFFFFF", smb: "R", label: "Reference Marker" }, // blue
+			GEOLOCATED: { bgcolor: "FF0000", color: "FFFFFF", smb: "M", label: "Mobile" }, // red
+			STATIONARY: { bgcolor: "FF9900", color: "000000", smb: "S", label: "Stationary" }, // orange
+			INDOOR:		{ bgcolor: "FBEC5D", color: "000000", smb: "I", label: "Indoor" }, // yellow
+			CANDIDATE:	{ bgcolor: "CCFFFF", color: "000000", smb: "C", label: "Location Candidate" }, // skyblue
+			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", label: "Home" },*/
 		});
 
 		var OverlayTypes = Object.freeze({
@@ -193,6 +193,54 @@ define(
 			},
 
 			/**
+			 * Update the visibility of all overlays registered under the given type.
+			 * @param {OverlayTypes} type overlay type
+			 * @param {Boolean} bShow     true to show, false to hide
+			 */
+			showOverlaysForType: function(type, bShow) {
+
+				// make ref to capture in inner function
+				var view = this;
+
+				var overlays = this.overlays.byType(type);
+				_.each(
+					overlays,
+					function(overlay) {
+						var marker = overlay.get("ref");
+						view.showOverlay(marker, bShow);
+					}
+				);
+			},
+
+			/**
+			 * Update visibility of results markers with the given MarkerColor
+			 * @param {MarkerColors} colorDef defines the category
+			 * @param {Boolean} bShow         true to show, false to hide
+			 */
+			showMarkersForCategory: function(colorDef, bShow) {
+
+				var view = this;
+
+				// get all geoloc + axf markers
+				var overlays = this.overlays.filter(
+					function flt(overlay) {
+						var type = overlay.get('type');
+						return (type === OverlayTypes.GEOLOCMARKER ||
+								type === OverlayTypes.AXFMARKER) &&
+								overlay.get('category') === colorDef.smb;
+					}
+				);
+
+				_.each(
+					overlays,
+					function(overlay) {
+						var marker = overlay.get("ref");
+						view.showOverlay(marker, bShow);
+					}
+				);
+			},
+
+			/**
 			 * Removes all overlays from the map and destroys them.
 			 */
 			deleteAllOverlays: function() {
@@ -228,9 +276,10 @@ define(
 			/**
 			 * Store a reference to the maps overlay object by type.
 			 */
-			registerOverlay: function(type, overlay) {
+			registerOverlay: function(type, overlay, category) {
 				this.overlays.add({
 					type: type,
+					category: category,
 					ref: overlay
 				}, { silent: true });
 			},
@@ -240,31 +289,32 @@ define(
 			 */
 			onSettingsChanged: function(event) {
 
-				// make ref to capture in inner function
-				var view = this;
-
 				if (event.changed.drawReferenceLines !== undefined) {
 					// show or hide reference lines
-					var lineOverlays = this.overlays.byType(OverlayTypes.REFERENCELINE);
-					_.each(
-						lineOverlays,
-						function(overlay) {
-							var marker = overlay.get("ref");
-							view.showOverlay(marker, event.changed.drawReferenceLines);
-						}
-					);
+					this.showOverlaysForType(OverlayTypes.REFERENCELINE, event.changed.drawReferenceLines);
 				}
 
 				if (event.changed.drawSessionLines !== undefined) {
 					// show or hide session lines
-					var sessionOverlays = this.overlays.byType(OverlayTypes.SESSIONVIZ);
-					_.each(
-						sessionOverlays,
-						function(overlay) {
-							var marker = overlay.get("ref");
-							view.showOverlay(marker, event.changed.drawSessionLines);
-						}
-					);
+					this.showOverlaysForType(OverlayTypes.SESSIONVIZ, event.changed.drawSessionLines);
+				}
+
+				if (event.changed.drawMarkers_R !== undefined) {
+					this.showOverlaysForType(OverlayTypes.REFERENCEMARKER, event.changed.drawMarkers_R);
+				}
+				if (event.changed.drawMarkers_C !== undefined) {
+					this.showOverlaysForType(OverlayTypes.CANDIDATEMARKER, event.changed.drawMarkers_C);
+				}
+
+				// mobile/stationary/indoor are "categories" of AXF/GEOLOCMARKER markers
+				if (event.changed.drawMarkers_M !== undefined) {
+					this.showMarkersForCategory(MarkerColors.GEOLOCATED, event.changed.drawMarkers_M);
+				}
+				if (event.changed.drawMarkers_S !== undefined) {
+					this.showMarkersForCategory(MarkerColors.STATIONARY, event.changed.drawMarkers_S);
+				}
+				if (event.changed.drawMarkers_I !== undefined) {
+					this.showMarkersForCategory(MarkerColors.INDOOR, event.changed.drawMarkers_I);
 				}
 			},
 
@@ -488,7 +538,8 @@ define(
 
 				// register the marker
 				if (type !== undefined) {
-					this.registerOverlay(type, marker);
+					// use the symbol as a category
+					this.registerOverlay(type, marker, colorDef.smb);
 					md.type = type;
 				}
 
