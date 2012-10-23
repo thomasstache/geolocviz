@@ -70,6 +70,7 @@ define(
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
+				this.mapview.on("site:selected", this.siteSelected, this);
 
 				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
 				this.sessioninfoview.on("session:unfocussed", this.sessionUnfocussed, this);
@@ -277,6 +278,12 @@ define(
 
 				this.model.set("focussedSessionId", -1);
 				this.mapview.zoomToBounds();
+			},
+
+			// Handler for the "site:selected" event from the mapview.
+			siteSelected: function(site) {
+
+				this.model.set("selectedSite", site);
 			},
 
 			// Handler for "result:nav-first" event.

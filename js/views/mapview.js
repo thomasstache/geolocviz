@@ -342,8 +342,15 @@ define(
 					this.zoomToBounds();
 			},
 
+			/**
+			 * Creates a marker for a site and adds it to the map.
+			 * @param  {Site}    site           model for the site
+			 * @param  {Boolean} bZoomToNetwork controls whether the current bounds should be updated
+			 * @return {void}
+			 */
 			drawSite: function(site, bZoomToNetwork) {
 
+				var view = this;
 				var latLng = site.get('latLng');
 
 				// helper function to collect and format tooltip data
@@ -368,7 +375,18 @@ define(
 						title: makeTooltip(site),
 						zIndex: Z_Index.SITE
 					});
+					marker.metaData = {
+						model: site
+					};
 					this.registerOverlay(OverlayTypes.SITE, marker);
+
+					// click event to the for the marker
+					google.maps.event.addListener(marker, 'click',
+						function() {
+							// in here "this" is bound to the marker
+							view.onSiteClick(this);
+						}
+					);
 				}
 			},
 
@@ -722,6 +740,19 @@ define(
 				});
 
 				this.registerOverlay(OverlayTypes.DEBUG, rect);
+			},
+
+			/**
+			 * Handler for clicks on map markers.
+			 */
+			onSiteClick: function(siteMarker) {
+
+				if (siteMarker && siteMarker.metaData) {
+
+					var md = siteMarker.metaData;
+					if (md.model)
+						this.trigger("site:selected", md.model);
+				}
 			},
 
 			/**

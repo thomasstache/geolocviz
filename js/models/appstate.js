@@ -20,6 +20,9 @@ define(
 				// the model of the selected result/sample
 				selectedResult: null,
 
+				// the model of the selected site
+				selectedSite: null,
+
 				// id of the last focussed session
 				focussedSessionId: -1,
 
