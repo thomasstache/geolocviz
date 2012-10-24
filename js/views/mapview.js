@@ -146,7 +146,7 @@ define(
 				// setup Google Maps component
 				this.map = new google.maps.Map(this.el, mapOptions);
 
-				this.bounds = new google.maps.LatLngBounds();
+				this.resetBounds();
 
 				//Associate the styled map with the MapTypeId and set it to display.
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
@@ -168,6 +168,16 @@ define(
 				this.render();
 			},
 
+			/**
+			 * Resets the view bounds rectangle
+			 */
+			resetBounds: function() {
+				this.bounds = new google.maps.LatLngBounds();
+			},
+
+			/**
+			 * Adjusts the viewport center and zoom to fit the currently collected bounds rectangle.
+			 */
 			zoomToBounds: function() {
 
 				if (!this.bounds.isEmpty())
@@ -246,6 +256,7 @@ define(
 			deleteAllOverlays: function() {
 
 				this.overlays.removeAll();
+				this.resetBounds();
 
 				this.highlightedSessionId = -1;
 				this.highlightedCandidateSampleCid = -1;
@@ -393,7 +404,7 @@ define(
 			// draw all markers for all sessions
 			drawResultMarkers: function() {
 
-				this.bounds = new google.maps.LatLngBounds();
+				this.resetBounds();
 				// capture the "this" scope
 				var view = this;
 				this.collection.each(function(session) {
