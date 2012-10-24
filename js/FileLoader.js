@@ -392,7 +392,7 @@ define(
 							}
 						}
 
-						console.log("Identified columns: " + colSiteId);
+						//console.log("Identified columns: " + colSiteId);
 					}
 				}
 			}
