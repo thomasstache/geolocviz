@@ -1,8 +1,9 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/sessioninfo", "hbs!../../templates/resultinfo", "hbs!../../templates/statisticsinfo"],
+	 "hbs!../../templates/sessioninfo", "hbs!../../templates/resultinfo",
+	 "hbs!../../templates/statisticsinfo", "hbs!../../templates/siteinfo"],
 
-	function($, _, Backbone, sessionTemplate, resultTemplate, statisticsTemplate) {
+	function($, _, Backbone, sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		var InfoView = Backbone.View.extend({
 			el: $("#infoView"),
@@ -20,6 +21,7 @@ define(
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
 				this.model.on("change:selectedResult", this.onResultChanged, this);
+				this.model.on("change:selectedSite", this.onSiteChanged, this);
 				this.model.on("change:statistics", this.onStatisticsChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 
@@ -47,6 +49,11 @@ define(
 				this.renderResultInfo();
 			},
 
+			onSiteChanged: function() {
+
+				this.renderSiteInfo();
+			},
+
 			onStatisticsChanged: function() {
 				this.renderStatistics();
 			},
@@ -56,6 +63,7 @@ define(
 
 				this.renderSessionInfo();
 				this.renderResultInfo();
+				this.renderSiteInfo();
 				this.renderStatistics();
 				return this;
 			},
@@ -72,6 +80,15 @@ define(
 
 				var result = this.model.get("selectedResult");
 				$("#resultInfo").html(resultTemplate(result !== null ? result.getInfo() : {}));
+				return this;
+			},
+
+			// Render the site template
+			renderSiteInfo: function() {
+
+				var site = this.model.get("selectedSite");
+				var context = site !== null ? site.getInfo() : {};
+				$("#siteInfo").html(siteTemplate(context));
 				return this;
 			},
 

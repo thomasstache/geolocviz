@@ -26,6 +26,12 @@ define(
 				this.set("sectors", new SectorList());
 			},
 
+			getInfo: function() {
+				var info = this.toJSON();
+				info.sectors = this.getSectors().map(function(sector){ return sector.toJSON();});
+				return info;
+			},
+
 			/**
 			 * Add a sector to the site
 			 * @param {Sector} sector the new sector (can also be an attribute hash, will be passed to Backbone.Collection.add().)
