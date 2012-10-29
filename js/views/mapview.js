@@ -106,6 +106,9 @@ define(
 			selectedMarkerHighlight: null,
 			selectedMarkerHighlightBestLoc: null,
 
+			/** @type {Marker} reference to the selected site marker */
+			selectedSiteMarker: null,
+
 			// id of the currently highlighted session (see drawSessionLines())
 			highlightedSessionId: -1,
 
@@ -286,6 +289,9 @@ define(
 
 			/**
 			 * Store a reference to the maps overlay object by type.
+			 * @param {OverlayTypes} type The type of the overlay
+			 * @param {Overlay} overlay   The GoogleMaps overlay object. One of {Marker/Line/Polyline}
+			 * @param {String} category   (optional) for results we can store the category for filtering.
 			 */
 			registerOverlay: function(type, overlay, category) {
 				this.overlays.add({
@@ -551,7 +557,8 @@ define(
 						position: latlng,
 						map: this.map,
 						icon: icon,
-						title: label
+						title: label,
+						zIndex: Z_Index.RESULT
 					}
 				);
 
@@ -594,6 +601,11 @@ define(
 				if (MarkerImages[code] === undefined) {
 
 					var imagePath = null;
+					var geometry = {
+						size: new google.maps.Size(10,10),
+						origin: new google.maps.Point(0,0),
+						anchor: new google.maps.Point(5,5)
+					};
 					if (code == "M") {
 						imagePath = 'images/circle_red.png';
 					}
@@ -605,12 +617,17 @@ define(
 					}
 					else if (code == "site") {
 						imagePath = 'images/site.png';
+						geometry.size = new google.maps.Size(9,9);
+						geometry.anchor = new google.maps.Point(4,4);
+					}
+					else if (code == "siteSelected") {
+						imagePath = 'images/siteSelectedBig.png';
+						geometry.size = new google.maps.Size(13,13);
+						geometry.anchor = new google.maps.Point(6,6);
 					}
 
 					MarkerImages[code] = new google.maps.MarkerImage(imagePath,
-																		  new google.maps.Size(10,10),
-																		  new google.maps.Point(0,0),
-																		  new google.maps.Point(5,5));
+																	 geometry.size, geometry.origin, geometry.anchor);
 				}
 				return MarkerImages[code];
 			},
@@ -763,6 +780,15 @@ define(
 					var md = siteMarker.metaData;
 					if (md.model)
 						this.trigger("site:selected", md.model);
+
+					// is there a highlighted site?
+					if (this.selectedSiteMarker) {
+						// reset marker image
+						this.selectedSiteMarker.setIcon(this.getMarkerImage("site"));
+					}
+
+					siteMarker.setIcon(this.getMarkerImage("siteSelected"));
+					this.selectedSiteMarker = siteMarker;
 				}
 			},
 
