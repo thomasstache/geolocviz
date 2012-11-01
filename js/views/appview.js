@@ -247,8 +247,20 @@ define(
 					this.sessionSelected(null);
 					this.sessionUnfocussed();
 				}
+				// check if it's a site/sector
+				var site = this.radioNetwork.get(searchText);
+				if (site) {
+					this.siteSelected(site);
+				}
+				else {
+					this.siteSelected(null);
+				}
+
 				this.resultSelected(null);
 			},
+
+
+			/*********************** Selection Handling ***********************/
 
 			// Handler for "session:selected" event. Update the info display.
 			sessionSelected: function(session) {
@@ -285,6 +297,9 @@ define(
 
 				this.model.set("selectedSite", site);
 			},
+
+
+			/*********************** Result Navigation ***********************/
 
 			// Handler for "result:nav-first" event.
 			resultsNavigateToFirst: function(result) {
