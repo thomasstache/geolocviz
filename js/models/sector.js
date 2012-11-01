@@ -13,6 +13,11 @@ define(
 				// antenna beamwidth
 				beamwidth: 0.0,
 
+				// cell identity, (WCDMA: "WCDMA_CI", GSM: "CI")
+				cellIdentity: null,
+				// controller ID (WCDMA: "RNCID", GSM: ???)
+				controllerId: null,
+
 				// GSM sector attributes
 				bcch: -1,
 				bsic: -1,

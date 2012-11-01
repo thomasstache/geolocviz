@@ -467,10 +467,12 @@ define(
 
 					GSM_BCCH: 8,
 					GSM_BSIC: 9,
+					GSM_CI: 13,
 
 					WCDMA_SC: 5,
 					WCDMA_CI: 6,
 					WCDMA_UARFCN: 7,
+					WCDMA_RNCID: 8,
 				});
 
 				var bOk = true;
@@ -492,10 +494,14 @@ define(
 						if (elementType === "GSM_Cell") {
 							props.bcch = record[IDX.GSM_BCCH];
 							props.bsic = record[IDX.GSM_BSIC];
+							props.cellIdentity = record[IDX.GSM_CI];
 						}
 						else if (elementType === "WCDMA_Cell") {
 							props.scramblingCode = record[IDX.WCDMA_SC];
 							props.uarfcn = record[IDX.WCDMA_UARFCN];
+
+							props.cellIdentity = record[IDX.WCDMA_CI];
+							props.controllerId = record[IDX.WCDMA_RNCID];
 						}
 
 						site.addSector(props, OPT_SILENT);
