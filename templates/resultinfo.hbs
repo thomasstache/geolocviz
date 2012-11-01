@@ -1,7 +1,14 @@
 {{#if num}}
 <h3 class="etched">Selected Result</h3>
 <ul class="propertyList">
-	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span> <span class="value">{{num}}/{{resultCount}} {{#if msgId}}(#{{msgId}}){{/if}}</span></li>
+	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span> <span class="value">{{num}}/{{resultCount}}</span>
+		{{#if msgId}}&nbsp;<span class="label">Msg:</span> <span class="value">#{{msgId}}</span>{{/if}}
+	</li>
+	{{#if primaryCellId}}
+	<li><span class="label">Sector:</span> <span class="value">{{primaryCellId}}</span>
+		<span class="label">RNC:</span> <span class="value">{{controllerId}}</span>
+	</li>
+	{{/if}}
 	{{#if distance}}
 	<li><span class="label">Distance:</span> <span class="value">{{distance}}m</span></li>
 	{{/if}}

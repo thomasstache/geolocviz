@@ -21,8 +21,13 @@ define(
 				// indoor probability as decimal
 				probIndoor: 0.0,
 
-				// id of the serving cell
-				primaryCellId: -1,
+				// id of the controller (WCDMA RNC)
+				// (optional) only available in extended .axf files
+				controllerId: null,
+				// id of the serving cell (corresponds to "CI" or "WCDMA_CI")
+				// (optional) only available in extended .axf files
+				primaryCellId: null,
+
 				// time offset
 				timestamp: 0,
 			},
@@ -40,6 +45,8 @@ define(
 					confidence: this.get('confidence'),
 					probMobility: this.get('probMobility'),
 					probIndoor: this.get('probIndoor'),
+					controllerId: this.get('controllerId'),
+					primaryCellId: this.get('primaryCellId'),
 				};
 			}
 		});

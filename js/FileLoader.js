@@ -302,7 +302,8 @@ define(
 
 				// session id and primary cell only in extended (XT) files
 				var sessionId     = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID] : SESSION_ID_DEFAULT;
-				var primaryCellId = (record.length == LineLengths.AXF_XT) ? record[IDX.CELL_ID] : -1;
+				var controllerId  = (record.length == LineLengths.AXF_XT) ? record[IDX.CONTROLLER] : NaN;
+				var primaryCellId = (record.length == LineLengths.AXF_XT) ? record[IDX.CELL_ID] : NaN;
 
 				var geoLatLng = new google.maps.LatLng(parseFloat(record[IDX.GEO_LAT]),
 													   parseFloat(record[IDX.GEO_LON]));
@@ -315,6 +316,7 @@ define(
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
 					probIndoor: percent2Decimal(probIndoor),
+					controllerId: controllerId,
 					primaryCellId: primaryCellId
 				};
 
