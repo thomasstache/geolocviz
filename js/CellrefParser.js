@@ -13,6 +13,42 @@ define(
 			// common Collection.add() options (add silently)
 			var OPT_SILENT = Object.freeze({ silent: true });
 
+			var SITE_FIELDS = Object.freeze({
+				"SiteID": true,
+				"Site_Name": true,
+				"Latitude": true,
+				"Longitude": true,
+			});
+
+			var SECTOR_FIELDS_GSM = Object.freeze({
+				"GSM_SiteIDForCell": true,
+				"Sector_ID": true,
+				"Azimuth": true,
+				"Beamwidth": true,
+				"CI": true,
+				"LAC": true,
+				"BCCH": true,
+				"BSIC": true,
+			});
+
+			var SECTOR_FIELDS_WCDMA = Object.freeze({
+				"WCDMA_SiteIDForCell": true,
+				"Sector_ID": true,
+				"Azimuth": true,
+				"Beamwidth": true,
+				"WCDMA_CI": true,
+				"RNCID": true,
+				"SC": true,
+			});
+
+			// TODO: 20121106 TBD!!!
+			var SECTOR_FIELDS_LTE = Object.freeze({
+				//"LTE_SiteIDForCell": true,
+			});
+
+			/** @type {Object} map of attributes to column indices in the current "format block" */
+			var attributeColumnIndex = {};
+
 			/** @type {SiteList} reference to the Sites collection */
 			var siteList = null;
 
@@ -77,45 +113,83 @@ define(
 					// probably a real comment line, ignore
 				}
 				else if (record.length > 1) {
-					var content = record[0].substr(1); // trim ";"
 
-					if (typeof String.prototype.trim == "function") // native trim()
-						content = content.trim();
-					else
-						content = $.trim(content);
+					var firstField = record[0].substr(1); // trim leading ";"
+					firstField = trimString(firstField);
 
-					if (content.indexOf("ElementTypeName") === 0) {
+					if (firstField.indexOf("ElementTypeName") === 0) {
 
 						// this is a format line
 
-						var colSiteId = -1,
-							colSiteName = -1,
-							colLat = -1,
-							colLng = -1,
-							colDbid = -1;
+						// reset our column index
+						attributeColumnIndex = {};
+						// always need the ElementTypeName
+						attributeColumnIndex[firstField] = 0;
+
+						// emulate a set using object literal, so we can do
+						//   if (key in set)...
+						var requiredFields = {};
+
+						// just for logging purposes
+						var mode = "";
+
+						// site or sector? which technology? Check field name in 2nd column:
+						// sites:
+						//   SiteID
+						// sectors:
+						//   GSM_SiteIDForCell
+						//   WCDMA_SiteIDForCell
+						//   CDMA_SiteIDForCell
+						//   CDMA1xEVDO_SiteIDForCell
+						//   LTE_SiteIDForCell
+
+						var secondField = trimString(record[1]);
+						switch (secondField) {
+
+							// site attribute columns
+							case "SiteID":
+								// required attributes: "SiteID", "Site_Name", "Latitude", "Longitude"
+								requiredFields = SITE_FIELDS;
+								mode = "sites";
+								break;
+
+							// GSM sector attributes
+							case "GSM_SiteIDForCell":
+								// required attributes: "SiteIDForCell", "Sector_ID", "Azimuth", "Beamwidth" , "CI", "LAC", "BCCH", "BSIC"
+								requiredFields = SECTOR_FIELDS_GSM;
+								mode = "GSM sectors";
+								break;
+
+							// UMTS sector attributes
+							case "WCDMA_SiteIDForCell":
+								// required attributes: "SiteIDForCell", "Sector_ID", "Azimuth", "Beamwidth" , "WCDMA_CI", "RNCID", "SC"
+								requiredFields = SECTOR_FIELDS_WCDMA;
+								mode = "WCDMA sectors";
+								break;
+
+							case "LTE_SiteIDForCell":
+								requiredFields = SECTOR_FIELDS_LTE;
+								mode = "LTE sectors";
+								break;
+						}
 
 						for (var i = 0; i < record.length; i++) {
-							switch (record[i])
-							{
-								case "SiteID":
-									colSiteId = i;
-									break;
-								case "Site_Name":
-									colSiteName = i;
-									break;
-								case "Latitude":
-									colLat = i;
-									break;
-								case "Longitude":
-									colLng = i;
-									break;
-								case "ElementHandle":
-									colDbid = i;
-									break;
+
+							var field = trimString(record[i]);
+
+							if (field in requiredFields) {
+								// override key for site reference to be the same for all technologies
+								if (field === secondField)
+									field = "SiteIDForCell";
+								attributeColumnIndex[field] = i;
 							}
 						}
 
-						//console.log("Identified columns: " + colSiteId);
+						if (_.keys(attributeColumnIndex).length > 1) {
+							//console.log("%c Identified columns (" + mode + "):", "background-color: #BFE3E2;"); // with color for new Chrome Devtools
+							console.log("Identified columns (" + mode + "):");
+							console.log(attributeColumnIndex);
+						}
 					}
 				}
 			}
@@ -243,6 +317,22 @@ define(
 					text = text.replace(",", ".");
 
 				return parseFloat(text);
+			}
+
+			/**
+			 * Helper function to trim strings.
+			 * @param  {String} text
+			 * @return {String}
+			 */
+			function trimString(text) {
+
+				var rv;
+				if (typeof String.prototype.trim == "function") // native trim()
+					rv = text.trim();
+				else
+					rv = $.trim(text);
+
+				return rv;
 			}
 
 			// return the external API
