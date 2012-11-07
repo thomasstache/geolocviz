@@ -15,8 +15,8 @@ define(
 
 				// cell identity, (WCDMA: "WCDMA_CI", GSM: "CI")
 				cellIdentity: null,
-				// controller ID (WCDMA: "RNCID", GSM: ???)
-				controllerId: null,
+				// "network segment" in which the cellIdentity is valid (WCDMA: "RNCID", GSM: "LAC")
+				netSegment: null,
 
 				// GSM sector attributes
 				bcch: -1,

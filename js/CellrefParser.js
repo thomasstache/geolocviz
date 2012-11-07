@@ -13,6 +13,38 @@ define(
 			// common Collection.add() options (add silently)
 			var OPT_SILENT = Object.freeze({ silent: true });
 
+			//////////////////////////////////////////////////////////////////////////
+			// Definition of required fields for the various element types:
+
+			// definition of site attribute keys
+			var SiteAttributes = Object.freeze({
+				ELEMENTTYPE: "ElementTypeName",
+				SITE_ID: "SiteID",
+				SITE_NAME: "Site_Name",
+				GEO_LAT: "Latitude",
+				GEO_LON: "Longitude",
+			});
+
+			// definition of sector attribute keys
+			var SectorAttributes = Object.freeze({
+				ELEMENTTYPE: "ElementTypeName",
+				// internal normalized tech-independent version:
+				SITE_ID: "SiteIDForCell",
+				SECTOR_ID: "Sector_ID",
+				AZIMUTH: "Azimuth",
+				BEAMWIDTH: "Beamwidth",
+				LAC: "LAC",
+
+				GSM_BCCH: "BCCH",
+				GSM_BSIC: "BSIC",
+				GSM_CI: "CI",
+
+				WCDMA_SC: "SC",
+				WCDMA_CI: "WCDMA_CI",
+				WCDMA_UARFCN: "UARFCN",
+				WCDMA_RNCID: "RNCID",
+			});
+
 			var SITE_FIELDS = Object.freeze({
 				"SiteID": true,
 				"Site_Name": true,
@@ -20,6 +52,7 @@ define(
 				"Longitude": true,
 			});
 
+			// "set" of sector fields applying to GSM (strings as they appear in the cellref files)
 			var SECTOR_FIELDS_GSM = Object.freeze({
 				"GSM_SiteIDForCell": true,
 				"Sector_ID": true,
@@ -31,20 +64,26 @@ define(
 				"BSIC": true,
 			});
 
+			// "set" of sector fields applying to WCDMA (strings as they appear in the cellref files)
 			var SECTOR_FIELDS_WCDMA = Object.freeze({
 				"WCDMA_SiteIDForCell": true,
 				"Sector_ID": true,
 				"Azimuth": true,
 				"Beamwidth": true,
+				"LAC": true,
 				"WCDMA_CI": true,
 				"RNCID": true,
+				"UARFCN": true,
 				"SC": true,
 			});
 
+			// "set" of sector fields applying to LTE (strings as they appear in the cellref files)
 			// TODO: 20121106 TBD!!!
 			var SECTOR_FIELDS_LTE = Object.freeze({
 				//"LTE_SiteIDForCell": true,
 			});
+
+			//////////////////////////////////////////////////////////////////////////
 
 			/** @type {Object} map of attributes to column indices in the current "format block" */
 			var attributeColumnIndex = {};
@@ -98,17 +137,12 @@ define(
 			}
 
 			/**
-			 * Parses a comment line for column format from the Cellref file format:
-			 * Supported Headers:
-			 *  ;ElementTypeName	SiteID	Site_Name	Latitude	Longitude	ElementHandle
-			 *  ;ElementTypeName	GSM_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	State	MSA	EIRP	BCCH	BSIC	MCC	MNC	LAC	CI	Height	Tilt	Antenna_key	AntennaName	TCHList	GSMNeighborList	ElementHandle
-			 *  ;ElementTypeName	WCDMA_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	SC	WCDMA_CI	UARFCN	RNCID	ElementHandle
+			 * Parses a comment line to determine the column indices from the Cellref file format.
 			 * @param {Array} record The row items split from the CSV
 			 */
 			function parseCellrefComment(record) {
-				// we could look for the position of the attributes we need: latitude, longitude, azimuth, siteId, sectorId
 
-				// identify the formatting lines, like ""
+				// identify the formatting lines, like ";ElementTypeName	SiteID	..."
 				if (record.length == 1) {
 					// probably a real comment line, ignore
 				}
@@ -178,9 +212,9 @@ define(
 							var field = trimString(record[i]);
 
 							if (field in requiredFields) {
-								// override key for site reference to be the same for all technologies
-								if (field === secondField)
-									field = "SiteIDForCell";
+								// override key for sectors' site reference to be the same for all technologies
+								if (mode !== "sites" && field === secondField)
+									field = SectorAttributes.SITE_ID;
 								attributeColumnIndex[field] = i;
 							}
 						}
@@ -196,30 +230,16 @@ define(
 
 			/**
 			 * Parses a site line from the Cellref file format
-			 * Header:
-			 *  ;ElementTypeName	SiteID	Site_Name	Latitude	Longitude	ElementHandle
-			 *
 			 * @param  {Array} record The row items split from the CSV
 			 * @return {Boolean}      True if successful
 			 */
 			function parseCellrefSiteRecord(record) {
 
-				// TODO: 20121016 replace with dynamic map built by parseCellrefComment()
-				var IDX = Object.freeze({
-					ELEMENTTYPE: 0,
-					SITE_ID: 1,
-					SITE_NAME: 2,
-					GEO_LAT: 3,
-					GEO_LON: 4,
-					HANDLE: 5
-				});
-
 				var bOk = true;
 				if (record.length > 1) {
 
-					var siteId = record[IDX.SITE_ID];
 					var tech = Site.TECH_UNKNOWN;
-					var elementType = record[IDX.ELEMENTTYPE];
+					var elementType = getAttr(record, SiteAttributes.ELEMENTTYPE);
 					switch (elementType) {
 						case "WCDMA_Site":
 							tech = Site.TECH_WCDMA;
@@ -232,11 +252,11 @@ define(
 					}
 
 					siteList.add({
-						id: siteId,
+						id: getAttr(record, SiteAttributes.SITE_ID),
 						technology: tech,
-						name: record[IDX.SITE_NAME],
-						latLng: new google.maps.LatLng(parseNumber(record[IDX.GEO_LAT]),
-													   parseNumber(record[IDX.GEO_LON]))
+						name: getAttr(record, SiteAttributes.SITE_NAME),
+						latLng: new google.maps.LatLng(parseNumber(getAttr(record, SiteAttributes.GEO_LAT)),
+													   parseNumber(getAttr(record, SiteAttributes.GEO_LON)))
 					}, OPT_SILENT);
 				}
 				return bOk;
@@ -244,69 +264,76 @@ define(
 
 			/**
 			 * Parses a sector line from the Cellref file format
-			 * Headers:
-			 *  ;ElementTypeName	GSM_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	State	MSA	EIRP	BCCH	BSIC	MCC	MNC	LAC	CI	Height	Tilt	Antenna_key	AntennaName	TCHList	GSMNeighborList	ElementHandle
-			 *  ;ElementTypeName	WCDMA_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	SC	WCDMA_CI	UARFCN	RNCID	ElementHandle
 			 * @param  {Array} record The row items split from the CSV
-			 * @return {Boolean}      True if successful
+			 * @return {Boolean}      True if successful, false if e.g. site is unknown
 			 */
 			function parseCellrefSectorRecord(record) {
-
-				// TODO: 20121017 replace with dynamic map built by parseCellrefComment()
-				var IDX = Object.freeze({
-					ELEMENTTYPE: 0,
-					SITE_ID: 1,
-					SECTOR_ID: 2,
-					AZIMUTH: 3,
-					BEAMWIDTH: 4,
-
-					GSM_BCCH: 8,
-					GSM_BSIC: 9,
-					GSM_CI: 13,
-
-					WCDMA_SC: 5,
-					WCDMA_CI: 6,
-					WCDMA_UARFCN: 7,
-					WCDMA_RNCID: 8,
-				});
 
 				var bOk = true;
 				if (record.length > 1) {
 
-					var siteId = record[IDX.SITE_ID];
+					var siteId = getAttr(record, SectorAttributes.SITE_ID);
+					var sectorId = getAttr(record, SectorAttributes.SECTOR_ID);
 
 					var site = siteList.get(siteId);
 					if (site) {
-						var sectorId = record[IDX.SECTOR_ID];
 
+						// common properties
 						var props = {
 							id: sectorId,
-							azimuth: record[IDX.AZIMUTH],
-							beamwidth: record[IDX.BEAMWIDTH],
+							azimuth: getAttr(record, SectorAttributes.AZIMUTH),
+							beamwidth: getAttr(record, SectorAttributes.BEAMWIDTH),
 						};
 
-						var elementType = record[IDX.ELEMENTTYPE];
-						if (elementType === "GSM_Cell") {
-							props.bcch = record[IDX.GSM_BCCH];
-							props.bsic = record[IDX.GSM_BSIC];
-							props.cellIdentity = record[IDX.GSM_CI];
-						}
-						else if (elementType === "WCDMA_Cell") {
-							props.scramblingCode = record[IDX.WCDMA_SC];
-							props.uarfcn = record[IDX.WCDMA_UARFCN];
+						// technology-dependent properties
+						var elementType = getAttr(record, SectorAttributes.ELEMENTTYPE);
+						switch (elementType) {
+							case "GSM_Cell":
+								props.bcch = getAttr(record, SectorAttributes.GSM_BCCH);
+								props.bsic = getAttr(record, SectorAttributes.GSM_BSIC);
 
-							props.cellIdentity = record[IDX.WCDMA_CI];
-							props.controllerId = record[IDX.WCDMA_RNCID];
+								props.cellIdentity = getAttr(record, SectorAttributes.GSM_CI);
+								props.netSegment = getAttr(record, SectorAttributes.LAC);
+								break;
+							case "WCDMA_Cell":
+								props.scramblingCode = getAttr(record, SectorAttributes.WCDMA_SC);
+								props.uarfcn = getAttr(record, SectorAttributes.WCDMA_UARFCN);
+
+								props.cellIdentity = getAttr(record, SectorAttributes.WCDMA_CI);
+								props.netSegment = getAttr(record, SectorAttributes.WCDMA_RNCID);
+								break;
 						}
 
 						site.addSector(props, OPT_SILENT);
 					}
 					else {
-						console.log("Sector references unknown site: " + siteId);
+						console.log("Sector '" + sectorId + "' references unknown site: " + siteId);
 						bOk = false;
 					}
 				}
 				return bOk;
+			}
+
+			/**
+			 * Helper function for picking an attribute value from "record" array.
+			 * @param  {Array} record             The row items split from the CSV
+			 * @param  {SiteAttributes} attribute Key of the attribute to retrieve
+			 * @return {Object}                   The attribute value
+			 */
+			function getAttr(record, attribute) {
+
+				var val;
+				var colIndex = attributeColumnIndex[attribute];
+
+				if (colIndex !== undefined &&
+					colIndex >= 0 && colIndex < record.length) {
+
+					val = record[colIndex];
+				}
+				else {
+					console.log("Attribute '" + attribute + "' not found.");
+				}
+				return val;
 			}
 
 			/**
