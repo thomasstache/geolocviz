@@ -5,10 +5,13 @@
 	{{#if technology}}
 	<li><span class="label">Tech:</span> <span class="value">{{technology}}</span></li>
 	{{/if}}
+{{#if sectors}}
+	<li><span class="label">Sectors:</span></li>
 	{{#each sectors}}
-	<li><span >{{id}}:</span> <span class="value">{{azimuth}}</span>&nbsp;
-		{{#if cellIdentity}}<span>CI:</span> <span class="value">{{cellIdentity}}</span>{{/if}}
+	<li><span >{{id}}</span>
+		<span class="value">(CI: {{cellIdentity}}, {{azimuth}}d)</span>
 	</li>
 	{{/each}}
+{{/if}}
 </ul>
 {{/if}}
