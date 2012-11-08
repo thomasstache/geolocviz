@@ -33,12 +33,15 @@ define(
 			getTooltipText: function() {
 				var s = this.get('id') + " (";
 
-				if (this.get('bcch') > -1)
-					s += "BCCH: " + this.get('bcch') + ",";
-				if (this.get('uarfcn') > -1)
-					s += "UARFCN: " + this.get('uarfcn') + ",";
+				s += "CI: " + this.get('cellIdentity') +
+					 ", Azi: " + this.get('azimuth') + "d";
 
-				s += this.get('azimuth') + "d)";
+				if (this.get('bcch') > -1)
+					s += ", BCCH: " + this.get('bcch');
+				if (this.get('uarfcn') > -1)
+					s += ", UARFCN: " + this.get('uarfcn');
+
+				s += ")";
 				return s;
 			}
 		});
