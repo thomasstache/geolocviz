@@ -248,7 +248,7 @@ window.Modernizr = (function( window, document, undefined ) {
           return testDOMProps(props, prefixed, elem);
         }
     }    tests['flexbox'] = function() {
-      return testPropsAll('flexWrap');
+      return testPropsAll('flexGrow');
     };
 
     tests['draganddrop'] = function() {
