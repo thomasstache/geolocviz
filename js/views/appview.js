@@ -1,3 +1,6 @@
+// jshint
+/*global Modernizr: true */
+
 define(
 
 	["jquery", "underscore", "backbone",
@@ -105,7 +108,7 @@ define(
 			// Check for the various File API support.
 			checkFileAPIs: function() {
 
-				if (window.File && window.FileReader && window.FileList && window.Blob) {
+				if (Modernizr.filereader) {
 					// Great success! All the File APIs are supported.
 					return true;
 				} else {
