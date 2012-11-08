@@ -130,18 +130,18 @@ define(
 					mapTypeControlOptions: {
 						mapTypeIds: [
 							STYLED_MAPTYPE_ID,
-							google.maps.MapTypeId.ROADMAP,
-							google.maps.MapTypeId.HYBRID,
+							// google.maps.MapTypeId.ROADMAP,
 							google.maps.MapTypeId.SATELLITE,
+							google.maps.MapTypeId.HYBRID,
 						]
 					},
-					mapTypeId: google.maps.MapTypeId.ROADMAP
+					mapTypeId: STYLED_MAPTYPE_ID
 				};
 
 				// (from https://developers.google.com/maps/documentation/javascript/styling)
 				// Create a new StyledMapType object, passing it the array of styles,
 				// as well as the name to be displayed on the map type control.
-				var styledMapType = new google.maps.StyledMapType(simpleMapStyles, {name: "Simplified"});
+				var styledMapType = new google.maps.StyledMapType(simpleMapStyles, {name: "Map"});
 
 				// Force the height of the map to fit the window
 				//this.$el.height($(window).height() - $("header").height());
@@ -153,7 +153,6 @@ define(
 
 				//Associate the styled map with the MapTypeId and set it to display.
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
-				this.map.setMapTypeId(STYLED_MAPTYPE_ID);
 
 				// TODO: 20121017 change to not delete network!
 				this.collection.on("reset", this.deleteAllOverlays, this);
