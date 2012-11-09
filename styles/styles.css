@@ -15,7 +15,6 @@ body {
 }
 
 #playground-app {
-	top: 0; bottom: 0; left: 0; right: 0;
 	margin: 3%; margin-top: 0;
 	padding: 10px 20px;
 
@@ -24,11 +23,45 @@ body {
 	border-radius: 0 0 5px 5px;
 }
 
+.flexbox #playground-app {
+
+	position: absolute;
+	top: 0; bottom: 0; left: 0; right: 0;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: flex;
+	-webkit-flex-direction: column;
+	-moz-flex-direction: column;
+	flex-direction: column;
+}
+
+.flexbox .mainContent {
+	/* should grow itself */
+	-webkit-flex: 1;
+	-moz-flex: 1; /* Fx 18+ */
+	flex: 1;
+
+	/* flexbox for children */
+	display: -webkit-flex; /* Chrome uses new (2012) spec draft */
+	display: -moz-flex; /* Firefox 18 uses new draft */
+	display: flex;
+	-webkit-flex-direction: row;
+	-moz-flex-direction: row;
+	flex-direction: row;
+}
+
 /* main map container */
 #mapView {
 	margin: 10px 0;
 	height: 760px;
 	border: 1px solid #eef;
+}
+
+.flexbox #mapView {
+	-webkit-flex: 1;
+	-moz-flex: 1; /* Fx 18+ */
+	flex: 1;
+	height: auto; /* override default fixed height */
 }
 
 /* general styles */
@@ -77,9 +110,21 @@ html.wait, html.wait * { cursor: wait; }
 	top: 0; right: 0;
 }
 
+/* Settings */
+
+#settings ul {
+	/* slimmer than default ul */
+	margin: 1ex; padding: 0;
+}
+#settings ul li {
+	/* horizontal layout for checkboxes */
+	display: inline-block;
+	margin: 0 1ex;
+}
+
 /* Legend */
 
-ul.legend {
+.legend {
 	font-size: 80%;
 	margin: 0 0 6px 0; /* reduce margin from default */
 	padding: 0 20px 2px;
@@ -191,8 +236,10 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	margin: 0 auto;
 	margin-left: -webkit-calc(-10% / 2);
 	margin-left: -moz-calc(-10% / 2);
+	margin-left: calc(-10% / 2);
 	margin-top: -webkit-calc(-10% / 2);
 	margin-top: -moz-calc(-10% / 2);
+	margin-top: calc(-10% / 2);
 }
 
 /* transparent div covering the drop text */
@@ -205,16 +252,25 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 /* Expand layout for widescreen displays */
 
 @media screen and (min-width: 1000px) {
-	.mainContent {
+	.flexbox .mainContent {
 		display: -webkit-flex; /* Chrome uses new (2012) spec draft */
+		display: -moz-flex;
+	}
+	.flexboxlegacy .mainContent {
 		display: -moz-box; /* Firefox uses previous (2009) draft */
 		width: 100%; /* necessary for Firefox <18, otherwise the box is "deflated" */
 	}
 
 	#mapView {
-		-webkit-flex: 1;
-		-moz-box-flex: 1;
 		margin-right: 10px;
+	}
+	.flexboxlegacy #mapView {
+		-moz-box-flex: 1;
+	}
+	.flexbox #mapView {
+		-webkit-flex: 1;
+		-moz-flex: 1;
+		flex: 1;
 	}
 	#infoView {
 		width: 300px;
@@ -231,18 +287,30 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 /* InfoView LCD layout for narrow screens */
 
 @media screen and (max-width: 1000px) {
+
+	.flexbox .mainContent {
+		/* switch direction */
+		-webkit-flex-direction: column;
+		-moz-flex-direction: column;
+		flex-direction: column;
+	}
+
 	#infoView {
 		display: -webkit-flex;
 		display: -moz-box; /* Fx 17*/
 		display: -moz-flex; /* Fx 18 */
+		display: flex;
 		width: 100%;
 	}
 	.infoBlock {
-		-webkit-flex: 1;
 		-moz-box-flex: 1;
-		-moz-flex: 1;
 		font-size: .9em;
 		line-height: 1.1em;
+	}
+	.flexbox .infoBlock {
+		-webkit-flex: 1;
+		-moz-flex: 1;
+		flex: 1;
 	}
 
 	#infoView .caption {

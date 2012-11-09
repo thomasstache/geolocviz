@@ -1,5 +1,5 @@
 /* Modernizr 2.6.2 (Custom Build) | MIT & BSD
- * Build: http://modernizr.com/download/#-flexbox-draganddrop-shiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-domprefixes-file_api-load
+ * Build: http://modernizr.com/download/#-flexbox-flexboxlegacy-draganddrop-shiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-domprefixes-file_api-load
  */
 ;
 
@@ -251,7 +251,10 @@ window.Modernizr = (function( window, document, undefined ) {
       return testPropsAll('flexGrow');
     };
 
-    tests['draganddrop'] = function() {
+
+    tests['flexboxlegacy'] = function() {
+        return testPropsAll('boxDirection');
+    };    tests['draganddrop'] = function() {
         var div = document.createElement('div');
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     };    for ( var feature in tests ) {
