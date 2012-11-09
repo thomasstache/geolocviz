@@ -126,6 +126,9 @@ define(
 				var mapOptions = {
 					zoom: 16,
 					center: mapCenter,
+					disableDefaultUI: true,
+					zoomControl: true,
+					mapTypeControl: true,
 					scaleControl: true,
 					mapTypeControlOptions: {
 						mapTypeIds: [
