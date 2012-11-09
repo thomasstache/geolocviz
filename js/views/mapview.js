@@ -129,7 +129,7 @@ define(
 					disableDefaultUI: true,
 					zoomControl: true,
 					mapTypeControl: true,
-					scaleControl: true,
+					//scaleControl: true,
 					mapTypeControlOptions: {
 						mapTypeIds: [
 							STYLED_MAPTYPE_ID,
@@ -169,6 +169,11 @@ define(
 				// listen for settings changes
 				this.appsettings = this.options.settings;
 				this.appsettings.on("change", this.onSettingsChanged, this);
+
+				// pull legend into the map, add it to map controls
+				var legend = $("#mapLegend");
+				if (legend && legend.length > 0)
+					this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
 
 				this.render();
 			},
