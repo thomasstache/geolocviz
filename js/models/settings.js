@@ -21,6 +21,9 @@ define(
 				drawMarkers_I: true,
 				// markers for candidates
 				drawMarkers_C: true,
+
+				// show or hide the map scale control
+				showScaleControl: false,
 			}
 		});
 

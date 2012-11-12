@@ -157,6 +157,9 @@ define(
 				//Associate the styled map with the MapTypeId and set it to display.
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 
+				// make available for console scripting
+				window.map = this.map;
+
 				// TODO: 20121017 change to not delete network!
 				this.collection.on("reset", this.deleteAllOverlays, this);
 
@@ -339,6 +342,10 @@ define(
 				}
 				if (event.changed.drawMarkers_I !== undefined) {
 					this.showMarkersForCategory(MarkerColors.INDOOR, event.changed.drawMarkers_I);
+				}
+
+				if (event.changed.showScaleControl !== undefined) {
+					this.map.setOptions({ scaleControl: event.changed.showScaleControl });
 				}
 			},
 

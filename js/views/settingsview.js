@@ -8,7 +8,8 @@ define(
 
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
-				"click #checkConnectSessions": "toggleSessionLines"
+				"click #checkConnectSessions": "toggleSessionLines",
+				"click #checkShowScaleControl": "toggleScaleControl"
 			},
 
 			initialize: function() {
@@ -17,6 +18,7 @@ define(
 
 				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
 				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
+				this.$("#checkShowScaleControl").prop("checked", this.model.get("showScaleControl"));
 			},
 
 			toggleReferenceLines: function() {
@@ -27,6 +29,9 @@ define(
 				this.model.set("drawSessionLines", this.$checkConnectSessions.prop("checked"));
 			},
 
+			toggleScaleControl: function() {
+				this.model.set("showScaleControl", this.$("#checkShowScaleControl").prop("checked"));
+			}
 		});
 
 		return SettingsView;
