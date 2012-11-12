@@ -16,6 +16,7 @@ define(
 
 		var OverlayTypes = Object.freeze({
 			SITE: "siteSymbol",
+			SECTOR: "sectorSymbol",
 			REFERENCEMARKER: "refMarker",
 			GEOLOCMARKER: "geoMarker",
 			AXFMARKER: "axfMarker",
@@ -421,6 +422,54 @@ define(
 				}
 			},
 
+			/**
+			 * Creates markers for all sectors in the site's SectorList.
+			 * The markers are drawn using SVG symbol paths.
+			 * @param  {Site} site
+			 * @return {void}
+			 */
+			drawSectorsForSite: function(site) {
+
+				if (site &&
+					site.getSectors().length > 0) {
+
+					var latLng = site.get('latLng');
+					if (isValidLatLng(latLng)) {
+
+						var sectorColl = site.getSectors();
+
+						for (var i = 0; i < sectorColl.length; i++) {
+
+							var sector = sectorColl.at(i);
+							// this was necessary to make the symbols actually rotate
+							var azi = 1.0 * sector.get('azimuth');
+							var marker = new google.maps.Marker({
+
+								icon: {
+									path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
+									rotation: azi,
+									fillColor: "#6AF",
+									fillOpacity: 1,
+									scale: 2,
+									strokeColor: "#333",
+									strokeOpacity: "0.6",
+									strokeWeight: 2,
+								},
+								position: latLng,
+								map: this.map,
+								title: sector.getTooltipText()
+							});
+
+							marker.metaData = {
+								model: sector
+							};
+
+							this.registerOverlay(OverlayTypes.SECTOR, marker);
+						}
+					}
+				}
+			},
+
 			// draw all markers for all sessions
 			drawResultMarkers: function() {
 
@@ -803,6 +852,9 @@ define(
 
 					siteMarker.setIcon(this.getMarkerImage("siteSelected"));
 					this.selectedSiteMarker = siteMarker;
+
+					this.deleteOverlaysForType(OverlayTypes.SECTOR);
+					this.drawSectorsForSite(md.model);
 				}
 			},
 
