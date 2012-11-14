@@ -105,7 +105,7 @@ html.wait, html.wait * { cursor: wait; }
 #fileForm {
 	display: inline-block;
 }
-#searchSessionInput {
+#mainToolbar .right {
 	position: absolute;
 	top: 0; right: 0;
 }
@@ -252,13 +252,13 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 /* Expand layout for widescreen displays */
 
 @media screen and (min-width: 1000px) {
+	.flexboxlegacy:not(.flexbox) .mainContent {
+		display: -moz-box; /* Firefox uses previous (2009) draft */
+		width: 100%; /* necessary for Firefox <18, otherwise the box is "deflated" */
+	}
 	.flexbox .mainContent {
 		display: -webkit-flex; /* Chrome uses new (2012) spec draft */
 		display: -moz-flex;
-	}
-	.flexboxlegacy .mainContent {
-		display: -moz-box; /* Firefox uses previous (2009) draft */
-		width: 100%; /* necessary for Firefox <18, otherwise the box is "deflated" */
 	}
 
 	#mapView {
