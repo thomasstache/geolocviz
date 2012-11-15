@@ -81,6 +81,8 @@ define(
 				this.sessioninfoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
 				this.sessioninfoview.on("result:nav-next", this.resultsNavigateToNext, this);
 				this.sessioninfoview.on("result:nav-last", this.resultsNavigateToLast, this);
+
+				$("#fileInput").prop("disabled", false);
 			},
 
 			render: function() {
