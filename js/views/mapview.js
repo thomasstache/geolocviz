@@ -107,8 +107,8 @@ define(
 			selectedMarkerHighlight: null,
 			selectedMarkerHighlightBestLoc: null,
 
-			/** @type {Marker} reference to the selected site marker */
-			selectedSiteMarker: null,
+			/** @type {Marker} reference to overlay used to highlight the selected site */
+			selectedSiteHighlight: null,
 
 			// id of the currently highlighted session (see drawSessionLines())
 			highlightedSessionId: -1,
@@ -836,6 +836,22 @@ define(
 			},
 
 			/**
+			 * Creates a marker with a custom graphic to highlight sites and adds it to the map.
+			 * @return {Marker} reference to the created marker
+			 */
+			createHighlightForSites: function() {
+
+				var marker = new google.maps.Marker({
+					icon: this.getMarkerImage("siteSelected"),
+					map: this.map,
+					zIndex: Z_Index.SITE + 10
+				});
+				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
+
+				return marker;
+			},
+
+			/**
 			 * Helper method for visual inspection of the bounding box.
 			 * @param {LatLngBounds} bounds
 			 * @param {String} color The stroke color as HTML color of the format "#FFFFFF"
@@ -864,18 +880,6 @@ define(
 					var md = siteMarker.metaData;
 					if (md.model)
 						this.trigger("site:selected", md.model);
-
-					// is there a highlighted site?
-					if (this.selectedSiteMarker) {
-						// reset marker image
-						this.selectedSiteMarker.setIcon(this.getMarkerImage("site"));
-					}
-
-					siteMarker.setIcon(this.getMarkerImage("siteSelected"));
-					this.selectedSiteMarker = siteMarker;
-
-					this.deleteOverlaysForType(OverlayTypes.SECTOR);
-					this.drawSectorsForSite(md.model);
 				}
 			},
 
@@ -1023,6 +1027,37 @@ define(
 					// hide the highlights
 					this.showOverlay(this.selectedMarkerHighlight, false);
 					this.showOverlay(this.selectedMarkerHighlightBestLoc, false);
+				}
+			},
+
+			/**
+			 * Highlight the given site by drawing an overlay.
+			 * @param {Site} site
+			 */
+			highlightSite: function(site) {
+
+				if (site) {
+
+					if (!this.selectedSiteHighlight) {
+						// create overlay for reuse for all site highlighting needs
+						this.selectedSiteHighlight = this.createHighlightForSites();
+					}
+
+					var latLng = site.get('latLng');
+					var bShow = isValidLatLng(latLng);
+					if (bShow) {
+						// update the position
+						this.selectedSiteHighlight.setPosition(latLng);
+					}
+					this.showOverlay(this.selectedSiteHighlight, bShow);
+
+					// draw sectors for the site
+					this.deleteOverlaysForType(OverlayTypes.SECTOR);
+					this.drawSectorsForSite(site);
+				}
+				else {
+					// reset previous highlighted site
+					this.showOverlay(this.selectedSiteHighlight, false);
 				}
 			}
 		});
