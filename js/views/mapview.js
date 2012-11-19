@@ -486,7 +486,11 @@ define(
 				//this.drawRectangle(this.bounds, "#00FF00");
 			},
 
-			// draw reference and geolocated markers for the given session
+			/**
+			 * Draw reference and geolocated markers for the given session
+			 * @param  {Session} session The session model.
+			 * @return {void}
+			 */
 			drawSession: function(session) {
 
 				var view = this;
@@ -708,15 +712,19 @@ define(
 
 			/**
 			 * Draws polylines connecting all reference locations and best-candidate locations in a session.
+			 * @param  {Session} session The session model.
+			 * @return {void}
 			 */
 			drawSessionLines: function(session) {
+
+				if (!session)
+					return;
 
 				// check if the session actually changed
 				if (this.highlightedSessionId !== session.id) {
 
 					// remove old lines and markers
-					this.deleteOverlaysForType(OverlayTypes.SESSIONVIZ);
-					this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
+					this.deleteSessionOverlays();
 
 					this.highlightedSessionId = session.id;
 
@@ -746,6 +754,19 @@ define(
 						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONVIZ);
 					}
 				}
+			},
+
+			/**
+			 * Removes all session highlight overlays from the map.
+			 * @return {void}
+			 */
+			deleteSessionOverlays: function() {
+
+				// remove old lines and markers
+				this.deleteOverlaysForType(OverlayTypes.SESSIONVIZ);
+				this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
+
+				this.highlightedSessionId = -1;
 			},
 
 			/**
@@ -924,6 +945,15 @@ define(
 			 * @param {Session} session The session model.
 			 */
 			focusSession: function(session) {
+
+				if ( this.highlightedSessionId >= 0 &&
+					(!session || session.id !== this.highlightedSessionId)) {
+
+					this.deleteSessionOverlays();
+				}
+
+				if (!session)
+					return;
 
 				// determine the extents of the session
 				var sessionRect = new google.maps.LatLngBounds();
