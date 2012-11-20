@@ -101,7 +101,7 @@ define(
 			overlays: null,
 
 			/** @type {SiteList} collection of sites */
-			radioNetwork: null,
+			siteList: null,
 
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
@@ -167,8 +167,8 @@ define(
 				// a collection to keep our overlays in sight
 				this.overlays = new OverlayList();
 
-				this.radioNetwork = this.options.radioNetwork;
-				this.radioNetwork.on("reset", this.deleteNetworkOverlays, this);
+				this.siteList = this.options.siteList;
+				this.siteList.on("reset", this.deleteNetworkOverlays, this);
 
 				// listen for settings changes
 				this.appsettings = this.options.settings;
@@ -366,7 +366,7 @@ define(
 
 				// capture the "this" scope
 				var view = this;
-				this.radioNetwork.each(function(site) {
+				this.siteList.each(function(site) {
 					view.drawSite(site, bZoomToNetwork);
 				});
 

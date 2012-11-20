@@ -28,7 +28,7 @@ define(
 			sessions: null,
 
 			/** @type {SiteList} the site collection forming our RAN model */
-			radioNetwork: null,
+			siteList: null,
 
 			/** @type {Settings} model for user controlable settings */
 			settings: null,
@@ -49,13 +49,13 @@ define(
 				// init model
 				this.model = new AppState();
 				this.sessions = new SessionList();
-				this.radioNetwork = new SiteList();
+				this.siteList = new SiteList();
 
 				// listen to changes
 				this.model.on("change:busy", this.busyStateChanged, this);
 				this.sessions.on("all", this.render, this);
 				this.sessions.on("add", this.sessionsUpdated, this);
-				this.radioNetwork.on("add", this.networkUpdated, this);
+				this.siteList.on("add", this.networkUpdated, this);
 
 				// setup settings
 				this.settings = new Settings();
@@ -64,7 +64,7 @@ define(
 				// setup map
 				this.mapview = new MapView({
 					collection: this.sessions,
-					radioNetwork: this.radioNetwork,
+					siteList: this.siteList,
 					settings: this.settings
 				});
 
@@ -95,7 +95,7 @@ define(
 
 			clearData: function() {
 				this.sessions.reset();
-				this.radioNetwork.reset();
+				this.siteList.reset();
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
@@ -134,7 +134,7 @@ define(
 
 				this.numFilesQueued += files.length;
 				this.model.set("busy", true);
-				FileLoader.loadFiles(files, this.sessions, this.radioNetwork, this.fileLoaded.bind(this));
+				FileLoader.loadFiles(files, this.sessions, this.siteList, this.fileLoaded.bind(this));
 			},
 
 			// Called when all files have been loaded. Triggers marker rendering.
@@ -162,9 +162,9 @@ define(
 				stats.set("numSessions", this.sessions.length);
 
 				// count sectors
-				var numSectors = this.radioNetwork.reduce(function(memo, site) { return memo + site.getSectors().length; }, 0);
+				var numSectors = this.siteList.reduce(function(memo, site) { return memo + site.getSectors().length; }, 0);
 				stats.set("numSectors", numSectors);
-				stats.set("numSites", this.radioNetwork.length);
+				stats.set("numSites", this.siteList.length);
 
 				this.model.trigger("change:statistics");
 
@@ -253,7 +253,7 @@ define(
 					this.sessionUnfocussed();
 				}
 				// check if it's a site/sector
-				var site = this.radioNetwork.get(searchText);
+				var site = this.siteList.get(searchText);
 				if (site) {
 					this.siteSelected(site);
 				}
@@ -263,7 +263,6 @@ define(
 
 				this.resultSelected(null);
 			},
-
 
 			/*********************** Selection Handling ***********************/
 
