@@ -81,6 +81,7 @@ define(
 				this.sessioninfoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
 				this.sessioninfoview.on("result:nav-next", this.resultsNavigateToNext, this);
 				this.sessioninfoview.on("result:nav-last", this.resultsNavigateToLast, this);
+				this.sessioninfoview.on("result:lookupElement", this.resultsLookupElement, this);
 
 				$("#fileInput").prop("disabled", false);
 			},
@@ -148,6 +149,7 @@ define(
 				if (this.model.get("radioNetworkDirty") === true) {
 					this.mapview.drawNetwork();
 					this.model.set("radioNetworkDirty", false);
+					this.model.set("radioNetworkAvailable", this.siteList.length > 0);
 				}
 			},
 
@@ -239,6 +241,8 @@ define(
 				this.model.set("radioNetworkDirty", true);
 			},
 
+			/*********************** Search and Lookups ***********************/
+
 			// Handler for "change" event from the session search field.
 			searchSessionInputChanged: function(evt) {
 
@@ -264,6 +268,19 @@ define(
 				this.resultSelected(null);
 			},
 
+			// Handler for "results:lookupElement" event. Lookup site/sector
+			resultsLookupElement: function(query) {
+
+				var sectorProps = {
+					netSegment:   query.controllerId,
+					cellIdentity: query.primaryCellId,
+				};
+				var site = this.siteList.findSiteWithSector(sectorProps);
+				if (site) {
+					this.siteSelected(site);
+				}
+			},
+
 			/*********************** Selection Handling ***********************/
 
 			// Handler for "session:selected" event. Update the info display.
@@ -279,7 +296,7 @@ define(
 				var view = this.mapview;
 				setTimeout(function(){
 					view.highlightResult(result);
-				}, 200);
+				}, 100);
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.

@@ -69,13 +69,14 @@ body {
 ul { list-style: none; }
 .clearfix {clear: both; margin: 0; }
 .invisible { visibility: hidden; }
-.hidden { display: none; }
+.hidden, .button.hidden { display: none; }
 html.wait, html.wait * { cursor: wait; }
 
 .button {
 	display: inline-block;
 	padding: 4px 10px;
 	font-size: 0.9em;
+	vertical-align: top;
 	text-decoration: none;
 	color: rgb(95,95,95);
 	background-color: rgba(190,190,190,0.6);
@@ -91,8 +92,13 @@ html.wait, html.wait * { cursor: wait; }
 	background-color: rgba(0,0,0,0.1);
 }
 .button.tiny {
-	font-size: 11px; line-height: 14px;
+	font-size: 80%;
+	line-height: 14px;
+	margin: 0;
 	padding: 1px 4px;
+}
+.button.symbolic {
+	font-size: 125%;
 }
 
 /* various button states */

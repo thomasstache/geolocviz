@@ -5,6 +5,17 @@ define(
 
 	function($, _, Backbone, sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
+		/**
+		 * Info View.
+		 * Emits the following events:
+		 *   session:focussed
+		 *   session:unfocussed
+		 *   result:nav-first
+		 *   result:nav-prev
+		 *   result:nav-next
+		 *   result:nav-last
+		 *   result:lookupElement
+		 */
 		var InfoView = Backbone.View.extend({
 			el: $("#infoView"),
 
@@ -15,6 +26,7 @@ define(
 				"click .results-prev": "onPrevResultClicked",
 				"click .results-next": "onNextResultClicked",
 				"click .results-last": "onLastResultClicked",
+				"click .lookup-element": "onLookupElementClicked",
 			},
 
 			initialize: function() {
@@ -24,6 +36,7 @@ define(
 				this.model.on("change:selectedSite", this.onSiteChanged, this);
 				this.model.on("change:statistics", this.onStatisticsChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
+				this.model.on("change:radioNetworkAvailable", this.updateResultsControls, this);
 
 				this.$tbSessionToolbar = $(".toolbar.sessionControls");
 				this.$tbResultsToolbar = $(".toolbar.resultControls");
@@ -34,6 +47,8 @@ define(
 				this.$navPrevBtn = $(".button.results-prev");
 				this.$navNextBtn = $(".button.results-next");
 				this.$navLastBtn = $(".button.results-last");
+
+				this.$lookupElementBtn = $(".button.lookup-element");
 			},
 
 			onSessionChanged: function() {
@@ -159,6 +174,25 @@ define(
 				this.trigger("result:" + eventType, this.model.get("selectedResult"));
 			},
 
+			/**
+			 * Click handler for the "lookup element" button.
+			 * If the result has a cell reference, the "result:lookupElement" event is triggered.
+			 * The event payload is an object containing primaryCellId and controllerId.
+			 */
+			onLookupElementClicked: function() {
+
+				var result = this.model.get("selectedResult");
+				if (result.has("primaryCellId") && result.has("controllerId")) {
+
+					var query = {
+						primaryCellId: result.get("primaryCellId"),
+						controllerId: result.get("controllerId")
+					};
+					this.trigger("result:lookupElement", query);
+				}
+			},
+
+			/* Updates toolbar button (enabled/visibility) states on result change. */
 			updateResultsControls: function() {
 
 				var result = this.model.get("selectedResult");
@@ -170,6 +204,14 @@ define(
 				this.$navPrevBtn.prop("disabled", !canNavigateBwd);
 				this.$navNextBtn.prop("disabled", !canNavigateFwd);
 				this.$navLastBtn.prop("disabled", !canNavigateFwd);
+
+				var hasElementRef = this.model.get("radioNetworkAvailable") &&
+									result !== null &&
+									result.has("primaryCellId") &&
+									!isNaN(result.get("primaryCellId"));
+
+				this.$lookupElementBtn.prop("disabled", !hasElementRef);
+				this.$lookupElementBtn.toggleClass("hidden", !hasElementRef);
 
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}

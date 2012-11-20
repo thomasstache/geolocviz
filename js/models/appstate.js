@@ -13,6 +13,8 @@ define(
 				sessionsDirty: false,
 				// if the network was updated and needs redraw
 				radioNetworkDirty: false,
+				// if radio network data was loaded
+				radioNetworkAvailable: false,
 
 				// the model of the selected/active session
 				selectedSession: null,
