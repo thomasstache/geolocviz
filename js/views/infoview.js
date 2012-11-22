@@ -41,14 +41,14 @@ define(
 				this.$tbSessionToolbar = $(".toolbar.sessionControls");
 				this.$tbResultsToolbar = $(".toolbar.resultControls");
 
-				this.$focusBtn = $(".button.focus-session");
-				this.$unfocusBtn = $(".button.unfocus-session");
-				this.$navFirstBtn = $(".button.results-first");
-				this.$navPrevBtn = $(".button.results-prev");
-				this.$navNextBtn = $(".button.results-next");
-				this.$navLastBtn = $(".button.results-last");
+				this.$focusBtn = $("button.focus-session");
+				this.$unfocusBtn = $("button.unfocus-session");
+				this.$navFirstBtn = $("button.results-first");
+				this.$navPrevBtn = $("button.results-prev");
+				this.$navNextBtn = $("button.results-next");
+				this.$navLastBtn = $("button.results-last");
 
-				this.$lookupElementBtn = $(".button.lookup-element");
+				this.$lookupElementBtn = $("button.lookup-element");
 			},
 
 			onSessionChanged: function() {
