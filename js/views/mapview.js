@@ -275,6 +275,7 @@ define(
 				this.highlightedSessionId = -1;
 				this.highlightedCandidateSampleCid = -1;
 
+				this.selectedSiteHighlight = null;
 				this.selectedMarkerHighlight = null;
 				this.selectedMarkerHighlightBestLoc = null;
 			},
