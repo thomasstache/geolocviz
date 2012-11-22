@@ -294,9 +294,10 @@ define(
 
 				this.model.set("selectedResult", result);
 				var view = this.mapview;
+				// this timeout is necessary to make the result marker doubleclick work
 				setTimeout(function(){
 					view.highlightResult(result);
-				}, 100);
+				}, 200);
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.
