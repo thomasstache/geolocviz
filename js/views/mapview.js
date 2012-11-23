@@ -801,8 +801,8 @@ define(
 								fillOpacity: opacity,
 								scale: 4
 							},
-							offset: '30px',
-							repeat: '60px'
+							offset: '50%',
+							repeat: '100px'
 						}];
 					}
 
