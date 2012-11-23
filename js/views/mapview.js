@@ -1033,9 +1033,10 @@ define(
 
 			/**
 			 * Highlight the given site by drawing an overlay.
-			 * @param {Site} site
+			 * @param {Site}    site
+			 * @param {Boolean} ensureVisible Flag to control if map viewport should be adjusted
 			 */
-			highlightSite: function(site) {
+			highlightSite: function(site, ensureVisible) {
 
 				if (site) {
 
@@ -1055,6 +1056,15 @@ define(
 					// draw sectors for the site
 					this.deleteOverlaysForType(OverlayTypes.SECTOR);
 					this.drawSectorsForSite(site);
+
+					if (ensureVisible && bShow) {
+						var bounds = this.map.getBounds();
+						// check manually, as fitBounds() even zooms out for unchanged bounds
+						if (!bounds.contains(latLng)){
+							bounds.extend(latLng);
+							this.map.fitBounds(bounds);
+						}
+					}
 				}
 				else {
 					// reset previous highlighted site

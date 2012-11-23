@@ -318,7 +318,7 @@ define(
 			siteSelected: function(site) {
 
 				this.model.set("selectedSite", site);
-				this.mapview.highlightSite(site);
+				this.mapview.highlightSite(site, true);
 			},
 
 
