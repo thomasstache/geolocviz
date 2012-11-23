@@ -208,12 +208,31 @@ define(
 
 			/**
 			 * Update the visibility of the given marker.
-			 * @param {Marker}  overlay Google Maps Marker or Polyline object
+			 * @param {Marker}  marker Google Maps Marker or Polyline object
 			 * @param {Boolean} bShow
 			 */
-			showOverlay: function(overlay, bShow) {
-				if (overlay)
-					overlay.setMap(bShow ? this.map : null);
+			setMarkerVisible: function(marker, bShow) {
+				if (marker)
+					marker.setMap(bShow ? this.map : null);
+			},
+
+			/**
+			 * Update the visibility of all overlays in the given array.
+			 * @param {Array}   overlays list of Overlay models
+			 * @param {Boolean} bShow
+			 */
+			setOverlaysVisible: function(overlays, bShow) {
+
+				// make ref to capture in inner function
+				var view = this;
+
+				_.each(
+					overlays,
+					function(overlay) {
+						var marker = overlay.get("ref");
+						view.setMarkerVisible(marker, bShow);
+					}
+				);
 			},
 
 			/**
@@ -223,17 +242,8 @@ define(
 			 */
 			showOverlaysForType: function(type, bShow) {
 
-				// make ref to capture in inner function
-				var view = this;
-
 				var overlays = this.overlays.byType(type);
-				_.each(
-					overlays,
-					function(overlay) {
-						var marker = overlay.get("ref");
-						view.showOverlay(marker, bShow);
-					}
-				);
+				this.setOverlaysVisible(overlays, bShow);
 			},
 
 			/**
@@ -242,8 +252,6 @@ define(
 			 * @param {Boolean} bShow         true to show, false to hide
 			 */
 			showMarkersForCategory: function(colorDef, bShow) {
-
-				var view = this;
 
 				// get all geoloc + axf markers
 				var overlays = this.overlays.filter(
@@ -255,13 +263,7 @@ define(
 					}
 				);
 
-				_.each(
-					overlays,
-					function(overlay) {
-						var marker = overlay.get("ref");
-						view.showOverlay(marker, bShow);
-					}
-				);
+				this.setOverlaysVisible(overlays, bShow);
 			},
 
 			/**
@@ -1003,7 +1005,7 @@ define(
 						// update the position
 						this.selectedMarkerHighlight.setPosition(latLng);
 					}
-					this.showOverlay(this.selectedMarkerHighlight, bShow);
+					this.setMarkerVisible(this.selectedMarkerHighlight, bShow);
 
 					if (result instanceof AccuracyResult) {
 						// for AccuracyResults draw a second circle for the best candidate
@@ -1018,16 +1020,16 @@ define(
 							this.selectedMarkerHighlightBestLoc.setPosition(latLng);
 						}
 
-						this.showOverlay(this.selectedMarkerHighlightBestLoc, bShow);
+						this.setMarkerVisible(this.selectedMarkerHighlightBestLoc, bShow);
 					}
 					else {
-						this.showOverlay(this.selectedMarkerHighlightBestLoc, false);
+						this.setMarkerVisible(this.selectedMarkerHighlightBestLoc, false);
 					}
 				}
 				else {
 					// hide the highlights
-					this.showOverlay(this.selectedMarkerHighlight, false);
-					this.showOverlay(this.selectedMarkerHighlightBestLoc, false);
+					this.setMarkerVisible(this.selectedMarkerHighlight, false);
+					this.setMarkerVisible(this.selectedMarkerHighlightBestLoc, false);
 				}
 			},
 
@@ -1051,7 +1053,7 @@ define(
 						// update the position
 						this.selectedSiteHighlight.setPosition(latLng);
 					}
-					this.showOverlay(this.selectedSiteHighlight, bShow);
+					this.setMarkerVisible(this.selectedSiteHighlight, bShow);
 
 					// draw sectors for the site
 					this.deleteOverlaysForType(OverlayTypes.SECTOR);
@@ -1068,7 +1070,7 @@ define(
 				}
 				else {
 					// reset previous highlighted site
-					this.showOverlay(this.selectedSiteHighlight, false);
+					this.setMarkerVisible(this.selectedSiteHighlight, false);
 				}
 			}
 		});
