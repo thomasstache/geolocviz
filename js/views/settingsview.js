@@ -15,10 +15,17 @@ define(
 			initialize: function() {
 				this.$checkConnectMarkers = $("#checkConnectMarkers");
 				this.$checkConnectSessions = $("#checkConnectSessions");
+				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
+
+				this.model.on("change", this.render, this);
+				this.render();
+			},
+
+			render: function() {
 
 				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
 				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
-				this.$("#checkShowScaleControl").prop("checked", this.model.get("showScaleControl"));
+				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
 			},
 
 			toggleReferenceLines: function() {
