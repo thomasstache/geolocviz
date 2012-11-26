@@ -227,10 +227,26 @@ define(
 				_.each(
 					overlays,
 					function(overlay) {
-						var marker = overlay.get("ref");
+						var marker = overlay.get('ref');
 						view.setMarkerVisible(marker, bShow);
 					}
 				);
+			},
+
+			/**
+			 * Update the visibility of all overlays that match the custom filter criterium.
+			 * @param {Function} filterFct the callback function for _.filter()
+			 * @param {Boolean}  bShow     true to show, false to hide
+			 */
+			showOverlaysForFilter: function(filterFct, bShow) {
+
+				if (typeof filterFct === "function") {
+
+					// get array of overlays that match the filter function
+					var overlays = this.overlays.filter(filterFct);
+
+					this.setOverlaysVisible(overlays, bShow);
+				}
 			},
 
 			/**
@@ -262,6 +278,57 @@ define(
 				);
 
 				this.setOverlaysVisible(overlays, bShow);
+			},
+
+			/**
+			 * Shows only result markers where the given sector is primary cell, and hides all other result markers.
+			 * @param  {Object} sectorProps List of key-value pairs that should match
+			 * @return {void}
+			 */
+			showMarkersForSector: function(sectorProps) {
+
+				// hide all result markers
+				this.showResultMarkers(false);
+				this.trigger("result:selected", null);
+
+				// list of result markers
+				var resultMarkers = this.overlays.filter(this.isResultMarker);
+
+				// filter for sector
+				var sectorResults = _.filter(
+					resultMarkers,
+					function(overlay) {
+						var rv = false;
+
+						var marker = overlay.get('ref');
+						var md = marker.metaData;
+
+						if (md && md.model) {
+							var result = md.model;
+							rv = result.get('controllerId') === sectorProps.netSegment &&
+								 result.get('primaryCellId') === sectorProps.cellIdentity;
+						}
+
+						return rv;
+					}
+				);
+				this.setOverlaysVisible(sectorResults, true);
+
+				this.trigger("results:filtered");
+			},
+
+			/**
+			 * Hides all overlays for results markers.
+			 * @param {Boolean} bShow True to show, false to hide
+			 */
+			showResultMarkers: function(bShow) {
+
+				if (!bShow) {
+					this.deleteCandidateMarkers();
+					this.appsettings.set({ drawReferenceLines: false, drawSessionLines: false });
+				}
+
+				this.showOverlaysForFilter(this.isResultMarker, bShow);
 			},
 
 			/**
@@ -323,6 +390,23 @@ define(
 					ref: overlay
 				}, { silent: true });
 			},
+
+			/**
+			 * Filter function for result markers.
+			 * @param  {Overlay} overlay The model to check
+			 * @return {Boolean}         true if this is a result marker overlay
+			 */
+			isResultMarker: function(overlay) {
+
+				var type = overlay.get('type');
+				return (type === OverlayTypes.GEOLOCMARKER ||
+						type === OverlayTypes.AXFMARKER ||
+						type === OverlayTypes.REFERENCEMARKER);
+			},
+
+
+
+
 
 			/**
 			 * Update map overlay visibility according to current settings.
@@ -485,6 +569,17 @@ define(
 				marker.metaData = {
 					model: sector
 				};
+
+				// click event to the for the marker
+				google.maps.event.addListener(marker, 'dblclick',
+					function() {
+						var ci = {
+							netSegment: sector.get('netSegment'),
+							cellIdentity: sector.get('cellIdentity'),
+						};
+						view.showMarkersForSector(ci);
+					}
+				);
 
 				this.registerOverlay(OverlayTypes.SECTOR, marker);
 			},
