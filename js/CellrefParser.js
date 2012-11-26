@@ -219,12 +219,12 @@ define(
 							}
 						}
 
-						if (_.keys(attributeColumnIndex).length > 1) {
+/*						if (_.keys(attributeColumnIndex).length > 1) {
 							//console.log("%c Identified columns (" + mode + "):", "background-color: #BFE3E2;"); // with color for new Chrome Devtools
 							console.log("Identified columns (" + mode + "):");
 							console.log(attributeColumnIndex);
 						}
-					}
+*/					}
 				}
 			}
 
