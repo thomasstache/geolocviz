@@ -158,9 +158,6 @@ define(
 				//Associate the styled map with the MapTypeId and set it to display.
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 
-				// make available for console scripting
-				window.map = this.map;
-
 				// TODO: 20121017 change to not delete network!
 				this.collection.on("reset", this.deleteAllOverlays, this);
 
@@ -179,7 +176,8 @@ define(
 				if (legend && legend.length > 0)
 					this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
 
-				this.render();
+				// make available for console scripting
+//				window.mapview = this;
 			},
 
 			/**
@@ -288,7 +286,9 @@ define(
 			 */
 			deleteNetworkOverlays: function() {
 
+				this.selectedSiteHighlight = null;
 				this.deleteOverlaysForType(OverlayTypes.SITE);
+				this.deleteOverlaysForType(OverlayTypes.SECTOR);
 			},
 
 			/**
@@ -297,8 +297,17 @@ define(
 			deleteOverlaysForType: function(type) {
 
 				var items = this.overlays.byType(type);
-				_.each(items, function(overlay) { overlay.removeFromMap(); });
-				this.overlays.remove(items);
+				this.deleteOverlays(items);
+			},
+
+			/**
+			 * Removes the given overlays from the map and destroys them.
+			 * @param {Array} list The overlays to delete
+			 */
+			deleteOverlays: function(list) {
+
+				_.each(list, function(overlay) { overlay.removeFromMap(); });
+				this.overlays.remove(list);
 			},
 
 			/**
@@ -444,33 +453,40 @@ define(
 						for (var i = 0; i < sectorColl.length; i++) {
 
 							var sector = sectorColl.at(i);
-							// this was necessary to make the symbols actually rotate
-							var azi = 1.0 * sector.get('azimuth');
-							var marker = new google.maps.Marker({
-
-								icon: {
-									path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
-									rotation: azi,
-									fillColor: "#6AF",
-									fillOpacity: 1,
-									scale: 2,
-									strokeColor: "#333",
-									strokeOpacity: "0.6",
-									strokeWeight: 2,
-								},
-								position: latLng,
-								map: this.map,
-								title: sector.getTooltipText()
-							});
-
-							marker.metaData = {
-								model: sector
-							};
-
-							this.registerOverlay(OverlayTypes.SECTOR, marker);
+							this.drawSector(sector, latLng);
 						}
 					}
 				}
+			},
+
+			drawSector: function(sector, siteLatLng) {
+
+				var view = this;
+
+				// this was necessary to make the symbols actually rotate
+				var azi = 1.0 * sector.get('azimuth');
+				var marker = new google.maps.Marker({
+
+					icon: {
+						path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
+						rotation: azi,
+						fillColor: "#6AF",
+						fillOpacity: 1,
+						scale: 2,
+						strokeColor: "#333",
+						strokeOpacity: "0.6",
+						strokeWeight: 2,
+					},
+					position: siteLatLng,
+					map: this.map,
+					title: sector.getTooltipText()
+				});
+
+				marker.metaData = {
+					model: sector
+				};
+
+				this.registerOverlay(OverlayTypes.SECTOR, marker);
 			},
 
 			// draw all markers for all sessions
