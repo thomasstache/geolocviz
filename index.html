@@ -67,16 +67,24 @@
 
 		<section id="settings">
 			<ul>
-				<li><input type="checkbox" id="checkConnectMarkers" />
-					<label for="checkConnectMarkers">Connect markers with reference</li>
-				<li><input type="checkbox" id="checkConnectSessions" />
-					<label for="checkConnectSessions">Connect markers in sessions</li>
 				<li><input type="checkbox" id="checkShowScaleControl" />
 					<label for="checkShowScaleControl">Display map scale</li>
+				<li><input type="checkbox" id="checkConnectSessions" />
+					<label for="checkConnectSessions">Connect markers in sessions</li>
+				<li><input type="checkbox" id="checkConnectMarkers" />
+					<label for="checkConnectMarkers">Connect markers with reference</li>
 			</ul>
 		</section>
 
+		<!-- container for the legend controls, will be placed onto the map -->
 		<section id="mapLegend" style="display: none" ></section>
+
+		<!-- filter controls, will be placed onto the map. markup similar to mapLegend -->
+		<section id="filters" class="hidden">
+			<ul class="mapcontrols top">
+				<li id="clearFilters" class="clickable"><span>Filter active</span> <a>Clear</a></li>
+			</ul>
+		</section>
 
 		<div id="fileDropVeil" class="hidden" >
 			<p class="dropText">Drop files here</p>

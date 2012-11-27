@@ -175,6 +175,9 @@ define(
 				var legend = $("#mapLegend");
 				if (legend && legend.length > 0)
 					this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
+				var filterbar = $("#filters");
+				if (filterbar && filterbar.length > 0)
+					this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(filterbar[0]);
 
 				// make available for console scripting
 //				window.mapview = this;

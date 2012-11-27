@@ -4,11 +4,11 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview",
+	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics", "FileLoader"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView,
+			 MapView, SettingsView, LegendView, InfoView, FilterView,
 			 SessionList, SiteList, Settings, AppState, Statistics, FileLoader) {
 
 		var AppView = Backbone.View.extend({
@@ -70,9 +70,11 @@ define(
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
 				this.sessioninfoview = new InfoView({ model: this.model });
+				this.filterview = new FilterView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
+				this.mapview.on("results:filtered", this.resultsFiltered, this);
 				this.mapview.on("site:selected", this.siteSelected, this);
 
 				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
@@ -82,6 +84,8 @@ define(
 				this.sessioninfoview.on("result:nav-next", this.resultsNavigateToNext, this);
 				this.sessioninfoview.on("result:nav-last", this.resultsNavigateToLast, this);
 				this.sessioninfoview.on("result:lookupElement", this.resultsLookupElement, this);
+
+				this.filterview.on("results:clear-filter", this.resultsClearFilter, this);
 
 				$("#fileInput").prop("disabled", false);
 			},
@@ -312,6 +316,19 @@ define(
 				setTimeout(function(){
 					view.highlightResult(result);
 				}, 200);
+			},
+
+			// Handler for the MapView's "results:filtered" event.
+			resultsFiltered: function() {
+
+				this.model.set("resultsFilterActive", true);
+			},
+
+			// Handler for the FilterView's "results:clear-filter" event.
+			resultsClearFilter: function() {
+
+				this.model.set("resultsFilterActive", false);
+				//this.mapview.showAllResults();
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.

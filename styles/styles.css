@@ -142,13 +142,19 @@ button:active {
 
 /* Legend */
 
-.legend {
-	font-size: 80%;
-	margin: 0 0 6px 0; /* reduce margin from default */
-	padding: 0 20px 2px;
+.mapcontrols {
+	margin: 0; /* reduce margin from UL default */
+	padding: 0 20px;
 	background: white;
 	border-radius: 5px;
 	box-shadow: rgb(100,100,100) 0 0 8px;
+}
+.mapcontrols.top { margin-top: 6px; }
+.mapcontrols.bottom { margin-bottom: 6px; }
+
+.legend {
+	font-size: 80%;
+	padding-bottom: 2px;
 }
 .legendItem {
 	margin: 2px;
@@ -340,3 +346,4 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 /* some final words about "display:", to override "block" or "inline-block" */
 .invisible { visibility: hidden; }
 .hidden { display: none; }
+.clickable:not([disabled]) { cursor: pointer; }

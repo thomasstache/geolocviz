@@ -21,6 +21,8 @@ define(
 				// if there are LocationCandidates
 				candidateLocationsAvailable: false,
 
+				// if the results are currently filtered
+				resultsFilterActive: false,
 				// the model of the selected/active session
 				selectedSession: null,
 
