@@ -68,8 +68,6 @@ body {
 
 ul { list-style: none; }
 .clearfix {clear: both; margin: 0; }
-.invisible { visibility: hidden; }
-.hidden, button.hidden { display: none; }
 html.wait, html.wait * { cursor: wait; }
 
 button {
@@ -338,3 +336,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 		right: 1em;
 	}
 }
+
+/* some final words about "display:", to override "block" or "inline-block" */
+.invisible { visibility: hidden; }
+.hidden { display: none; }
