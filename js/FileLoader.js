@@ -44,6 +44,20 @@ define(
 			var currentAccuracyResult = null;
 
 			/**
+			 * Parse and load a file. Supported types are *.axf, *.distances and *.txt
+			 * @param {File} file The file to load
+			 */
+			function loadFile(file) {
+
+				var reader = new FileReader();
+				// If we use onloadend, we need to check the readyState.
+				reader.onloadend = onFileReadComplete;
+				reader.file = file;
+
+				reader.readAsBinaryString(file);
+			}
+
+			/**
 			 * Handler for the loadend event of the FileReader
 			 * @param  {Event} evt the ProgressEvent
 			 */
@@ -81,6 +95,8 @@ define(
 						default:
 							currentFileType = null;
 					}
+
+					fileStatistics.type = currentFileType;
 
 					if (currentFileType === null) {
 						alert("Could not recognize this file type!");
@@ -328,23 +344,11 @@ define(
 						callbackFct = callback;
 
 					for (var i = 0, f; f = files[i]; i++) {
-						this.loadFile(f);
+						loadFile(f);
 					}
 				},
 
-				/**
-				 * Parse and load a file. Supported types are *.axf, *.distances and *.txt
-				 * @param {File} file The file to load
-				 */
-				loadFile: function(file) {
-
-					var reader = new FileReader();
-					// If we use onloadend, we need to check the readyState.
-					reader.onloadend = onFileReadComplete;
-					reader.file = file;
-
-					reader.readAsBinaryString(file);
-				}
+				FileTypes: FileTypes,
 			};
 		})();
 
