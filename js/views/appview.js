@@ -68,7 +68,7 @@ define(
 					settings: this.settings
 				});
 
-				this.legendview = new LegendView({ settings: this.settings, colors: this.mapview.colors() });
+				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
 				this.sessioninfoview = new InfoView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
@@ -148,8 +148,10 @@ define(
 				}
 				if (this.model.get("radioNetworkDirty") === true) {
 					this.mapview.drawNetwork();
-					this.model.set("radioNetworkDirty", false);
-					this.model.set("radioNetworkAvailable", this.siteList.length > 0);
+					this.model.set({
+						radioNetworkDirty: false,
+						radioNetworkAvailable: this.siteList.length > 0,
+					});
 				}
 			},
 
@@ -163,10 +165,22 @@ define(
 				stats.addFileStats(filestats);
 				stats.set("numSessions", this.sessions.length);
 
-				// count sectors
-				var numSectors = this.siteList.reduce(function(memo, site) { return memo + site.getSectors().length; }, 0);
-				stats.set("numSectors", numSectors);
-				stats.set("numSites", this.siteList.length);
+				if (filestats.type === FileLoader.FileTypes.CELLREF) {
+
+					// count sectors
+					var numSectors = this.siteList.reduce(function(memo, site) { return memo + site.getSectors().length; }, 0);
+					stats.set({
+						numSectors: numSectors,
+						numSites: this.siteList.length,
+					});
+				}
+				else if (filestats.type === FileLoader.FileTypes.ACCURACY) {
+
+					this.model.set({
+						referenceLocationsAvailable: true,
+						candidateLocationsAvailable: true,
+					});
+				}
 
 				this.model.trigger("change:statistics");
 

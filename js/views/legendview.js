@@ -12,12 +12,20 @@ define(
 				"click .legendItem" : "legendItemClicked"
 			},
 
+			appstate: null,
 			settings: null,
 			colorData: null,
 
 			initialize: function() {
 
 				this.settings = this.options.settings;
+				this.appstate = this.options.appstate;
+
+				// listen to some state changes
+				if (this.appstate) {
+					this.appstate.on("change:referenceLocationsAvailable", this.onStateChanged, this);
+					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
+				}
 
 				// translate the colors dictionary into an array for our templating
 				var colorDict = this.options.colors;
@@ -35,6 +43,31 @@ define(
 			render: function() {
 
 				this.$el.html(tmplFct(this.colorData));
+				this.showLegendItem("R", this.appstate.get("referenceLocationsAvailable"));
+				this.showLegendItem("C", this.appstate.get("candidateLocationsAvailable"));
+			},
+
+			/**
+			 * Update item visibility according to current state.
+			 */
+			onStateChanged: function(event) {
+
+				if (event.changed.referenceLocationsAvailable !== undefined) {
+					this.showLegendItem("R", event.changed.referenceLocationsAvailable);
+				}
+				if (event.changed.candidateLocationsAvailable !== undefined) {
+					this.showLegendItem("C", event.changed.candidateLocationsAvailable);
+				}
+			},
+
+			showLegendItem: function(symbol, bShow) {
+
+				// use an attribute selector to select item according to the "smb" property used in our template
+				var selector = "li[data-markertype='" + symbol + "']";
+				var $item = this.$(selector);
+				if ($item && $item.length === 1) {
+					$item.toggleClass("hidden", !bShow);
+				}
 			},
 
 			/**

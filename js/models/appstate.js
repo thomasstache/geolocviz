@@ -13,8 +13,13 @@ define(
 				sessionsDirty: false,
 				// if the network was updated and needs redraw
 				radioNetworkDirty: false,
+
 				// if radio network data was loaded
 				radioNetworkAvailable: false,
+				// if there are AccuracyResults
+				referenceLocationsAvailable: false,
+				// if there are LocationCandidates
+				candidateLocationsAvailable: false,
 
 				// the model of the selected/active session
 				selectedSession: null,
@@ -28,7 +33,7 @@ define(
 				// id of the last focussed session
 				focussedSessionId: -1,
 
-				// statistics about loaded files and records
+				/** @type {Statistics} model containing statistics about loaded files and records */
 				statistics: null
 			},
 		});
