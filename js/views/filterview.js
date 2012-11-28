@@ -4,7 +4,10 @@ define(
 	function($, Backbone) {
 
 		var FilterView = Backbone.View.extend({
-			el: $("#filters"),
+			el: $("#filterBar"),
+
+			/** @type {AppState} the shared app state */
+			model: null,
 
 			events: {
 				"click #clearFilters": "clearFilterClicked",

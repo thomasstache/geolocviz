@@ -159,10 +159,10 @@ button:active {
 .legendItem {
 	margin: 2px;
 	display: inline-block;
-	cursor: pointer;
 	opacity: 1;
 }
 
+.legendItem.unavailable,
 .legendItem.markerOff {
 	opacity: 0.5;
 }
@@ -177,6 +177,17 @@ button:active {
 	border-radius: 2.5px;
 	width: 30px;
 	height: 2.5ex;
+}
+
+/* filter bar UL */
+#filters {
+	font-size: 1.1em;
+	background-color: #FFFFB9;
+}
+
+.filterItem a {
+	font-weight: bold;
+	text-decoration: underline;
 }
 
 /* Session Info Display */

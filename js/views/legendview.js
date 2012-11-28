@@ -12,8 +12,11 @@ define(
 				"click .legendItem" : "legendItemClicked"
 			},
 
+			/** @type {AppState} the shared app state */
 			appstate: null,
+			/** @type {Settings} the settings model */
 			settings: null,
+			/** @type {Object} properties hash for the template */
 			colorData: null,
 
 			initialize: function() {
@@ -25,6 +28,7 @@ define(
 				if (this.appstate) {
 					this.appstate.on("change:referenceLocationsAvailable", this.onStateChanged, this);
 					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
+					this.appstate.on("change:resultsFilterActive", this.onStateChanged, this);
 				}
 
 				// translate the colors dictionary into an array for our templating
@@ -57,6 +61,15 @@ define(
 				}
 				if (event.changed.candidateLocationsAvailable !== undefined) {
 					this.showLegendItem("C", event.changed.candidateLocationsAvailable);
+				}
+
+				if (event.changed.resultsFilterActive !== undefined) {
+					var bFiltered = event.changed.resultsFilterActive;
+					// disable the legend items
+					$(".legendItem")
+						.toggleClass("clickable", !bFiltered)
+						.toggleClass("unavailable", bFiltered)
+						.prop("disabled", bFiltered);
 				}
 			},
 

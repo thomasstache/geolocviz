@@ -175,7 +175,7 @@ define(
 				var legend = $("#mapLegend");
 				if (legend && legend.length > 0)
 					this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
-				var filterbar = $("#filters");
+				var filterbar = $("#filterBar");
 				if (filterbar && filterbar.length > 0)
 					this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(filterbar[0]);
 
@@ -288,11 +288,16 @@ define(
 			 * @param  {Object} sectorProps List of key-value pairs that should match
 			 * @return {void}
 			 */
-			showMarkersForSector: function(sectorProps) {
+			filterResultsBySector: function(sectorProps) {
+
+				// unselect session and results
+				this.trigger("result:selected", null);
+				this.trigger("session:selected", null);
+
+				this.trigger("results:filtered");
 
 				// hide all result markers
 				this.showResultMarkers(false);
-				this.trigger("result:selected", null);
 
 				// list of result markers
 				var resultMarkers = this.overlays.filter(this.isResultMarker);
@@ -316,8 +321,12 @@ define(
 					}
 				);
 				this.setOverlaysVisible(sectorResults, true);
+			},
 
-				this.trigger("results:filtered");
+			clearAllResultFilters: function() {
+
+				// TODO: don't turn on everything, but obey visibility settings!
+				this.showResultMarkers(true);
 			},
 
 			/**
@@ -328,7 +337,7 @@ define(
 
 				if (!bShow) {
 					this.deleteCandidateMarkers();
-					this.appsettings.set({ drawReferenceLines: false, drawSessionLines: false });
+					this.deleteSessionOverlays();
 				}
 
 				this.showOverlaysForFilter(this.isResultMarker, bShow);
@@ -576,11 +585,7 @@ define(
 				// click event to the for the marker
 				google.maps.event.addListener(marker, 'dblclick',
 					function() {
-						var ci = {
-							netSegment: sector.get('netSegment'),
-							cellIdentity: sector.get('cellIdentity'),
-						};
-						view.showMarkersForSector(ci);
+						view.onSectorDblClick(this);
 					}
 				);
 
@@ -1001,7 +1006,27 @@ define(
 			},
 
 			/**
-			 * Handler for clicks on map markers.
+			 * Handler for double-clicks on sector markers.
+			 */
+			onSectorDblClick: function(marker) {
+
+				if (marker && marker.metaData) {
+
+					var md = marker.metaData;
+					if (md.model) {
+
+						var sector = md.model;
+						var ci = {
+							netSegment: sector.get('netSegment'),
+							cellIdentity: sector.get('cellIdentity'),
+						};
+						this.filterResultsBySector(ci);
+					}
+				}
+			},
+
+			/**
+			 * Handler for clicks on map result markers.
 			 */
 			onMarkerClick: function(marker) {
 
@@ -1027,7 +1052,7 @@ define(
 			},
 
 			/**
-			 * Handler for double-clicks on map markers.
+			 * Handler for double-clicks on map result markers.
 			 */
 			onMarkerDblClick: function(marker) {
 

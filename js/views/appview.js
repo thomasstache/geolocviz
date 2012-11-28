@@ -59,7 +59,7 @@ define(
 
 				// setup settings
 				this.settings = new Settings();
-				this.settingsview = new SettingsView({ model: this.settings });
+				this.settingsview = new SettingsView({ model: this.settings, appstate: this.model });
 
 				// setup map
 				this.mapview = new MapView({
@@ -321,14 +321,17 @@ define(
 			// Handler for the MapView's "results:filtered" event.
 			resultsFiltered: function() {
 
-				this.model.set("resultsFilterActive", true);
+				this.model.set({
+					resultsFilterActive: true,
+					focussedSessionId: -1
+				});
 			},
 
 			// Handler for the FilterView's "results:clear-filter" event.
 			resultsClearFilter: function() {
 
 				this.model.set("resultsFilterActive", false);
-				//this.mapview.showAllResults();
+				this.mapview.clearAllResultFilters();
 			},
 
 			// Handler for "session:focussed" event. Zoom the map view.
