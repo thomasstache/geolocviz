@@ -8,8 +8,11 @@
 {{#if sectors}}
 	<li><span class="label">Sectors:</span></li>
 	{{#each sectors}}
-	<li><span >{{id}}</span>
-		<span class="value">(CI: {{cellIdentity}} &#8599;{{azimuth}}d &#8738;{{beamwidth}}d)</span>
+	<li class="sectoritem"><span>{{id}}</span>
+		<span class="value">(CI:{{cellIdentity}}
+							{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
+							{{#if bcch}}BCCH:{{bcch}}{{/if}}
+							&#8599;{{azimuth}}d &#8738;{{beamwidth}}d)</span>
 	</li>
 	{{/each}}
 {{/if}}

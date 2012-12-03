@@ -239,11 +239,12 @@ button:active {
 	font-size: 0.9em;
 }
 
-.propertyList .fileitem {
+.propertyList .fileitem,
+.propertyList .sectoritem {
+	font-size: .9em;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	max-width: 20em;
 	padding-left: 5px;
 }
 
@@ -308,7 +309,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 		flex: 1;
 	}
 	#infoView {
-		width: 300px;
+		width: 350px;
 		margin-left: 10px;
 	}
 	.infoBlock {
@@ -341,6 +342,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 		-moz-box-flex: 1;
 		font-size: .9em;
 		line-height: 1.1em;
+		max-width: 20em;
 	}
 	.flexbox .infoBlock {
 		-webkit-flex: 1;

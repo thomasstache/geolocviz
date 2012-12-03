@@ -19,12 +19,12 @@ define(
 				netSegment: null,
 
 				// GSM sector attributes
-				bcch: -1,
-				bsic: -1,
+				bcch: null,
+				bsic: null,
 
 				// WCDMA sector attributes
-				scramblingCode: -1,
-				uarfcn: -1,
+				scramblingCode: null,
+				uarfcn: null,
 			},
 
 			initialize: function() {
@@ -36,9 +36,11 @@ define(
 				s += "CI: " + this.get('cellIdentity') +
 					 ", ↗" + this.get('azimuth') + "d";
 
-				if (this.get('bcch') > -1)
+				if (this.has('bcch'))
 					s += ", BCCH: " + this.get('bcch');
-				if (this.get('uarfcn') > -1)
+				if (this.has('scramblingCode'))
+					s += ", SC: " + this.get('scramblingCode');
+				if (this.has('uarfcn'))
 					s += ", UARFCN: " + this.get('uarfcn');
 
 				s += ")";
