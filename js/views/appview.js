@@ -289,13 +289,15 @@ define(
 			// Handler for "results:lookupElement" event. Lookup site/sector
 			resultsLookupElement: function(query) {
 
-				var sectorProps = {
-					netSegment:   query.controllerId,
-					cellIdentity: query.primaryCellId,
-				};
-				var site = this.siteList.findSiteWithSector(sectorProps);
-				if (site) {
-					this.siteSelected(site);
+				if (query.elementType === "sector") {
+
+					var site = this.siteList.findSiteWithSector(query.properties);
+					if (site) {
+						// remember last query
+						this.model.set("elementSearchQuery", query);
+
+						this.siteSelected(site);
+					}
 				}
 			},
 
@@ -352,6 +354,9 @@ define(
 
 			// Handler for the "site:selected" event from the mapview.
 			siteSelected: function(site) {
+
+				if (site === null)
+					this.model.set("elementSearchQuery", null);
 
 				this.model.set("selectedSite", site);
 				this.mapview.highlightSite(site, true);

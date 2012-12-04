@@ -248,6 +248,8 @@ button:active {
 	padding-left: 5px;
 }
 
+.sectoritem.highlighted { font-weight: bold; font-style: italic; }
+
 .flexboxlegacy .fileitem {
 	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
 }

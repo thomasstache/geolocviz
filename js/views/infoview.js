@@ -29,6 +29,9 @@ define(
 				"click .lookup-element": "onLookupElementClicked",
 			},
 
+			/** @type {AppState} the shared app state */
+			model: null,
+
 			initialize: function() {
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
@@ -103,6 +106,19 @@ define(
 
 				var site = this.model.get("selectedSite");
 				var context = site !== null ? site.getInfo() : {};
+
+				// highlight sectors according to current lookup query
+				if (context.sectors) {
+					var query = this.model.get("elementSearchQuery");
+					var sectorProps = query.properties || {};
+
+					var matching = _.where(context.sectors, sectorProps);
+					if (matching && matching.length > 0) {
+
+						_.each(matching, function(sector) {sector.highlight = true;});
+					}
+				}
+
 				$("#siteInfo").html(siteTemplate(context));
 				return this;
 			},
@@ -185,8 +201,11 @@ define(
 				if (result.has("primaryCellId") && result.has("controllerId")) {
 
 					var query = {
-						primaryCellId: result.get("primaryCellId"),
-						controllerId: result.get("controllerId")
+						elementType: "sector",
+						properties: {
+							cellIdentity: result.get("primaryCellId"),
+							netSegment: result.get("controllerId")
+						}
 					};
 					this.trigger("result:lookupElement", query);
 				}

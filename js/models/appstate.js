@@ -23,6 +23,10 @@ define(
 
 				// if the results are currently filtered
 				resultsFilterActive: false,
+
+				// last element query (after results:lookupElement)
+				elementSearchQuery: null,
+
 				// the model of the selected/active session
 				selectedSession: null,
 
