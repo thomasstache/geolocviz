@@ -40,6 +40,7 @@ define(
 				this.model.on("change:statistics", this.onStatisticsChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 				this.model.on("change:radioNetworkAvailable", this.updateResultsControls, this);
+				this.model.on("change:elementSearchQuery", this.onSiteChanged, this);
 
 				this.$tbSessionToolbar = $(".toolbar.sessionControls");
 				this.$tbResultsToolbar = $(".toolbar.resultControls");
@@ -108,7 +109,8 @@ define(
 				var context = site !== null ? site.getInfo() : {};
 
 				// highlight sectors according to current lookup query
-				if (context.sectors) {
+				if (context.sectors &&
+				    this.model.has("elementSearchQuery")) {
 					var query = this.model.get("elementSearchQuery");
 					var sectorProps = query.properties || {};
 
