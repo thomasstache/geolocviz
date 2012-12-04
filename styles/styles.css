@@ -248,6 +248,10 @@ button:active {
 	padding-left: 5px;
 }
 
+.flexboxlegacy .fileitem {
+	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
+}
+
 header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
