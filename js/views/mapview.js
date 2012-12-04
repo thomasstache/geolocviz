@@ -1059,29 +1059,20 @@ define(
 				if (marker && marker.metaData) {
 
 					var md = marker.metaData;
-					if (md.sessionId !== undefined &&
-						md.sessionId > 0) {
 
-						var session = this.collection.get(md.sessionId);
-						if (session) {
-							// connect session results
-							this.drawSessionLines(session);
+					if (md.type !== undefined &&
+						md.type === OverlayTypes.GEOLOCMARKER &&
+						md.model !== undefined) {
 
-							if (md.type !== undefined &&
-								md.type === OverlayTypes.GEOLOCMARKER &&
-								md.model !== undefined) {
-
-								// draw location candidates
-								var sample = md.model;
-								if (sample && sample instanceof AccuracyResult) {
-									this.drawCandidateMarkers(sample);
-								}
-							}
-							else {
-								// type unknown or "not geoloc"
-								this.deleteCandidateMarkers();
-							}
+						// draw location candidates
+						var sample = md.model;
+						if (sample && sample instanceof AccuracyResult) {
+							this.drawCandidateMarkers(sample);
 						}
+					}
+					else {
+						// type unknown or "not geoloc"
+						this.deleteCandidateMarkers();
 					}
 				}
 			},

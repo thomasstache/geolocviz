@@ -305,6 +305,8 @@ define(
 			sessionSelected: function(session) {
 
 				this.model.set("selectedSession", session);
+				// connect session results
+				this.mapview.drawSessionLines(session);
 			},
 
 			// Handler for "result:selected" event. Update the info display.
