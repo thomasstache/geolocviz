@@ -87,6 +87,20 @@ define(
 			return !isNaN(latLng.lat()) &&
 				   !isNaN(latLng.lng());
 		}
+		/**
+		 * Adds a given location to the list, if the location differs from the previous one.
+		 * @param  {Array} latLngArray The list of LatLng locations
+		 * @param  {LatLng} latLng      The new location
+		 * @return {void}
+		 */
+		function pushIfNewLocation(latLngArray, latLng) {
+			if (!(latLngArray instanceof Array &&
+			      latLng instanceof google.maps.LatLng))
+			    return;
+			if (latLngArray.length === 0 ||
+			    !latLng.equals(latLngArray[latLngArray.length - 1]))
+			    latLngArray.push(latLng);
+		}
 
 		var MapView = Backbone.View.extend({
 
@@ -863,12 +877,12 @@ define(
 
 							var latLng = sample.get('latLng');
 							if (isValidLatLng(latLng))
-								refLocations.push(latLng);
+								pushIfNewLocation(refLocations, latLng);
 
 							if (sample instanceof AccuracyResult) {
 								latLng = sample.getBestLocationCandidate().get('latLng');
 								if (isValidLatLng(latLng))
-									bestLocations.push(latLng);
+									pushIfNewLocation(bestLocations, latLng);
 							}
 						});
 

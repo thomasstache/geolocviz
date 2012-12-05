@@ -112,6 +112,7 @@ define(
 				if (context.sectors &&
 				    this.model.has("elementSearchQuery")) {
 					var query = this.model.get("elementSearchQuery");
+					// TODO: check for query.elementType === "sector"
 					var sectorProps = query.properties || {};
 
 					var matching = _.where(context.sectors, sectorProps);
