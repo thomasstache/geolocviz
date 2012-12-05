@@ -85,6 +85,12 @@ define(
 
 			//////////////////////////////////////////////////////////////////////////
 
+			var DataTypes = Object.freeze({
+				STRING: "string",
+				FLOAT: "float",
+				INTEGER: "int",
+			});
+
 			/** @type {Object} map of attributes to column indices in the current "format block" */
 			var attributeColumnIndex = {};
 
@@ -251,13 +257,14 @@ define(
 							tech = Site.TECH_UNKNOWN;
 					}
 
-					siteList.add({
+					var props = {
 						id: getAttr(record, SiteAttributes.SITE_ID),
 						technology: tech,
 						name: getAttr(record, SiteAttributes.SITE_NAME),
 						latLng: new google.maps.LatLng(parseNumber(getAttr(record, SiteAttributes.GEO_LAT)),
 													   parseNumber(getAttr(record, SiteAttributes.GEO_LON)))
-					}, OPT_SILENT);
+					};
+					siteList.add(props, OPT_SILENT);
 				}
 				return bOk;
 			}
@@ -281,28 +288,32 @@ define(
 						// common properties
 						var props = {
 							id: sectorId,
-							azimuth: getAttr(record, SectorAttributes.AZIMUTH),
-							beamwidth: getAttr(record, SectorAttributes.BEAMWIDTH),
+							azimuth: getAttr(record, SectorAttributes.AZIMUTH, DataTypes.INTEGER),
+							beamwidth: getAttr(record, SectorAttributes.BEAMWIDTH, DataTypes.FLOAT),
 						};
 
 						// technology-dependent properties
 						var elementType = getAttr(record, SectorAttributes.ELEMENTTYPE);
 						switch (elementType) {
 							case "GSM_Cell":
-								props.bcch = getAttr(record, SectorAttributes.GSM_BCCH);
-								props.bsic = getAttr(record, SectorAttributes.GSM_BSIC);
+								props.bcch = getAttr(record, SectorAttributes.GSM_BCCH, DataTypes.INTEGER);
+								props.bsic = getAttr(record, SectorAttributes.GSM_BSIC, DataTypes.INTEGER);
 
-								props.cellIdentity = getAttr(record, SectorAttributes.GSM_CI);
-								props.netSegment = getAttr(record, SectorAttributes.LAC);
+								props.cellIdentity = getAttr(record, SectorAttributes.GSM_CI, DataTypes.INTEGER);
+								props.netSegment = getAttr(record, SectorAttributes.LAC, DataTypes.INTEGER);
 								break;
 							case "WCDMA_Cell":
-								props.scramblingCode = getAttr(record, SectorAttributes.WCDMA_SC);
-								props.uarfcn = getAttr(record, SectorAttributes.WCDMA_UARFCN);
+								props.scramblingCode = getAttr(record, SectorAttributes.WCDMA_SC, DataTypes.INTEGER);
+								props.uarfcn = getAttr(record, SectorAttributes.WCDMA_UARFCN, DataTypes.INTEGER);
 
-								props.cellIdentity = getAttr(record, SectorAttributes.WCDMA_CI);
-								props.netSegment = getAttr(record, SectorAttributes.WCDMA_RNCID);
+								props.cellIdentity = getAttr(record, SectorAttributes.WCDMA_CI, DataTypes.INTEGER);
+								props.netSegment = getAttr(record, SectorAttributes.WCDMA_RNCID, DataTypes.INTEGER);
 								break;
 						}
+
+						// some datasets don't have a valid RNCID, use a default value
+						if (!props.netSegment)
+							props.netSegment = -1;
 
 						site.addSector(props, OPT_SILENT);
 					}
@@ -318,17 +329,23 @@ define(
 			 * Helper function for picking an attribute value from "record" array.
 			 * @param  {Array} record             The row items split from the CSV
 			 * @param  {SiteAttributes} attribute Key of the attribute to retrieve
+			 * @param  {DataTypes} dataType       The data type to return ()
 			 * @return {Object}                   The attribute value
 			 */
-			function getAttr(record, attribute) {
+			function getAttr(record, attribute, dataType) {
 
 				var val;
+				var type = dataType || DataTypes.STRING;
 				var colIndex = attributeColumnIndex[attribute];
 
 				if (colIndex !== undefined &&
 					colIndex >= 0 && colIndex < record.length) {
 
 					val = record[colIndex];
+					if (type === DataTypes.FLOAT)
+						val = parseNumber(val);
+					else if (type === DataTypes.INTEGER)
+						val = parseInt(val, 10);
 				}
 				else {
 					console.log("Attribute '" + attribute + "' not found.");

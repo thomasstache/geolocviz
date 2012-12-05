@@ -281,15 +281,15 @@ define(
 													   parseNumber(record[IDX.GEO_LON]));
 
 				var props = {
-					msgId: record[IDX.MSGID],
-					sessionId: sessionId,
-					timestamp: record[IDX.TIMEOFFSET],
+					msgId: parseNumber(record[IDX.MSGID]),
+					sessionId: sessionId, // intentionally as String, as it gets very long
+					timestamp: parseNumber(record[IDX.TIMEOFFSET]),
 					latLng: geoLatLng,
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
 					probIndoor: percent2Decimal(probIndoor),
-					controllerId: controllerId,
-					primaryCellId: primaryCellId
+					controllerId: parseNumber(controllerId),
+					primaryCellId: parseNumber(primaryCellId)
 				};
 
 				var session = getSession(sessionId);
