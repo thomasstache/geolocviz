@@ -41,8 +41,6 @@ define(
 				this.get("files").push(filestats);
 
 				// willfully using '!=' to test against undefined and null
-				if (filestats.numRows != null)
-					this.addTo("numRows", filestats.numRows);
 				if (filestats.numResults != null)
 					this.addTo("numResults", filestats.numResults);
 				if (filestats.numResultsAndCandidates != null)

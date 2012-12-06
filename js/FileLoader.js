@@ -135,7 +135,6 @@ define(
 
 				currentAccuracyResult = null;
 
-				stats.numRows = 0,
 				stats.numResults = 0,
 				stats.numResultsAndCandidates = 0;
 
@@ -166,7 +165,6 @@ define(
 				for (var ct = 1; ct < rowData.length; ct++) {
 					parsingFct(rowData[ct], stats);
 				}
-				stats.numRows = rowData.length - 1;
 
 				currentAccuracyResult = null; // release
 				sessionList.trigger('add');
