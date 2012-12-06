@@ -254,8 +254,8 @@ button:active {
 	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
 }
 
-button.lookup-element       { background-color: rgba(221, 206, 147, 0.6); }
-button.lookup-element:hover { background-color: rgba(231, 215, 152, 0.45); }
+button.lookup-element       { background-color: rgba(230, 180, 23, 0.2); }
+button.lookup-element:hover { background-color: rgba(247, 216, 119, 0.4); }
 
 header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	-webkit-user-select: none;
