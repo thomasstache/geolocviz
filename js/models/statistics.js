@@ -25,6 +25,18 @@ define(
 				this.set("files", []);
 			},
 
+			/**
+			 * Reset the attributes corresponding to results data to their defaults.
+			 */
+			resetResultsData: function() {
+				this.set({
+					numSessions: this.defaults.numSessions,
+					numResults: this.defaults.numResults,
+					numResultsAndCandidates: this.defaults.numResultsAndCandidates,
+				});
+				// TODO: comb through "files" array and remove result files
+			},
+
 			addFileStats: function(filestats) {
 				this.get("files").push(filestats);
 

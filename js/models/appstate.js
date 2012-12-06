@@ -42,6 +42,27 @@ define(
 				/** @type {Statistics} model containing statistics about loaded files and records */
 				statistics: null
 			},
+
+			/**
+			 * Reset the attributes corresponding to results data to their defaults.
+			 */
+			resetResultsData: function() {
+				this.set({
+					referenceLocationsAvailable: false,
+					candidateLocationsAvailable: false,
+					resultsFilterActive: false,
+					elementSearchQuery: null,
+					selectedSession: null,
+					selectedResult: null,
+					focussedSessionId: -1,
+				});
+
+				if (this.has("statistics")) {
+					var stats = this.get("statistics");
+					stats.resetResultsData();
+					this.trigger("change:statistics");
+				}
+			}
 		});
 
 		return AppState;

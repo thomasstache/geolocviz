@@ -15,10 +15,11 @@ define(
 			el: $("#playground-app"),
 
 			events: {
-				"change #fileInput"          : "fileInputChanged",
-				"change #searchSessionInput" : "searchSessionInputChanged",
-				"click #cmdClearData"        : "clearData",
-				"drop #fileDropZone"         : "dropHandler"
+				"change #fileInput"      : "fileInputChanged",
+				"change #searchInput"    : "searchInputChanged",
+				"click #cmdClearAllData" : "clearData",
+				"click #cmdClearResults" : "clearResults",
+				"drop #fileDropZone"     : "dropHandler"
 			},
 
 			/** @type {AppState} model containing shared application state, like selection state or statistics */
@@ -98,18 +99,27 @@ define(
 					this.legendview.$el.hide();
 			},
 
-			clearData: function() {
+			clearResults: function() {
+				this.model.resetResultsData();
 				this.sessions.reset();
+			},
+
+			clearData: function() {
+				this.clearResults();
 				this.siteList.reset();
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
+				this.clearSearchField();
 				this.clearFileForm();
 			},
 
 			// reset the form to clear old file names
 			clearFileForm: function() {
 				$("#fileForm")[0].reset();
+			},
+			clearSearchField: function() {
+				$("#searchInput").prop("value", "");
 			},
 
 			// Check for the various File API support.
@@ -261,8 +271,8 @@ define(
 
 			/*********************** Search and Lookups ***********************/
 
-			// Handler for "change" event from the session search field.
-			searchSessionInputChanged: function(evt) {
+			// Handler for "change" event from the search field.
+			searchInputChanged: function(evt) {
 
 				var searchText = evt.target.value;
 				var session = this.sessions.get(searchText);

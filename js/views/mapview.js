@@ -22,7 +22,7 @@ define(
 			AXFMARKER: "axfMarker",
 			CANDIDATEMARKER: "candidateMarker",
 			REFERENCELINE: "refLine",
-			SESSIONVIZ: "sessionViz",
+			SESSIONLINE: "sessionLine",
 			SELECTIONVIZ: "selectionViz",
 			DEBUG: "debug"
 		});
@@ -172,8 +172,7 @@ define(
 				//Associate the styled map with the MapTypeId and set it to display.
 				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 
-				// TODO: 20121017 change to not delete network!
-				this.collection.on("reset", this.deleteAllOverlays, this);
+				this.collection.on("reset", this.deleteResultOverlays, this);
 
 				// a collection to keep our overlays in sight
 				this.overlays = new OverlayList();
@@ -368,9 +367,10 @@ define(
 				this.highlightedSessionId = -1;
 				this.highlightedCandidateSampleCid = -1;
 
-				this.selectedSiteHighlight = null;
 				this.selectedMarkerHighlight = null;
 				this.selectedMarkerHighlightBestLoc = null;
+
+				this.selectedSiteHighlight = null;
 			},
 
 			/**
@@ -382,6 +382,32 @@ define(
 				this.selectedSiteHighlight = null;
 				this.deleteOverlaysForType(OverlayTypes.SITE);
 				this.deleteOverlaysForType(OverlayTypes.SECTOR);
+			},
+
+			/**
+			 * Removes all result + session overlays from the map.
+			 * @return {void}
+			 */
+			deleteResultOverlays: function() {
+
+				function filterFct(overlay) {
+
+					var type = overlay.get('type');
+					return (type === OverlayTypes.GEOLOCMARKER ||
+							type === OverlayTypes.AXFMARKER ||
+							type === OverlayTypes.REFERENCEMARKER ||
+							type === OverlayTypes.CANDIDATEMARKER ||
+							type === OverlayTypes.SESSIONLINE ||
+							type === OverlayTypes.REFERENCELINE);
+				}
+
+				var list = this.overlays.filter(filterFct);
+				this.deleteOverlays(list);
+
+				this.highlightedSessionId = -1;
+				this.highlightedCandidateSampleCid = -1;
+
+				this.highlightResult(null);
 			},
 
 			/**
@@ -446,7 +472,7 @@ define(
 
 				if (event.changed.drawSessionLines !== undefined) {
 					// show or hide session lines
-					this.showOverlaysForType(OverlayTypes.SESSIONVIZ, event.changed.drawSessionLines);
+					this.showOverlaysForType(OverlayTypes.SESSIONLINE, event.changed.drawSessionLines);
 				}
 
 				if (event.changed.drawMarkers_R !== undefined) {
@@ -886,8 +912,8 @@ define(
 							}
 						});
 
-						this.createLine(refLocations, "#4AB0F5", 6, 0.8, OverlayTypes.SESSIONVIZ);
-						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONVIZ);
+						this.createLine(refLocations, "#4AB0F5", 6, 0.8, OverlayTypes.SESSIONLINE);
+						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE);
 					}
 				}
 			},
@@ -899,7 +925,7 @@ define(
 			deleteSessionOverlays: function() {
 
 				// remove old lines and markers
-				this.deleteOverlaysForType(OverlayTypes.SESSIONVIZ);
+				this.deleteOverlaysForType(OverlayTypes.SESSIONLINE);
 				this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
 
 				this.highlightedSessionId = -1;
@@ -926,7 +952,7 @@ define(
 					};
 
 					// apply line symbols for session lines
-					if (type === OverlayTypes.SESSIONVIZ) {
+					if (type === OverlayTypes.SESSIONLINE) {
 						options.icons = [{
 							icon: {
 								path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
