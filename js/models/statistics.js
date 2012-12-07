@@ -67,7 +67,9 @@ define(
 					if (types.indexOf(file.type) >= 0)
 						obsolete.push(file);
 				}
-				this.set("files", _.difference(files, obsolete));
+
+				if (obsolete.length > 0)
+					this.set("files", _.difference(files, obsolete));
 			},
 
 			addTo: function(attribute, value) {
