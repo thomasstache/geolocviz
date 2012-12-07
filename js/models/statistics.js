@@ -1,7 +1,7 @@
 define(
-	["backbone"],
+	["underscore", "backbone"],
 
-	function(Backbone) {
+	function(_, Backbone) {
 
 		var Statistics = Backbone.Model.extend({
 
@@ -33,27 +33,52 @@ define(
 					numSessions: this.defaults.numSessions,
 					numResults: this.defaults.numResults,
 					numResultsAndCandidates: this.defaults.numResultsAndCandidates,
-				});
-				// TODO: comb through "files" array and remove result files
+				},
+				OPT_SILENT);
 			},
 
 			addFileStats: function(filestats) {
+				// willfully using '!=' to test against undefined and null
+				/*jshint eqnull:true*/
+
 				this.get("files").push(filestats);
 
-				// willfully using '!=' to test against undefined and null
 				if (filestats.numResults != null)
 					this.addTo("numResults", filestats.numResults);
 				if (filestats.numResultsAndCandidates != null)
 					this.addTo("numResultsAndCandidates", filestats.numResultsAndCandidates);
 			},
 
+			/**
+			 * Removes all entries from the files array matching one of the given file types.
+			 * @param  {Array} typeList List of types to remove.
+			 * @return {void}
+			 */
+			removeFileStatsForType: function(typeList) {
+				var types = typeList || [],
+					obsolete = [],
+					file, files = this.get("files");
+
+				if (!types.length || !files.length)
+					return;
+
+				for (var i = 0; i < files.length; i++) {
+					file = files[i];
+					if (types.indexOf(file.type) >= 0)
+						obsolete.push(file);
+				}
+				this.set("files", _.difference(files, obsolete));
+			},
+
 			addTo: function(attribute, value) {
 				if (this.has(attribute)) {
 					var current = this.get(attribute);
-					this.set(attribute, current + value);
+					this.set(attribute, current + value, OPT_SILENT);
 				}
 			}
 		});
+
+		var OPT_SILENT = Object.freeze({ silent: true });
 
 		return Statistics;
 	}

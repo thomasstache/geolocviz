@@ -99,14 +99,32 @@ define(
 					this.legendview.$el.hide();
 			},
 
+			/**
+			 * Clears results data and related state and statistics.
+			 */
 			clearResults: function() {
+
+				// update app state (selections et al)
 				this.model.resetResultsData();
+				this.clearFileForm();
+
+				// update statistics
+				if (this.model.has("statistics")) {
+					var stats = this.model.get("statistics");
+					stats.removeFileStatsForType([FileLoader.FileTypes.ACCURACY, FileLoader.FileTypes.AXF]);
+				}
+
 				this.sessions.reset();
 			},
 
+			/**
+			 * Clears all data.
+			 */
 			clearData: function() {
-				this.clearResults();
+
+				this.sessions.reset();
 				this.siteList.reset();
+
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
@@ -177,7 +195,7 @@ define(
 
 				var stats = this.model.get("statistics");
 				stats.addFileStats(filestats);
-				stats.set("numSessions", this.sessions.length);
+				stats.set("numSessions", this.sessions.length, OPT_SILENT);
 
 				if (filestats.type === FileLoader.FileTypes.CELLREF) {
 
@@ -186,7 +204,8 @@ define(
 					stats.set({
 						numSectors: numSectors,
 						numSites: this.siteList.length,
-					});
+					},
+					OPT_SILENT);
 				}
 				else if (filestats.type === FileLoader.FileTypes.ACCURACY) {
 
@@ -196,7 +215,7 @@ define(
 					});
 				}
 
-				this.model.trigger("change:statistics");
+				stats.trigger("change");
 
 				this.numFilesQueued--;
 				if (this.numFilesQueued === 0)
@@ -427,6 +446,8 @@ define(
 				$("html").toggleClass("wait", event.changed.busy);
 			}
 		});
+
+		var OPT_SILENT = Object.freeze({ silent: true });
 
 		return AppView;
 	}

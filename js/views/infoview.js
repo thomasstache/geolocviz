@@ -37,10 +37,11 @@ define(
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
 				this.model.on("change:selectedResult", this.onResultChanged, this);
 				this.model.on("change:selectedSite", this.onSiteChanged, this);
-				this.model.on("change:statistics", this.onStatisticsChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 				this.model.on("change:radioNetworkAvailable", this.updateResultsControls, this);
 				this.model.on("change:elementSearchQuery", this.onSiteChanged, this);
+				// indicates new Statistics model
+				this.model.on("change:statistics", this.onStatisticsRefChanged, this);
 
 				this.$tbSessionToolbar = $(".toolbar.sessionControls");
 				this.$tbResultsToolbar = $(".toolbar.resultControls");
@@ -73,8 +74,21 @@ define(
 				this.renderSiteInfo();
 			},
 
-			onStatisticsChanged: function() {
-				this.renderStatistics();
+			onStatisticsRefChanged: function(event) {
+
+				if (event.changed.statistics !== undefined) {
+					// the Statistics model reference has changed
+
+					var oldStats = event.previous("statistics");
+					if (oldStats)
+						oldStats.off("change", this.renderStatistics);
+
+					var newStats = event.changed.statistics;
+					if (newStats)
+						newStats.on("change", this.renderStatistics, this);
+
+					this.renderStatistics();
+				}
 			},
 
 			// Render the templates with the current context data.

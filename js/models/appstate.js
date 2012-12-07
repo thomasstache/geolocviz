@@ -60,7 +60,6 @@ define(
 				if (this.has("statistics")) {
 					var stats = this.get("statistics");
 					stats.resetResultsData();
-					this.trigger("change:statistics");
 				}
 			}
 		});
