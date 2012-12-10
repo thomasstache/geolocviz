@@ -37,7 +37,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
     slice = classes.slice,
 
-    featureName, 
+    featureName,
 
 
     injectElementWithStyles = function( rule, callback, nodes, testnames ) {
@@ -97,7 +97,7 @@ window.Modernizr = (function( window, document, undefined ) {
       return bool;
 
      },
- 
+
 
     isEventSupported = (function() {
 
@@ -144,7 +144,7 @@ window.Modernizr = (function( window, document, undefined ) {
       };
     }
     else {
-      hasOwnProp = function (object, property) { 
+      hasOwnProp = function (object, property) {
         return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
       };
     }
@@ -247,17 +247,20 @@ window.Modernizr = (function( window, document, undefined ) {
           props = (prop + ' ' + (domPrefixes).join(ucProp + ' ') + ucProp).split(' ');
           return testDOMProps(props, prefixed, elem);
         }
-    }    tests['flexbox'] = function() {
+    }
+    tests['flexbox'] = function() {
       return testPropsAll('flexGrow');
     };
 
 
     tests['flexboxlegacy'] = function() {
         return testPropsAll('boxDirection');
-    };    tests['draganddrop'] = function() {
+    };
+    tests['draganddrop'] = function() {
         var div = document.createElement('div');
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
-    };    for ( var feature in tests ) {
+    };
+    for ( var feature in tests ) {
         if ( hasOwnProp(tests, feature) ) {
                                     featureName  = feature.toLowerCase();
             Modernizr[featureName] = tests[feature]();
@@ -292,7 +295,7 @@ window.Modernizr = (function( window, document, undefined ) {
 
        }
 
-       return Modernizr; 
+       return Modernizr;
      };
 
 
