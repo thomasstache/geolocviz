@@ -12,9 +12,9 @@
 	{{#if distance}}
 	<li><span class="label">Distance:</span> <span class="value">{{distance}}m</span></li>
 	{{/if}}
-	<li><span class="label">Confidence:</span> <span class="value">{{confidence}}</span></li>
-	<li><span class="label">P_mobile:</span> <span class="value">{{probMobility}}</span></li>
-	<li><span class="label">P_indoor:</span> <span class="value">{{probIndoor}}</span></li>
+	<li><span class="label">Confidence:</span> <span class="value">{{percent confidence}}</span></li>
+	<li><span class="label">P_mobile:</span> <span class="value">{{percent probMobility}}</span></li>
+	<li><span class="label">P_indoor:</span> <span class="value">{{percent probIndoor}}</span></li>
 	{{#if candidateCount}}
 	<li><span class="label">Candidates:</span> <span class="value">{{candidateCount}}</span></li>
 	{{/if}}

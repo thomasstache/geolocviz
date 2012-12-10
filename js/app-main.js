@@ -20,7 +20,8 @@ requirejs.config({
 		backbone: 'lib/backbone',
 	},
 	hbs: {
-		disableI18n: true
+		disableI18n: true,
+		helperDirectory: '../templates/helpers/'
 	}
 });
 

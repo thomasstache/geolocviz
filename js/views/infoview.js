@@ -112,7 +112,9 @@ define(
 			renderResultInfo: function() {
 
 				var result = this.model.get("selectedResult");
-				$("#resultInfo").html(resultTemplate(result !== null ? result.getInfo() : {}));
+				var context = result !== null ? result.getInfo() : {};
+
+				$("#resultInfo").html(resultTemplate(context));
 				return this;
 			},
 
