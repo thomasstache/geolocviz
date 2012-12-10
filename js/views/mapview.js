@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult) {
+	 "models/AccuracyResult", "models/axfresult", "models/position"],
+	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -135,44 +135,54 @@ define(
 
 			initialize: function() {
 
-				var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
+				try {
+					var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
 
-				// include the custom MapTypeId to add to the map type control.
-				var mapOptions = {
-					zoom: 16,
-					center: mapCenter,
-					disableDefaultUI: true,
-					zoomControl: true,
-					mapTypeControl: true,
-					//scaleControl: true,
-					mapTypeControlOptions: {
-						mapTypeIds: [
-							STYLED_MAPTYPE_ID,
-							// google.maps.MapTypeId.ROADMAP,
-							google.maps.MapTypeId.SATELLITE,
-							google.maps.MapTypeId.HYBRID,
-						]
-					},
-					mapTypeId: STYLED_MAPTYPE_ID
-				};
+					// include the custom MapTypeId to add to the map type control.
+					var mapOptions = {
+						zoom: 16,
+						center: mapCenter,
+						disableDefaultUI: true,
+						zoomControl: true,
+						mapTypeControl: true,
+						//scaleControl: true,
+						mapTypeControlOptions: {
+							mapTypeIds: [
+								STYLED_MAPTYPE_ID,
+								// google.maps.MapTypeId.ROADMAP,
+								google.maps.MapTypeId.SATELLITE,
+								google.maps.MapTypeId.HYBRID,
+							]
+						},
+						mapTypeId: STYLED_MAPTYPE_ID
+					};
 
-				// (from https://developers.google.com/maps/documentation/javascript/styling)
-				// Create a new StyledMapType object, passing it the array of styles,
-				// as well as the name to be displayed on the map type control.
-				var styledMapType = new google.maps.StyledMapType(simpleMapStyles, {name: "Map"});
+					// (from https://developers.google.com/maps/documentation/javascript/styling)
+					// Create a new StyledMapType object, passing it the array of styles,
+					// as well as the name to be displayed on the map type control.
+					var styledMapType = new google.maps.StyledMapType(simpleMapStyles, {name: "Map"});
 
-				// Force the height of the map to fit the window
-				//this.$el.height($(window).height() - $("header").height());
+					// setup Google Maps component
+					this.map = new google.maps.Map(this.el, mapOptions);
 
-				// setup Google Maps component
-				this.map = new google.maps.Map(this.el, mapOptions);
+					this.resetBounds();
 
-				this.resetBounds();
+					//Associate the styled map with the MapTypeId and set it to display.
+					this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 
-				//Associate the styled map with the MapTypeId and set it to display.
-				this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
+					// pull legend into the map, add it to map controls
+					var legend = $("#mapLegend");
+					if (legend && legend.length > 0)
+						this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
+					var filterbar = $("#filterBar");
+					if (filterbar && filterbar.length > 0)
+						this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(filterbar[0]);
 
-				this.collection.on("reset", this.deleteResultOverlays, this);
+					this.initialized = true;
+				}
+				catch (e) {
+					this.initialized = false;
+				}
 
 				// a collection to keep our overlays in sight
 				this.overlays = new OverlayList();
@@ -180,20 +190,23 @@ define(
 				this.siteList = this.options.siteList;
 				this.siteList.on("reset", this.deleteNetworkOverlays, this);
 
+				this.collection.on("reset", this.deleteResultOverlays, this);
+
 				// listen for settings changes
 				this.appsettings = this.options.settings;
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
-				// pull legend into the map, add it to map controls
-				var legend = $("#mapLegend");
-				if (legend && legend.length > 0)
-					this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
-				var filterbar = $("#filterBar");
-				if (filterbar && filterbar.length > 0)
-					this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(filterbar[0]);
-
 				// make available for console scripting
 //				window.mapview = this;
+			},
+
+			/**
+			 * Check for availabitity of the Google Maps API
+			 * @return {Boolean} Returns true if the API is available.
+			 */
+			hasGoogleMaps: function() {
+				return (window.google !== undefined &&
+						google.maps !== undefined);
 			},
 
 			/**
@@ -509,6 +522,9 @@ define(
 			// Draw the radio network consisting of sites and sectors
 			drawNetwork: function() {
 
+				if (!this.hasGoogleMaps())
+					return;
+
 				// only zoom to the whole network if we don't have results displayed
 				var bZoomToNetwork = this.collection.length === 0;
 
@@ -531,7 +547,7 @@ define(
 			drawSite: function(site, bZoomToNetwork) {
 
 				var view = this;
-				var latLng = site.get('latLng');
+				var latLng = this.makeLatLng(site.get('position'));
 
 				// helper function to collect and format tooltip data
 				function makeTooltip(site) {
@@ -581,7 +597,7 @@ define(
 				if (site &&
 					site.getSectors().length > 0) {
 
-					var latLng = site.get('latLng');
+					var latLng = this.makeLatLng(site.get('position'));
 					if (isValidLatLng(latLng)) {
 
 						var sectorColl = site.getSectors();
@@ -635,6 +651,9 @@ define(
 			// draw all markers for all sessions
 			drawResultMarkers: function() {
 
+				if (!this.hasGoogleMaps())
+					return;
+
 				this.resetBounds();
 				// capture the "this" scope
 				var view = this;
@@ -661,7 +680,7 @@ define(
 
 					var color = null;
 					if (sample instanceof AccuracyResult) {
-						var refLoc = sample.get('latLng');
+						var refLoc = view.makeLatLng(sample.get('position'));
 
 						// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
 						if (isValidLatLng(refLoc)) {
@@ -676,7 +695,7 @@ define(
 						}
 
 						var bestCand = sample.getBestLocationCandidate();
-						var bestLoc = bestCand.get('latLng');
+						var bestLoc = view.makeLatLng(bestCand.get('position'));
 						color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
 							  : (bestCand.category() == "I") ? MarkerColors.INDOOR
 							  : MarkerColors.GEOLOCATED;
@@ -694,7 +713,7 @@ define(
 					}
 					else if (sample instanceof AxfResult) {
 
-						var location = sample.get('latLng');
+						var location = view.makeLatLng(sample.get('position'));
 						color = (sample.category() == "S") ? MarkerColors.STATIONARY
 							  : (sample.category() == "I") ? MarkerColors.INDOOR
 							  : MarkerColors.GEOLOCATED;
@@ -730,8 +749,9 @@ define(
 					for (var i = 1; i < sample.locationCandidates.length; i++) {
 
 						var candidate = sample.locationCandidates.at(i);
+						var latLng = this.makeLatLng(candidate.get('position'));
 						this.createMarker(OverlayTypes.CANDIDATEMARKER,
-										  candidate.get('latLng'),
+										  latLng,
 										  "#" + sample.get('msgId'),
 										  MarkerColors.CANDIDATE,
 										  sample,
@@ -764,7 +784,7 @@ define(
 				if (type === OverlayTypes.AXFMARKER) {
 
 					icon = this.getMarkerImage(letter);
-/*					icon = {
+					/*icon = {
 						path: google.maps.SymbolPath.CIRCLE,
 						fillColor: "#" + colorDef.bgcolor,
 						fillOpacity: 1,
@@ -773,7 +793,8 @@ define(
 						strokeOpacity: "0.6",
 						strokeWeight: 1,
 					};
-*/				}
+					*/
+				}
 				else {
 					var color = colorDef.bgcolor + "|" + colorDef.color;
 
@@ -882,6 +903,8 @@ define(
 				if (!session)
 					return;
 
+				var view = this;
+
 				// check if the session actually changed
 				if (this.highlightedSessionId !== session.id) {
 
@@ -901,12 +924,12 @@ define(
 						// extract the non-NaN locations
 						session.results.each(function(sample) {
 
-							var latLng = sample.get('latLng');
+							var latLng = view.makeLatLng(sample.get('position'));
 							if (isValidLatLng(latLng))
 								pushIfNewLocation(refLocations, latLng);
 
 							if (sample instanceof AccuracyResult) {
-								latLng = sample.getBestLocationCandidate().get('latLng');
+								latLng = view.makeLatLng(sample.getBestLocationCandidate().get('position'));
 								if (isValidLatLng(latLng))
 									pushIfNewLocation(bestLocations, latLng);
 							}
@@ -1135,14 +1158,15 @@ define(
 				// determine the extents of the session
 				var sessionRect = new google.maps.LatLngBounds();
 
+				var view = this;
 				session.results.each(function(sample) {
 
-					var latLng = sample.get('latLng');
+					var latLng = view.makeLatLng(sample.get('position'));
 					if (isValidLatLng(latLng))
 						sessionRect.extend(latLng);
 
 					if (sample instanceof AccuracyResult) {
-						latLng = sample.getBestLocationCandidate().get('latLng');
+						latLng = view.makeLatLng(sample.getBestLocationCandidate().get('position'));
 						if (isValidLatLng(latLng))
 							sessionRect.extend(latLng);
 					}
@@ -1161,7 +1185,7 @@ define(
 				if (result !== null &&
 				    result !== undefined) {
 
-					var latLng = result.get('latLng');
+					var latLng = this.makeLatLng(result.get('position'));
 					// draw a highlight around the result
 
 					if (!this.selectedMarkerHighlight) {
@@ -1184,7 +1208,7 @@ define(
 							this.selectedMarkerHighlightBestLoc = this.createHighlightCircle();
 						}
 
-						latLng = result.getBestLocationCandidate().get('latLng');
+						latLng = this.makeLatLng(result.getBestLocationCandidate().get('position'));
 						bShow = isValidLatLng(latLng);
 						if (bShow) {
 							this.selectedMarkerHighlightBestLoc.setPosition(latLng);
@@ -1217,7 +1241,7 @@ define(
 						this.selectedSiteHighlight = this.createHighlightForSites();
 					}
 
-					var latLng = site.get('latLng');
+					var latLng = this.makeLatLng(site.get('position'));
 					var bShow = isValidLatLng(latLng);
 					if (bShow) {
 						// update the position
@@ -1242,7 +1266,17 @@ define(
 					// reset previous highlighted site
 					this.setMarkerVisible(this.selectedSiteHighlight, false);
 				}
+			},
+
+			makeLatLng: function(pos) {
+
+				var latLng;
+				if (pos instanceof Position) {
+					latLng = new google.maps.LatLng(pos.lat, pos.lon);
+				}
+				return latLng;
 			}
+
 		});
 
 		return MapView;
