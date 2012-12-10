@@ -267,8 +267,8 @@ define(
 
 				// session id and primary cell only in extended (XT) files
 				var sessionId     = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID] : SESSION_ID_DEFAULT;
-				var controllerId  = (record.length == LineLengths.AXF_XT) ? record[IDX.CONTROLLER] : NaN;
-				var primaryCellId = (record.length == LineLengths.AXF_XT) ? record[IDX.CELL_ID] : NaN;
+				var controllerId  = (record.length == LineLengths.AXF_XT) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
+				var primaryCellId = (record.length == LineLengths.AXF_XT) ? parseNumber(record[IDX.CELL_ID]) : NaN;
 
 				var props = {
 					msgId: parseNumber(record[IDX.MSGID]),
@@ -279,8 +279,8 @@ define(
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
 					probIndoor: percent2Decimal(probIndoor),
-					controllerId: parseNumber(controllerId),
-					primaryCellId: parseNumber(primaryCellId)
+					controllerId: controllerId,
+					primaryCellId: primaryCellId
 				};
 
 				var session = getSession(sessionId);
@@ -307,6 +307,9 @@ define(
 			 * Helper function to validate and convert numeric values.
 			 */
 			function parseNumber(text) {
+				if (typeof text === "number")
+					return text;
+
 				if (text.indexOf(",") > 0)
 					text = text.replace(",", ".");
 
