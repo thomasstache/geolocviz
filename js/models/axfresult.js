@@ -12,8 +12,8 @@ define(
 				// id of the "call" session
 				sessionId: -1,
 
-				// position
-				latLng: null,
+				// @type {Position} geolocated position
+				position: null,
 				// confidence value after the combiner
 				confidence: 0.0,
 				// mobile session probability as decimal

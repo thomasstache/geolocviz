@@ -10,8 +10,8 @@ define(
 				msgId: -1,
 				// id of the "call" session
 				sessionId: -1,
-				// geolocated position
-				latLng: null,
+				// @type {Position} geolocated position
+				position: null,
 			},
 
 			category: function() {

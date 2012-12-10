@@ -11,8 +11,8 @@ define(
 				msgId: -1,
 				// id of the "call" session
 				sessionId: -1,
-				// reference position
-				latLng: null,
+				// @type {Position} reference position
+				position: null,
 			},
 
 			/** @type {LocationCandidateList} collection of LocationCandidates */

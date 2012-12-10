@@ -1,9 +1,9 @@
 define(
 	["underscore",
 	 "collections/sites",
-	 "models/site"],
+	 "models/site", "models/position"],
 
-	function(_, SiteList, Site) {
+	function(_, SiteList, Site, Position) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -261,8 +261,8 @@ define(
 						id: getAttr(record, SiteAttributes.SITE_ID),
 						technology: tech,
 						name: getAttr(record, SiteAttributes.SITE_NAME),
-						latLng: new google.maps.LatLng(parseNumber(getAttr(record, SiteAttributes.GEO_LAT)),
-													   parseNumber(getAttr(record, SiteAttributes.GEO_LON)))
+						position: new Position(parseNumber(getAttr(record, SiteAttributes.GEO_LAT)),
+											   parseNumber(getAttr(record, SiteAttributes.GEO_LON)))
 					};
 					siteList.add(props, OPT_SILENT);
 				}

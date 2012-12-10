@@ -7,8 +7,8 @@ define(
 		var LocationCandidate = BaseResult.extend({
 
 			defaults: {
-				// geolocated position
-				latLng: null,
+				// @type {Position} geolocated position
+				position: null,
 				// distance between geolocated and reference position
 				distance: 0.0,
 

@@ -11,8 +11,8 @@ define(
 				id: -1,
 				// site name
 				name: "",
-				// geographical position
-				latLng: null,
+				// @type {Position} geographical position
+				position: null,
 				// collection of sectors
 				sectors: null,
 				// network system/technology: GSM, WCDMA, LTE...

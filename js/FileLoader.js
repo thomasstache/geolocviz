@@ -1,10 +1,10 @@
 define(
 	["underscore",
 	 "collections/sessions", "collections/results",
-	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate",
+	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "models/position",
 	 "CellrefParser", "jquery.csv"],
 
-	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, CellrefParser) {
+	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, CellrefParser) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -199,17 +199,14 @@ define(
 				if (currentAccuracyResult === null ||
 					currentAccuracyResult.get('msgId') != msgId) {
 
-					// reference marker location
-					var refLatLng = new google.maps.LatLng(parseNumber(record[IDX.REF_LAT]),
-														   parseNumber(record[IDX.REF_LON]));
-
 					// get the session if existing
 					var session = getSession(sessId);
 
 					currentAccuracyResult = new AccuracyResult({
 						msgId: msgId,
 						sessionId: sessId,
-						latLng: refLatLng
+						position: new Position(parseNumber(record[IDX.REF_LAT]),
+											   parseNumber(record[IDX.REF_LON]))
 					});
 					session.results.add(currentAccuracyResult, OPT_SILENT);
 					stats.numResults++;
@@ -219,15 +216,13 @@ define(
 				var probMobile = record[IDX.PROB_MOB];
 				var probIndoor = record[IDX.PROB_INDOOR];
 
-				var geoLatLng = new google.maps.LatLng(parseNumber(record[IDX.GEO_LAT]),
-													   parseNumber(record[IDX.GEO_LON]));
-
 				var distReported = record[IDX.DIST];
 
 				currentAccuracyResult.locationCandidates.add(
 					new LocationCandidate({
 						msgId: msgId,
-						latLng: geoLatLng,
+						position: new Position(parseNumber(record[IDX.GEO_LAT]),
+											   parseNumber(record[IDX.GEO_LON])),
 						distance: distReported,
 						confidence: confidence,
 						probMobility: probMobile,
@@ -275,14 +270,12 @@ define(
 				var controllerId  = (record.length == LineLengths.AXF_XT) ? record[IDX.CONTROLLER] : NaN;
 				var primaryCellId = (record.length == LineLengths.AXF_XT) ? record[IDX.CELL_ID] : NaN;
 
-				var geoLatLng = new google.maps.LatLng(parseNumber(record[IDX.GEO_LAT]),
-													   parseNumber(record[IDX.GEO_LON]));
-
 				var props = {
 					msgId: parseNumber(record[IDX.MSGID]),
 					sessionId: sessionId, // intentionally as String, as it gets very long
 					timestamp: parseNumber(record[IDX.TIMEOFFSET]),
-					latLng: geoLatLng,
+					position: new Position(parseNumber(record[IDX.GEO_LAT]),
+										   parseNumber(record[IDX.GEO_LON])),
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
 					probIndoor: percent2Decimal(probIndoor),
