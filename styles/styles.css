@@ -28,25 +28,20 @@ body {
 	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
 	display: -webkit-flex;
-	display: -moz-flex;
 	display: flex;
 	-webkit-flex-direction: column;
-	-moz-flex-direction: column;
 	flex-direction: column;
 }
 
 .flexbox .mainContent {
 	/* should grow itself */
 	-webkit-flex: 1;
-	-moz-flex: 1; /* Fx 18+ */
 	flex: 1;
 
 	/* flexbox for children */
 	display: -webkit-flex; /* Chrome uses new (2012) spec draft */
-	display: -moz-flex; /* Firefox 18 uses new draft */
 	display: flex;
 	-webkit-flex-direction: row;
-	-moz-flex-direction: row;
 	flex-direction: row;
 }
 
@@ -59,7 +54,6 @@ body {
 
 .flexbox #mapView {
 	-webkit-flex: 1;
-	-moz-flex: 1; /* Fx 18+ */
 	flex: 1;
 	height: auto; /* override default fixed height */
 }
@@ -303,7 +297,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	}
 	.flexbox .mainContent {
 		display: -webkit-flex; /* Chrome uses new (2012) spec draft */
-		display: -moz-flex;
+		display: flex;
 	}
 
 	#mapView {
@@ -314,7 +308,6 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	}
 	.flexbox #mapView {
 		-webkit-flex: 1;
-		-moz-flex: 1;
 		flex: 1;
 	}
 	#infoView {
@@ -336,14 +329,12 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	.flexbox .mainContent {
 		/* switch direction */
 		-webkit-flex-direction: column;
-		-moz-flex-direction: column;
 		flex-direction: column;
 	}
 
 	#infoView {
 		display: -webkit-flex;
 		display: -moz-box; /* Fx 17*/
-		display: -moz-flex; /* Fx 18 */
 		display: flex;
 		width: 100%;
 	}
@@ -355,7 +346,6 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
 	}
 	.flexbox .infoBlock {
 		-webkit-flex: 1;
-		-moz-flex: 1;
 		flex: 1;
 	}
 
