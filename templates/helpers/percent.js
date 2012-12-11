@@ -6,10 +6,9 @@ define(
 		/**
 		 * Handlebars helper to format values as percentages.
 		 * @param  {Object} context The value passed into the template
-		 * @param  {Object} options [description]
 		 * @return {SafeString}
 		 */
-		function asPercent(context, options) {
+		function asPercent(context) {
 
 			var result,
 				num = typeof context === "number" ? context : parseFloat(context);
