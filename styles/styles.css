@@ -122,6 +122,14 @@ button:not([disabled]):active {
 	top: 0; right: 0;
 }
 
+/* Map View */
+
+.mapMessage p {
+	text-align: center;
+	font-size: 120%;
+	text-shadow: 0 2px 4px #bbbbbb;
+}
+
 /* Settings */
 
 #settings ul {
@@ -134,7 +142,7 @@ button:not([disabled]):active {
 	margin: 0 1ex;
 }
 
-/* Legend */
+/* Overlays on top of map */
 
 .mapcontrols {
 	margin: 0; /* reduce margin from UL default */
@@ -145,6 +153,8 @@ button:not([disabled]):active {
 }
 .mapcontrols.top { margin-top: 6px; }
 .mapcontrols.bottom { margin-bottom: 6px; }
+
+/* Legend */
 
 .legend {
 	font-size: 80%;

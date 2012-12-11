@@ -138,6 +138,7 @@ define(
 					this.initialized = true;
 				}
 				catch (e) {
+					this.$(".mapMessage").show();
 					this.initialized = false;
 				}
 
