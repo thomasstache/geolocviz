@@ -33,49 +33,6 @@ define(
 			SITE: 100
 		});
 
-		var STYLED_MAPTYPE_ID = "styled_map";
-		var simpleMapStyles = [
-			{
-				stylers: [
-					{ gamma: 2 }
-				]
-			},
-			{
-				featureType: "poi",
-				stylers: [
-					{ visibility: "off" }
-				]
-			},
-			{
-				featureType: "road",
-				stylers: [
-					{ saturation: -25 },
-					{ gamma: 1.75 }
-				]
-			},
-			{
-				featureType: "road",
-				elementType: "labels.text.fill",
-				stylers: [
-					{ saturation: -75 }
-				]
-			},
-			{
-				featureType: "road.local",
-				elementType: "labels",
-				stylers: [
-					{ visibility: "simplified" }
-				]
-			},
-			{
-				featureType: "transit",
-				elementType: "labels.icon",
-				stylers: [
-					{ saturation: -100 }
-				]
-			}
-		];
-
 		// "map" of already created MarkerImages by type
 		var MarkerImages = {};
 
@@ -1278,6 +1235,50 @@ define(
 			}
 
 		});
+
+
+		var STYLED_MAPTYPE_ID = "styled_map";
+		var simpleMapStyles = [
+			{
+				stylers: [
+					{ gamma: 2 }
+				]
+			},
+			{
+				featureType: "poi",
+				stylers: [
+					{ visibility: "off" }
+				]
+			},
+			{
+				featureType: "road",
+				stylers: [
+					{ saturation: -25 },
+					{ gamma: 1.75 }
+				]
+			},
+			{
+				featureType: "road",
+				elementType: "labels.text.fill",
+				stylers: [
+					{ saturation: -75 }
+				]
+			},
+			{
+				featureType: "road.local",
+				elementType: "labels",
+				stylers: [
+					{ visibility: "simplified" }
+				]
+			},
+			{
+				featureType: "transit",
+				elementType: "labels.icon",
+				stylers: [
+					{ saturation: -100 }
+				]
+			}
+		];
 
 		return MapView;
 	}
