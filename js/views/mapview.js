@@ -74,6 +74,9 @@ define(
 			/** @type {SiteList} collection of sites */
 			siteList: null,
 
+			/** @type {Function} filter function to run result models */
+			resultFilterFct: null,
+
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
 			selectedMarkerHighlightBestLoc: null,
@@ -274,6 +277,8 @@ define(
 			 */
 			filterResultsBySector: function(sectorProps) {
 
+				var view = this;
+
 				// unselect session and results
 				this.trigger("result:selected", null);
 				this.trigger("session:selected", null);
@@ -284,37 +289,22 @@ define(
 
 				this.trigger("results:filtered");
 
-				// hide all result markers
-				this.showResultMarkers(false);
+				// set a filter function, capturing the sector properties in the closure.
+				this.resultFilterFct = function(result) {
+					return view.isResultMatchingSector(result, sectorProps);
+				};
 
-				// list of result markers
-				var resultMarkers = this.overlays.filter(this.isResultMarker);
-
-				// filter for sector
-				var sectorResults = _.filter(
-					resultMarkers,
-					function(overlay) {
-						var rv = false;
-
-						var marker = overlay.get('ref');
-						var md = marker.metaData;
-
-						if (md && md.model) {
-							var result = md.model;
-							rv = result.get('controllerId') === sectorProps.netSegment &&
-								 result.get('primaryCellId') === sectorProps.cellIdentity;
-						}
-
-						return rv;
-					}
-				);
-				this.setOverlaysVisible(sectorResults, true);
+				// draw overlays
+				this.drawResultMarkers();
 			},
 
+			/**
+			 * Resets the current filter for results and redraws markers for all results.
+			 */
 			clearAllResultFilters: function() {
 
-				// TODO: don't turn on everything, but obey visibility settings!
-				this.showResultMarkers(true);
+				this.resultFilterFct = null;
+				this.drawResultMarkers();
 			},
 
 			/**
@@ -431,6 +421,21 @@ define(
 						type === OverlayTypes.REFERENCEMARKER);
 			},
 
+			/**
+			 * Filter function for result models.
+			 * @param  {BaseResult} result   Result model
+			 * @param  {Object}  sectorProps Property hash of attributes to match
+			 * @return {Boolean}             True if result matches serving sector
+			 */
+			isResultMatchingSector: function(result, sectorProps) {
+
+				var rv = true;
+				if (result.has('controllerId') && result.has('primaryCellId')) {
+					rv = result.get('controllerId') === sectorProps.netSegment &&
+						 result.get('primaryCellId') === sectorProps.cellIdentity;
+				}
+				return rv;
+			},
 
 
 
@@ -610,27 +615,37 @@ define(
 				this.registerOverlay(OverlayTypes.SECTOR, marker);
 			},
 
-			// draw all markers for all sessions
+			/**
+			 * Draw result markers for all sessions according to current filter
+			 */
 			drawResultMarkers: function() {
 
 				if (!this.hasGoogleMaps())
 					return;
 
-				this.resetBounds();
+				// clear all result markers
+				this.deleteResultOverlays();
+
+				var bZoomToResults = this.resultFilterFct === null;
+
+				if (bZoomToResults)
+					this.resetBounds();
+
 				// capture the "this" scope
 				var view = this;
 				this.collection.each(function(session) {
 					view.drawSession(session);
 				});
 
-				this.zoomToBounds();
+				if (bZoomToResults)
+					this.zoomToBounds();
 
 				// debug code
 				//this.drawRectangle(this.bounds, "#00FF00");
 			},
 
 			/**
-			 * Draw reference and geolocated markers for the given session
+			 * Draw markers for results in the given session matching the current filter
 			 * @param  {Session} session The session model.
 			 * @return {void}
 			 */
@@ -641,6 +656,12 @@ define(
 				session.results.each(function(sample) {
 
 					var color = null;
+
+					// check if the result sample matches the current filter
+					if (view.resultFilterFct !== null &&
+					    view.resultFilterFct(sample) === false)
+					    return;
+
 					if (sample instanceof AccuracyResult) {
 						var refLoc = view.makeLatLng(sample.get('position'));
 
