@@ -29,8 +29,8 @@ define(
 
 		var Z_Index = Object.freeze({
 			HIGHLIGHT: -10, // TS: only negative values really put the highlight under the result markers
-			RESULT: 1,
-			SITE: 100
+			SITE: 10,
+			RESULT: 100,
 		});
 
 		// "map" of already created MarkerImages by type
@@ -954,6 +954,7 @@ define(
 						strokeColor: color,
 						strokeOpacity: opacity,
 						strokeWeight: weight,
+						clickable: false,
 						map: this.map
 					};
 
@@ -996,6 +997,7 @@ define(
 						strokeWeight: 1,
 					},
 					map: this.map,
+					clickable: false,
 					zIndex: Z_Index.HIGHLIGHT
 				});
 				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
