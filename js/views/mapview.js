@@ -278,6 +278,10 @@ define(
 				this.trigger("result:selected", null);
 				this.trigger("session:selected", null);
 
+				// short circuit if we don't have results
+				if (this.collection.length === 0)
+					return;
+
 				this.trigger("results:filtered");
 
 				// hide all result markers
