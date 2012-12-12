@@ -12,7 +12,7 @@
 		<span class="value">(CI:{{cellIdentity}}
 							{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
 							{{#if bcch}}BCCH:{{bcch}}{{/if}}
-							&#8599;{{azimuth}}d &#8738;{{beamwidth}}d)</span>
+							&#8599;{{withUnit azimuth "d"}} &#8738;{{withUnit beamwidth "d"}})</span>
 	</li>
 	{{/each}}
 {{/if}}
