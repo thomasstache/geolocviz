@@ -34,7 +34,7 @@ define(
 				var s = this.get('id') + " (";
 
 				s += "CI: " + this.get('cellIdentity') +
-					 ", ↗" + this.get('azimuth') + "d";
+					 ", ↗" + this.get('azimuth') + "°";
 
 				if (this.has('bcch'))
 					s += ", BCCH: " + this.get('bcch');
