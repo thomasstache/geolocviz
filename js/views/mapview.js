@@ -348,7 +348,7 @@ define(
 			 */
 			deleteNetworkOverlays: function() {
 
-				this.selectedSiteHighlight = null;
+				this.highlightSite(null);
 				this.deleteOverlaysForType(OverlayTypes.SITE);
 				this.deleteOverlaysForType(OverlayTypes.SECTOR);
 			},
@@ -498,6 +498,9 @@ define(
 
 				// only zoom to the whole network if we don't have results displayed
 				var bZoomToNetwork = this.collection.length === 0;
+
+				if (bZoomToNetwork)
+					this.resetBounds();
 
 				// capture the "this" scope
 				var view = this;
