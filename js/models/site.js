@@ -46,6 +46,19 @@ define(
 			 */
 			getSectors: function() {
 				return this.get("sectors");
+			},
+
+			/**
+			 * Returns an array with all sectors sorted by the given attribute.
+			 * @param  {String} attribute
+			 * @return {Array}
+			 */
+			getSectorsSortedBy: function(attribute) {
+				return this.getSectors().sortBy(
+					function(sector) {
+						return sector.get(attribute);
+					}
+				);
 			}
 		},
 		{

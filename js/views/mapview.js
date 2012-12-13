@@ -30,8 +30,12 @@ define(
 		var Z_Index = Object.freeze({
 			HIGHLIGHT: -10, // TS: only negative values really put the highlight under the result markers
 			SITE: 10,
+			SECTOR: 20,
 			RESULT: 100,
 		});
+
+		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
+		var DEFAULT_SECTOR_SCALE = 2.0;
 
 		// "map" of already created MarkerImages by type
 		var MarkerImages = {};
@@ -567,23 +571,41 @@ define(
 					var latLng = this.makeLatLng(site.get('position'));
 					if (isValidLatLng(latLng)) {
 
-						var sectorColl = site.getSectors();
+						var sectors = site.getSectorsSortedBy('azimuth');
+						var lastAzimuth = NaN;
+						var scale = DEFAULT_SECTOR_SCALE;
 
-						for (var i = 0; i < sectorColl.length; i++) {
+						for (var i = 0; i < sectors.length; i++) {
 
-							var sector = sectorColl.at(i);
-							this.drawSector(sector, latLng);
+							var sector = sectors[i];
+							var azimuth = sector.get('azimuth');
+
+							// increase the symbol scale if the sector has the same azimuth as the one before
+							if (azimuth === lastAzimuth)
+								scale += 1.0;
+							else
+								scale = DEFAULT_SECTOR_SCALE;
+
+							lastAzimuth = azimuth;
+
+							this.drawSector(sector, latLng, scale);
 						}
 					}
 				}
 			},
 
-			drawSector: function(sector, siteLatLng) {
+			/**
+			 * Draw a symbol for the given sector.
+			 * @param  {Sector} sector     The model with the sector's data
+			 * @param  {LatLng} siteLatLng The location of the parent site
+			 * @param  {Number} scale      (optional) Scaling factor for the symbol size
+			 */
+			drawSector: function(sector, siteLatLng, scale) {
 
 				var view = this;
 
-				// this was necessary to make the symbols actually rotate
-				var azi = 1.0 * sector.get('azimuth');
+				var _scale = scale || DEFAULT_SECTOR_SCALE;
+				var azi = sector.get('azimuth');
 				var marker = new google.maps.Marker({
 
 					icon: {
@@ -591,14 +613,15 @@ define(
 						rotation: azi,
 						fillColor: "#6AF",
 						fillOpacity: 1,
-						scale: 2,
+						scale: _scale,
 						strokeColor: "#333",
 						strokeOpacity: "0.6",
 						strokeWeight: 2,
 					},
 					position: siteLatLng,
 					map: this.map,
-					title: sector.getTooltipText()
+					title: sector.getTooltipText(),
+					zIndex: Z_Index.SECTOR - _scale // the bigger the symbol, the lower we place it
 				});
 
 				marker.metaData = {
