@@ -50,7 +50,7 @@ define(
 		}
 		/**
 		 * Adds a given location to the list, if the location differs from the previous one.
-		 * @param  {Array} latLngArray The list of LatLng locations
+		 * @param  {Array}  latLngArray The list of LatLng locations
 		 * @param  {LatLng} latLng      The new location
 		 * @return {void}
 		 */
@@ -778,23 +778,12 @@ define(
 
 				if (type === OverlayTypes.AXFMARKER) {
 
-					icon = this.getMarkerImage(letter);
-					/*icon = {
-						path: google.maps.SymbolPath.CIRCLE,
-						fillColor: "#" + colorDef.bgcolor,
-						fillOpacity: 1,
-						scale: 5,
-						strokeColor: "#333",
-						strokeOpacity: "0.6",
-						strokeWeight: 1,
-					};
-					*/
+					icon = this.getMarkerImage("dot", letter);
 				}
 				else {
 					var color = colorDef.bgcolor + "|" + colorDef.color;
 
-					var iconUrl = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + letter + "|" + color;
-					icon = new google.maps.MarkerImage(iconUrl, null, null, new google.maps.Point(10, 34));
+					icon = this.getMarkerImage("pin", letter + "|" + color);
 				}
 
 				var marker = new google.maps.Marker(
@@ -841,7 +830,18 @@ define(
 				return marker;
 			},
 
-			getMarkerImage: function(code) {
+			/**
+			 * Return the Marker image for the given type. Creates it on first request and caches it.
+			 * @param  {String} type   General type of the marker - one of "dot", "pin", "site"
+			 * @param  {String} option (optional) parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
+			 * @return {MarkerImage}
+			 */
+			getMarkerImage: function(type, option) {
+
+				// option is optional
+				option = option || "";
+
+				var code = type + "_" + option;
 
 				// already in cache?
 				if (MarkerImages[code] !== undefined) {
@@ -857,24 +857,40 @@ define(
 					anchor: new google.maps.Point(5,5)
 				};
 
-				if (code == "M") {
-					imagePath = 'images/circle_red.png';
-				}
-				else if (code == "I") {
-					imagePath = 'images/circle_yellow.png';
-				}
-				else if (code == "S") {
-					imagePath = 'images/circle_orange.png';
-				}
-				else if (code == "site") {
-					imagePath = 'images/site.png';
-					geometry.size = new google.maps.Size(9,9);
-					geometry.anchor = new google.maps.Point(4,4);
-				}
-				else if (code == "siteSelected") {
-					imagePath = 'images/siteSelectedBig.png';
-					geometry.size = new google.maps.Size(13,13);
-					geometry.anchor = new google.maps.Point(6,6);
+				switch (type) {
+					case "dot":
+						if (option == "M") {
+							imagePath = 'images/circle_red.png';
+						}
+						else if (option == "I") {
+							imagePath = 'images/circle_yellow.png';
+						}
+						else if (option == "S") {
+							imagePath = 'images/circle_orange.png';
+						}
+						break;
+
+					case "pin":
+						imagePath = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + option;
+						geometry = {
+							size: null,
+							origin: null,
+							anchor: new google.maps.Point(10, 34)
+						};
+						break;
+
+					case "site":
+						if (option == "selected") {
+							imagePath = 'images/siteSelectedBig.png';
+							geometry.size = new google.maps.Size(13,13);
+							geometry.anchor = new google.maps.Point(6,6);
+						}
+						else {
+							imagePath = 'images/site.png';
+							geometry.size = new google.maps.Size(9,9);
+							geometry.anchor = new google.maps.Point(4,4);
+						}
+						break;
 				}
 
 				var img = new google.maps.MarkerImage(imagePath,
@@ -1032,7 +1048,7 @@ define(
 			createHighlightForSites: function() {
 
 				var marker = new google.maps.Marker({
-					icon: this.getMarkerImage("siteSelected"),
+					icon: this.getMarkerImage("site", "selected"),
 					map: this.map,
 					zIndex: Z_Index.SITE + 10
 				});
