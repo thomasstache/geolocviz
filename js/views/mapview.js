@@ -312,20 +312,6 @@ define(
 			},
 
 			/**
-			 * Hides all overlays for results markers.
-			 * @param {Boolean} bShow True to show, false to hide
-			 */
-			showResultMarkers: function(bShow) {
-
-				if (!bShow) {
-					this.deleteCandidateMarkers();
-					this.deleteSessionOverlays();
-				}
-
-				this.showOverlaysForFilter(this.isResultMarker, bShow);
-			},
-
-			/**
 			 * Removes all overlays from the map and destroys them.
 			 */
 			deleteAllOverlays: function() {
