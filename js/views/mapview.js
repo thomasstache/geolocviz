@@ -843,38 +843,46 @@ define(
 
 			getMarkerImage: function(code) {
 
-				if (MarkerImages[code] === undefined) {
-
-					var imagePath = null;
-					var geometry = {
-						size: new google.maps.Size(10,10),
-						origin: new google.maps.Point(0,0),
-						anchor: new google.maps.Point(5,5)
-					};
-					if (code == "M") {
-						imagePath = 'images/circle_red.png';
-					}
-					else if (code == "I") {
-						imagePath = 'images/circle_yellow.png';
-					}
-					else if (code == "S") {
-						imagePath = 'images/circle_orange.png';
-					}
-					else if (code == "site") {
-						imagePath = 'images/site.png';
-						geometry.size = new google.maps.Size(9,9);
-						geometry.anchor = new google.maps.Point(4,4);
-					}
-					else if (code == "siteSelected") {
-						imagePath = 'images/siteSelectedBig.png';
-						geometry.size = new google.maps.Size(13,13);
-						geometry.anchor = new google.maps.Point(6,6);
-					}
-
-					MarkerImages[code] = new google.maps.MarkerImage(imagePath,
-																	 geometry.size, geometry.origin, geometry.anchor);
+				// already in cache?
+				if (MarkerImages[code] !== undefined) {
+					return MarkerImages[code];
 				}
-				return MarkerImages[code];
+
+				var imagePath = null;
+
+				// the common size+offsets of our AXF marker images
+				var geometry = {
+					size: new google.maps.Size(10,10),
+					origin: new google.maps.Point(0,0),
+					anchor: new google.maps.Point(5,5)
+				};
+
+				if (code == "M") {
+					imagePath = 'images/circle_red.png';
+				}
+				else if (code == "I") {
+					imagePath = 'images/circle_yellow.png';
+				}
+				else if (code == "S") {
+					imagePath = 'images/circle_orange.png';
+				}
+				else if (code == "site") {
+					imagePath = 'images/site.png';
+					geometry.size = new google.maps.Size(9,9);
+					geometry.anchor = new google.maps.Point(4,4);
+				}
+				else if (code == "siteSelected") {
+					imagePath = 'images/siteSelectedBig.png';
+					geometry.size = new google.maps.Size(13,13);
+					geometry.anchor = new google.maps.Point(6,6);
+				}
+
+				var img = new google.maps.MarkerImage(imagePath,
+													  geometry.size, geometry.origin, geometry.anchor);
+
+				MarkerImages[code] = img;
+
+				return img;
 			},
 
 			/**
