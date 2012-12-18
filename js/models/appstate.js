@@ -16,6 +16,9 @@ define(
 
 				// if radio network data was loaded
 				radioNetworkAvailable: false,
+				// if result data was loaded
+				resultsAvailable: false,
+
 				// if there are AccuracyResults
 				referenceLocationsAvailable: false,
 				// if there are LocationCandidates

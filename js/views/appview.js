@@ -177,7 +177,10 @@ define(
 
 				if (this.model.get("sessionsDirty") === true) {
 					this.mapview.drawResultMarkers();
-					this.model.set("sessionsDirty", false);
+					this.model.set({
+						sessionsDirty: false,
+						resultsAvailable: this.sessions.length > 0
+					});
 				}
 				if (this.model.get("radioNetworkDirty") === true) {
 					this.mapview.drawNetwork();

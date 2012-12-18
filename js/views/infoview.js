@@ -40,6 +40,7 @@ define(
 				this.model.on("change:selectedSite", this.onSiteChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 				this.model.on("change:radioNetworkAvailable", this.updateResultsControls, this);
+				this.model.on("change:resultsAvailable", this.renderSiteInfo, this);
 				this.model.on("change:elementSearchQuery", this.onSiteChanged, this);
 				// indicates new Statistics model
 				this.model.on("change:statistics", this.onStatisticsRefChanged, this);
@@ -137,6 +138,11 @@ define(
 
 						_.each(matching, function(sector) {sector.highlight = true;});
 					}
+				}
+
+				// enable filter buttons
+				if (this.model.get("resultsAvailable")) {
+					context.enableFilter = true;
 				}
 
 				$("#siteInfo").html(siteTemplate(context));
