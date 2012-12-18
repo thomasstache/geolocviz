@@ -70,7 +70,7 @@ define(
 				});
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
-				this.sessioninfoview = new InfoView({ model: this.model });
+				this.infoview = new InfoView({ model: this.model });
 				this.filterview = new FilterView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
@@ -78,13 +78,13 @@ define(
 				this.mapview.on("results:filtered", this.resultsFiltered, this);
 				this.mapview.on("site:selected", this.siteSelected, this);
 
-				this.sessioninfoview.on("session:focussed", this.sessionFocussed, this);
-				this.sessioninfoview.on("session:unfocussed", this.sessionUnfocussed, this);
-				this.sessioninfoview.on("result:nav-first", this.resultsNavigateToFirst, this);
-				this.sessioninfoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
-				this.sessioninfoview.on("result:nav-next", this.resultsNavigateToNext, this);
-				this.sessioninfoview.on("result:nav-last", this.resultsNavigateToLast, this);
-				this.sessioninfoview.on("result:lookupElement", this.resultsLookupElement, this);
+				this.infoview.on("session:focussed", this.sessionFocussed, this);
+				this.infoview.on("session:unfocussed", this.sessionUnfocussed, this);
+				this.infoview.on("result:nav-first", this.resultsNavigateToFirst, this);
+				this.infoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
+				this.infoview.on("result:nav-next", this.resultsNavigateToNext, this);
+				this.infoview.on("result:nav-last", this.resultsNavigateToLast, this);
+				this.infoview.on("result:lookupElement", this.resultsLookupElement, this);
 
 				this.filterview.on("results:clear-filter", this.resultsClearFilter, this);
 
