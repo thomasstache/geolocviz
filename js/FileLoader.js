@@ -337,7 +337,8 @@ define(
 					if (typeof callback === "function")
 						callbackFct = callback;
 
-					for (var i = 0, f; f = files[i]; i++) {
+					var f;
+					for (var i = 0; (f = files[i]); i++) {
 						loadFile(f);
 					}
 				},
