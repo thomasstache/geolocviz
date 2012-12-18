@@ -252,7 +252,12 @@ button:not([disabled]):active {
 	padding-left: 5px;
 }
 
+/* emphasize a sector in the list */
 .sectoritem.highlighted { font-weight: bold; font-style: italic; }
+
+/* per-sector result filter buttons */
+.sectoritem > .filter-by-element { display: none; }
+.sectoritem:hover > .filter-by-element { display: inline-block; }
 
 .flexboxlegacy .fileitem {
 	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
@@ -261,7 +266,10 @@ button:not([disabled]):active {
 button.lookup-element       { background-color: rgba(230, 180, 23, 0.2); }
 button.lookup-element:hover { background-color: rgba(247, 216, 119, 0.4); }
 
-header, footer, #mapView, #mapLegend, #settings, #mainToolbar, .toolbar {
+
+/* UI should not be selectable */
+
+header, footer, #mapView, #mapLegend, #settings, #mainToolbar, #filterBar, .toolbar {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-ms-user-select: none;

@@ -13,6 +13,9 @@
 							{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
 							{{#if bcch}}BCCH:{{bcch}}{{/if}}
 							&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}})</span>
+		<button class="translucent tiny symbolic filter-by-element"
+				title="Filter results served by sector"
+				data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
 	</li>
 	{{/each}}
 {{/if}}

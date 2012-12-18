@@ -27,6 +27,7 @@ define(
 				"click .results-next": "onNextResultClicked",
 				"click .results-last": "onLastResultClicked",
 				"click .lookup-element": "onLookupElementClicked",
+				"click .filter-by-element" : "onFilterByElementClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -227,6 +228,28 @@ define(
 						}
 					};
 					this.trigger("result:lookupElement", query);
+				}
+			},
+
+			/**
+			 * Handler for clicks on sector item filter buttons. Triggers a "result:filterByElement" event with the sectors CI.
+			 * @param  {Event} evt jQuery click event
+			 */
+			onFilterByElementClicked: function(evt) {
+
+				if (!(evt.currentTarget && evt.currentTarget.classList.contains("filter-by-element")))
+					return;
+
+				var el = evt.currentTarget;
+				if (el.dataset &&
+					el.dataset.ci !== undefined &&
+					el.dataset.netsegment !== undefined) {
+
+					var query = {
+						netSegment:   parseInt(el.dataset.netsegment, 10),
+						cellIdentity: parseInt(el.dataset.ci, 10)
+					};
+					this.trigger("result:filterByElement", query);
 				}
 			},
 

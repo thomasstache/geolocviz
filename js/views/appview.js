@@ -85,6 +85,7 @@ define(
 				this.infoview.on("result:nav-next", this.resultsNavigateToNext, this);
 				this.infoview.on("result:nav-last", this.resultsNavigateToLast, this);
 				this.infoview.on("result:lookupElement", this.resultsLookupElement, this);
+				this.infoview.on("result:filterByElement", this.resultsFilterByElement, this);
 
 				this.filterview.on("results:clear-filter", this.resultsClearFilter, this);
 
@@ -315,21 +316,6 @@ define(
 				this.resultSelected(null);
 			},
 
-			// Handler for "results:lookupElement" event. Lookup site/sector
-			resultsLookupElement: function(query) {
-
-				if (query.elementType === "sector") {
-
-					var site = this.siteList.findSiteWithSector(query.properties);
-					if (site) {
-						// remember last query
-						this.model.set("elementSearchQuery", query);
-
-						this.siteSelected(site);
-					}
-				}
-			},
-
 			/*********************** Selection Handling ***********************/
 
 			// Handler for "session:selected" event. Update the info display.
@@ -391,6 +377,33 @@ define(
 				this.mapview.highlightSite(site, true);
 			},
 
+
+			/*********************** Result Interaction ***********************/
+
+			// Handler for "results:lookupElement" event. Lookup site/sector
+			resultsLookupElement: function(query) {
+
+				if (query.elementType === "sector") {
+
+					var site = this.siteList.findSiteWithSector(query.properties);
+					if (site) {
+						// remember last query
+						this.model.set("elementSearchQuery", query);
+
+						this.siteSelected(site);
+					}
+				}
+			},
+
+			// Handler for the "result:filterByElement" event from the InfoView.
+			resultsFilterByElement: function(query) {
+
+				if (query.cellIdentity !== undefined &&
+				    query.netSegment !== undefined) {
+
+					this.mapview.filterResultsBySector(query);
+				}
+			},
 
 			/*********************** Result Navigation ***********************/
 

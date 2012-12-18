@@ -1100,11 +1100,11 @@ define(
 					if (md.model) {
 
 						var sector = md.model;
-						var ci = {
+						var query = {
 							netSegment: sector.get('netSegment'),
 							cellIdentity: sector.get('cellIdentity'),
 						};
-						this.filterResultsBySector(ci);
+						this.filterResultsBySector(query);
 					}
 				}
 			},
