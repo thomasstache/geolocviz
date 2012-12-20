@@ -260,14 +260,25 @@ define(
 							tech = Site.TECH_UNKNOWN;
 					}
 
-					var props = {
-						id: getAttr(record, SiteAttributes.SITE_ID),
-						technology: tech,
-						name: getAttr(record, SiteAttributes.SITE_NAME),
-						position: new Position(parseNumber(getAttr(record, SiteAttributes.GEO_LAT)),
-											   parseNumber(getAttr(record, SiteAttributes.GEO_LON)))
-					};
-					siteList.add(props, OPT_SILENT);
+					var strId = getAttr(record, SiteAttributes.SITE_ID),
+						strName = getAttr(record, SiteAttributes.SITE_NAME),
+						strLat = getAttr(record, SiteAttributes.GEO_LAT),
+						strLon = getAttr(record, SiteAttributes.GEO_LON);
+
+					if (strName && strId && strLon && strLat) {
+
+						var props = {
+							id: strId,
+							technology: tech,
+							name: strName,
+							position: new Position(parseNumber(strLat),
+												   parseNumber(strLon))
+						};
+						siteList.add(props, OPT_SILENT);
+					}
+					else {
+						console.log("Missing data for site, skipping: " + strId);
+					}
 				}
 				return bOk;
 			}
@@ -351,16 +362,21 @@ define(
 						val = parseInt(val, 10);
 				}
 				else {
-					console.log("Attribute '" + attribute + "' not found.");
+					console.log("Attribute '" + attribute + "' not found in record.");
 				}
 				return val;
 			}
 
 			/**
 			 * Helper function to validate and convert numeric values.
+			 * @param  {String} text
+			 * @return {Number}
 			 */
 			function parseNumber(text) {
-				if (text.indexOf(",") > 0)
+				if (text === undefined)
+					return NaN;
+
+				if (typeof text === "string" && text.indexOf(",") > 0)
 					text = text.replace(",", ".");
 
 				return parseFloat(text);
