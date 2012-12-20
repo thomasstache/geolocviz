@@ -106,38 +106,41 @@ define(
 
 				var bOk = true;
 
-				_.each(rows, function _prsRow(rowItems) {
+				try {
+					_.each(rows, function _prsRow(rowItems) {
 
-					if (!rowItems || rowItems.length === 0)
-						return;
+						if (!rowItems || rowItems.length === 0)
+							return;
 
-					var lineTypeId = rowItems[0];
+						var lineTypeId = rowItems[0];
 
-					if (lineTypeId.charAt(0) === ";") {
-						bOk &= parseCellrefComment(rowItems);
-					}
-					else {
-						switch(lineTypeId)
-						{
-							case 'GSM_Site':
-							case 'WCDMA_Site':
-								bOk &= parseCellrefSiteRecord(rowItems);
-								break;
-
-							case 'GSM_Cell':
-							case 'WCDMA_Cell':
-								bOk &= parseCellrefSectorRecord(rowItems);
-								break;
-
-							default:
-								console.log("Unsupported line in file " + lineTypeId);
-								bOk = false;
+						if (lineTypeId.charAt(0) === ";") {
+							bOk &= parseCellrefComment(rowItems);
 						}
-					}
-				});
+						else {
+							switch(lineTypeId)
+							{
+								case 'GSM_Site':
+								case 'WCDMA_Site':
+									bOk &= parseCellrefSiteRecord(rowItems);
+									break;
 
-				if (siteList)
-					siteList.trigger('add');
+								case 'GSM_Cell':
+								case 'WCDMA_Cell':
+									bOk &= parseCellrefSectorRecord(rowItems);
+									break;
+
+								default:
+									console.log("Unsupported line in file: " + lineTypeId);
+									bOk = false;
+							}
+						}
+					});
+				} // no catch here, but in caller
+				finally {
+					if (siteList)
+						siteList.trigger('add');
+				}
 
 				return bOk;
 			}

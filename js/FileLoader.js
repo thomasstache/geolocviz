@@ -108,11 +108,16 @@ define(
 						// decompose the blob
 						rowData = jQuery.csv(separator)(rdr.result);
 
-						// parse the data
-						if (currentFileType === FileTypes.CELLREF)
-							bOk = CellrefParser.parse(siteList, rowData);
-						else
-							bOk = processCSV(rowData, currentFileType, fileStatistics);
+						try {
+							// parse the data
+							if (currentFileType === FileTypes.CELLREF)
+								bOk = CellrefParser.parse(siteList, rowData);
+							else
+								bOk = processCSV(rowData, currentFileType, fileStatistics);
+						}
+						catch (e) {
+							alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
+						}
 					}
 
 					// notify about completion of this file (TODO: notify when whole batch is completed!)
