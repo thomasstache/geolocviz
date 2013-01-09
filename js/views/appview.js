@@ -282,6 +282,26 @@ define(
 				this.loadFiles(files);
 			},
 
+			/**
+			 * Show a W3C desktop notification.
+			 * @param  {String} message
+			 */
+			showNotification: function(message) {
+
+				// currently only available on Webkit (see Mozilla Bug 594543)
+				if (!window.webkitNotifications)
+					return;
+
+				var notification = window.webkitNotifications.createNotification("images/map-96.png", "GeoLocViz", message);
+
+				notification.show();
+
+				// cancel notification automatically
+				setTimeout(function() {
+						notification.cancel();
+					}, 5000);
+			},
+
 			// Handler for the "add" event from the sessions collection.
 			sessionsUpdated: function() {
 				this.model.set("sessionsDirty", true);
@@ -394,6 +414,26 @@ define(
 						this.model.set("elementSearchQuery", query);
 
 						this.siteSelected(site);
+					}
+					else {
+						// site not found
+
+						var message = "No matching site found...";
+
+						if (window.webkitNotifications) {
+
+							if (window.webkitNotifications.checkPermission() === 0) { // 0 is PERMISSION_ALLOWED
+								this.showNotification(message);
+							} else {
+								var view = this;
+								window.webkitNotifications.requestPermission(function() {
+									view.showNotification(message);
+								});
+							}
+						}
+						else {
+							alert(message);
+						}
 					}
 				}
 			},
