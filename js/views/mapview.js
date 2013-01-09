@@ -419,7 +419,12 @@ define(
 			 */
 			isResultMatchingSector: function(result, sectorProps) {
 
-				var rv = true;
+				var rv = false; // excluded by default
+
+				// for AccuracyResults the properties are in the LocationCandidate models
+				if (result instanceof AccuracyResult)
+					result = result.getBestLocationCandidate();
+
 				if (result.has('controllerId') && result.has('primaryCellId')) {
 					rv = result.get('controllerId') === sectorProps.netSegment &&
 						 result.get('primaryCellId') === sectorProps.cellIdentity;
