@@ -28,6 +28,14 @@ define(
 			},
 
 			/**
+			 * Returns the attributes identifying the serving sector.
+			 * @return {Object} a property hash
+			 */
+			getSectorProperties: function() {
+				return {};
+			},
+
+			/**
 			 * Returns the index of the result in its collection.
 			 * Returns -1 if there is no collection.
 			 */

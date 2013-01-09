@@ -48,6 +48,17 @@ define(
 					controllerId: this.get('controllerId'),
 					primaryCellId: this.get('primaryCellId'),
 				};
+			},
+
+			/**
+			 * Returns the attributes identifying the serving sector.
+			 * @return {Object} a property hash including "primaryCellId" and "controllerId"
+			 */
+			getSectorProperties: function() {
+				return {
+					controllerId: this.get('controllerId'),
+					primaryCellId: this.get('primaryCellId'),
+				};
 			}
 		});
 

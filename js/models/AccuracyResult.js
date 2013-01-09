@@ -41,6 +41,18 @@ define(
 					primaryCellId: bestCand.get('primaryCellId'),
 					candidateCount: this.locationCandidates.length,
 				};
+			},
+
+			/**
+			 * Returns the attributes identifying the serving sector.
+			 * @return {Object} a property hash including "primaryCellId" and "controllerId"
+			 */
+			getSectorProperties: function() {
+				var bestCand = this.getBestLocationCandidate();
+				return {
+					controllerId: bestCand.get('controllerId'),
+					primaryCellId: bestCand.get('primaryCellId'),
+				};
 			}
 		});
 

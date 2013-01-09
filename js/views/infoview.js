@@ -224,13 +224,15 @@ define(
 			onLookupElementClicked: function() {
 
 				var result = this.model.get("selectedResult");
-				if (result.has("primaryCellId") && result.has("controllerId")) {
+
+				var sectorProps = result.getSectorProperties();
+				if (sectorProps.primaryCellId !== undefined && sectorProps.controllerId !== undefined) {
 
 					var query = {
 						elementType: "sector",
 						properties: {
-							cellIdentity: result.get("primaryCellId"),
-							netSegment: result.get("controllerId")
+							cellIdentity: sectorProps.primaryCellId,
+							netSegment: sectorProps.controllerId
 						}
 					};
 					this.trigger("result:lookupElement", query);
@@ -272,10 +274,10 @@ define(
 				this.$navNextBtn.prop("disabled", !canNavigateFwd);
 				this.$navLastBtn.prop("disabled", !canNavigateFwd);
 
+				var sectorProps = result !== null ? result.getSectorProperties() : {};
 				var hasElementRef = this.model.get("radioNetworkAvailable") &&
-									result !== null &&
-									result.has("primaryCellId") &&
-									!isNaN(result.get("primaryCellId"));
+									sectorProps.primaryCellId !== undefined &&
+									!isNaN(sectorProps.primaryCellId);
 
 				this.$lookupElementBtn.prop("disabled", !hasElementRef);
 				this.$lookupElementBtn.toggleClass("hidden", !hasElementRef);
