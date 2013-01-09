@@ -20,7 +20,8 @@ define(
 			// line/header lengths of the supported CSV files
 			var LineLengths = Object.freeze({
 				ACCURACY_60: 9,
-				ACCURACY: 11,
+				ACCURACY_61: 11,
+				ACCURACY_612: 13,
 				AXF_60: 10,
 				AXF_61: 11,
 				AXF_XT: 14
@@ -147,7 +148,9 @@ define(
 				// identify file format (rudimentary by no. columns)
 				var header = rowData[0];
 
-				if (currentFileType == FileTypes.ACCURACY && header.length == LineLengths.ACCURACY) {
+				if (currentFileType == FileTypes.ACCURACY &&
+					(header.length == LineLengths.ACCURACY_61 ||
+					 header.length == LineLengths.ACCURACY_612)) {
 					parsingFct = parseAccuracyRecordV3;
 				}
 				else if (currentFileType == FileTypes.ACCURACY &&
@@ -194,7 +197,9 @@ define(
 					CONF: 7,
 					PROB_MOB: 8,
 					PROB_INDOOR: 9,
-					SESSIONID: 10
+					SESSIONID: 10,
+					CONTROLLER: 11, // 6.1.2+
+					CELL_ID: 12
 				});
 
 				var msgId = record[IDX.MSGID];
@@ -223,16 +228,22 @@ define(
 
 				var distReported = record[IDX.DIST];
 
+				var controllerId  = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
+				var primaryCellId = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CELL_ID]) : NaN;
+
+				var props = {
+					msgId: msgId,
+					position: new Position(parseNumber(record[IDX.GEO_LAT]),
+										   parseNumber(record[IDX.GEO_LON])),
+					distance: distReported,
+					confidence: confidence,
+					probMobility: probMobile,
+					probIndoor: probIndoor,
+					controllerId: controllerId,
+					primaryCellId: primaryCellId
+				};
 				currentAccuracyResult.locationCandidates.add(
-					new LocationCandidate({
-						msgId: msgId,
-						position: new Position(parseNumber(record[IDX.GEO_LAT]),
-											   parseNumber(record[IDX.GEO_LON])),
-						distance: distReported,
-						confidence: confidence,
-						probMobility: probMobile,
-						probIndoor: probIndoor
-					}), OPT_SILENT);
+					new LocationCandidate(props), OPT_SILENT);
 				stats.numResultsAndCandidates++;
 			}
 

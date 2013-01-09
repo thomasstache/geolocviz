@@ -37,6 +37,8 @@ define(
 					confidence: bestCand.get('confidence'),
 					probMobility: bestCand.get('probMobility'),
 					probIndoor: bestCand.get('probIndoor'),
+					controllerId: bestCand.get('controllerId'),
+					primaryCellId: bestCand.get('primaryCellId'),
 					candidateCount: this.locationCandidates.length,
 				};
 			}
