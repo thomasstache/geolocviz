@@ -43,6 +43,11 @@ define(
 				WCDMA_CI: "WCDMA_CI",
 				WCDMA_UARFCN: "UARFCN",
 				WCDMA_RNCID: "RNCID",
+				
+				LTE_ECI: "ECI",
+				LTE_PCI: "PCI",
+				LTE_EARFCN: "DL_EARFCN",
+				LTE_TRKAREA: "TrackingArea",
 			});
 
 			var SITE_FIELDS = Object.freeze({
@@ -80,7 +85,14 @@ define(
 			// "set" of sector fields applying to LTE (strings as they appear in the cellref files)
 			// TODO: 20121106 TBD!!!
 			var SECTOR_FIELDS_LTE = Object.freeze({
-				//"LTE_SiteIDForCell": true,
+				"LTE_SiteIDForCell": true,
+				"Sector_ID": true,
+				"Azimuth": true,
+				"Beamwidth": true,
+				"PCI": true,
+				"ECI": true,
+				"TrackingArea": true,
+				"DL_EARFCN": true,
 			});
 
 			//////////////////////////////////////////////////////////////////////////
@@ -122,11 +134,13 @@ define(
 							{
 								case 'GSM_Site':
 								case 'WCDMA_Site':
+								case 'LTE_Site':
 									bOk &= parseCellrefSiteRecord(rowItems);
 									break;
 
 								case 'GSM_Cell':
 								case 'WCDMA_Cell':
+								case 'LTE_Cell':
 									bOk &= parseCellrefSectorRecord(rowItems);
 									break;
 
@@ -256,6 +270,9 @@ define(
 						case "GSM_Site":
 							tech = Site.TECH_GSM;
 							break;
+						case "LTE_Site":
+							tech = Site.TECH_LTE;
+							break;
 						default:
 							tech = Site.TECH_UNKNOWN;
 					}
@@ -322,6 +339,13 @@ define(
 
 								props.cellIdentity = getAttr(record, SectorAttributes.WCDMA_CI, DataTypes.INTEGER);
 								props.netSegment = getAttr(record, SectorAttributes.WCDMA_RNCID, DataTypes.INTEGER);
+								break;
+							case "LTE_Cell":
+								props.earfcn = getAttr(record, SectorAttributes.LTE_EARFCN, DataTypes.INTEGER);
+								props.pci = getAttr(record, SectorAttributes.LTE_PCI, DataTypes.INTEGER);
+								
+								props.cellIdentity = getAttr(record, SectorAttributes.LTE_ECI, DataTypes.INTEGER);
+								props.netSegment = getAttr(record, SectorAttributes.LTE_TRKAREA, DataTypes.INTEGER);
 								break;
 						}
 

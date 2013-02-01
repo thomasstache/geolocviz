@@ -66,6 +66,7 @@ define(
 			TECH_UNKNOWN: "unknown",
 			TECH_GSM: "gsm",
 			TECH_WCDMA: "wcdma",
+			TECH_LTE: "lte",
 		});
 
 		return Site;

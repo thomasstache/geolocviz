@@ -42,6 +42,8 @@ define(
 					s += ", SC: " + this.get('scramblingCode');
 				if (this.has('uarfcn'))
 					s += ", UARFCN: " + this.get('uarfcn');
+				if (this.has('earfcn'))
+					s += ", EARFCN: " + this.get('earfcn');
 
 				s += ")";
 				return s;
