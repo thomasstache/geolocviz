@@ -64,9 +64,9 @@ define(
 		{
 			// known technologies
 			TECH_UNKNOWN: "unknown",
-			TECH_GSM: "gsm",
-			TECH_WCDMA: "wcdma",
-			TECH_LTE: "lte",
+			TECH_GSM: "GSM",
+			TECH_WCDMA: "UMTS",
+			TECH_LTE: "LTE",
 		});
 
 		return Site;

@@ -36,12 +36,18 @@ define(
 				s += "CI: " + this.get('cellIdentity') +
 					 ", ↗" + this.get('azimuth') + "°";
 
+				// GSM
 				if (this.has('bcch'))
 					s += ", BCCH: " + this.get('bcch');
+				// UMTS
 				if (this.has('scramblingCode'))
 					s += ", SC: " + this.get('scramblingCode');
 				if (this.has('uarfcn'))
 					s += ", UARFCN: " + this.get('uarfcn');
+				
+				// LTE
+				if (this.has('pci'))
+					s += ", PCI: " + this.get('pci');
 				if (this.has('earfcn'))
 					s += ", EARFCN: " + this.get('earfcn');
 
