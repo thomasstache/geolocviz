@@ -48,6 +48,7 @@ define(
 				LTE_PCI: "PCI",
 				LTE_EARFCN: "DL_EARFCN",
 				LTE_TRKAREA: "TrackingArea",
+				LTE_TAC: "TAC",
 			});
 
 			var SITE_FIELDS = Object.freeze({
@@ -92,6 +93,7 @@ define(
 				"PCI": true,
 				"ECI": true,
 				"TrackingArea": true,
+				"TAC": true,
 				"DL_EARFCN": true,
 			});
 
@@ -345,7 +347,15 @@ define(
 								props.pci = getAttr(record, SectorAttributes.LTE_PCI, DataTypes.INTEGER);
 								
 								props.cellIdentity = getAttr(record, SectorAttributes.LTE_ECI, DataTypes.INTEGER);
-								props.netSegment = getAttr(record, SectorAttributes.LTE_TRKAREA, DataTypes.INTEGER);
+								
+								// pick between "TAC" and "TrackingArea", prefer the former
+								var tac = 0;
+								var colTAC = attributeColumnIndex[SectorAttributes.LTE_TAC];
+								if (colTAC !== undefined && colTAC > 0)
+									tac = getAttr(record, SectorAttributes.LTE_TAC, DataTypes.INTEGER);
+								else
+									tac = getAttr(record, SectorAttributes.LTE_TRKAREA, DataTypes.INTEGER);
+								props.netSegment = tac;
 								break;
 						}
 
@@ -380,6 +390,7 @@ define(
 					colIndex >= 0 && colIndex < record.length) {
 
 					val = record[colIndex];
+					// convert to numeric if requested so
 					if (type === DataTypes.FLOAT)
 						val = parseNumber(val);
 					else if (type === DataTypes.INTEGER)
