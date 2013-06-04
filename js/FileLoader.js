@@ -55,7 +55,7 @@ define(
 				reader.onloadend = onFileReadComplete;
 				reader.file = file;
 
-				reader.readAsBinaryString(file);
+				reader.readAsText(file);
 			}
 
 			/**
