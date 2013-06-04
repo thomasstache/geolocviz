@@ -116,6 +116,8 @@ define(
 				}
 
 				this.sessions.reset();
+				this.mapview.updateBoundsToNetwork();
+				this.mapview.zoomToBounds();
 			},
 
 			/**

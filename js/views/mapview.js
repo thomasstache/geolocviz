@@ -182,6 +182,22 @@ define(
 			},
 
 			/**
+			 * Adjusts the view bounds rectangle to fit the network sites.
+			 * Use e.g. after clearing results
+			 */
+			updateBoundsToNetwork: function() {
+				this.resetBounds();
+
+				var view = this;
+				this.siteList.each(function(site) {
+					var latLng = view.makeLatLng(site.get('position'));
+
+					if (isValidLatLng(latLng))
+						view.bounds.extend(latLng);
+				});
+			},
+
+			/**
 			 * Adjusts the viewport center and zoom to fit the currently collected bounds rectangle.
 			 */
 			zoomToBounds: function() {
