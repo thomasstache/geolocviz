@@ -11,7 +11,7 @@ define(
 		var CellrefParser = (function() {
 
 			// common Collection.add() options (add silently)
-			var OPT_SILENT = Object.freeze({ silent: true });
+			var OPT_SILENT = { silent: true };
 
 			//////////////////////////////////////////////////////////////////////////
 			// Definition of required fields for the various element types:

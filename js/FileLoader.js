@@ -28,7 +28,7 @@ define(
 			});
 
 			// common Collection.add() options (add silently)
-			var OPT_SILENT = Object.freeze({ silent: true });
+			var OPT_SILENT = { silent: true };
 
 			// dummy session ID for records from files that don't provide it.
 			var SESSION_ID_DEFAULT = 0;
