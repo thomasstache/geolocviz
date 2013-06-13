@@ -285,12 +285,81 @@ define(
 			},
 
 			/**
-			 * Show a W3C desktop notification.
+			 * Show a desktop notification.
 			 * @param  {String} message
 			 */
 			showNotification: function(message) {
 
-				// currently only available on Webkit (see Mozilla Bug 594543)
+				if (Notification && Notification.permission) {
+					// WhatWG spec notifications available
+
+					if (Notification.permission === PERMISSION_GRANTED) {
+						this._showHTML5Notification(message);
+					}
+					else {
+						var view = this;
+						Notification.requestPermission(function(result) {
+							if (result === PERMISSION_GRANTED) {
+								view._showHTML5Notification(message);
+							}
+							else {
+								alert(message);
+							}
+						});
+					}
+				}
+				else if (window.webkitNotifications) {
+					// Chrome notifications available
+
+					if (window.webkitNotifications.checkPermission() === 0) { // 0 is PERMISSION_ALLOWED
+						this._showWebkitNotification(message);
+					} else {
+						var view = this;
+						window.webkitNotifications.requestPermission(function() {
+							view._showWebkitNotification(message);
+						});
+					}
+				}
+				else  {
+					alert(message);
+				}
+			},
+
+			/**
+			 * Show a HTML5/WhatWG desktop notification (Firefox 22+).
+			 * @param  {String} message
+			 */
+			_showHTML5Notification: function(message) {
+				
+				if (!(Notification && Notification.permission))
+					return;
+				
+				// if permission denied, simply show Alert
+				if (Notification.permission !== PERMISSION_GRANTED) {
+					alert(message);
+					return;
+				}
+
+				var notification = new Notification(
+					"GeoLocViz",
+					{
+						body: message,
+						icon: "images/map-96.png",
+						tag: message,
+					});
+
+				// close notification automatically
+				notification.onshow = function() {
+					setTimeout(notification.close, NOTIFICATION_TIMEOUT);
+				};
+			},
+			
+			/**
+			 * Show a Webkit desktop notification (Google Chrome).
+			 * @param  {String} message
+			 */
+			_showWebkitNotification: function(message) {
+				
 				if (!window.webkitNotifications)
 					return;
 
@@ -301,7 +370,7 @@ define(
 				// cancel notification automatically
 				setTimeout(function() {
 						notification.cancel();
-					}, 5000);
+					}, NOTIFICATION_TIMEOUT);
 			},
 
 			// Handler for the "add" event from the sessions collection.
@@ -422,20 +491,7 @@ define(
 
 						var message = "No matching site found...";
 
-						if (window.webkitNotifications) {
-
-							if (window.webkitNotifications.checkPermission() === 0) { // 0 is PERMISSION_ALLOWED
-								this.showNotification(message);
-							} else {
-								var view = this;
-								window.webkitNotifications.requestPermission(function() {
-									view.showNotification(message);
-								});
-							}
-						}
-						else {
-							alert(message);
-						}
+						this.showNotification(message);
 					}
 				}
 			},
@@ -505,7 +561,10 @@ define(
 			}
 		});
 
-		var OPT_SILENT = Object.freeze({ silent: true });
+		var OPT_SILENT = { silent: true };
+		
+		var PERMISSION_GRANTED = "granted";
+		var NOTIFICATION_TIMEOUT = 5000;
 
 		return AppView;
 	}
