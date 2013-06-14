@@ -1,5 +1,5 @@
-// jshint
-/*global Modernizr: true */
+// configuration of jshint linting
+/* global Modernizr: false, Notification: false */
 
 define(
 
@@ -290,6 +290,7 @@ define(
 			 */
 			showNotification: function(message) {
 
+				var view = this;
 				if (Notification && Notification.permission) {
 					// WhatWG spec notifications available
 
@@ -297,7 +298,6 @@ define(
 						this._showHTML5Notification(message);
 					}
 					else {
-						var view = this;
 						Notification.requestPermission(function(result) {
 							if (result === PERMISSION_GRANTED) {
 								view._showHTML5Notification(message);
@@ -314,7 +314,6 @@ define(
 					if (window.webkitNotifications.checkPermission() === 0) { // 0 is PERMISSION_ALLOWED
 						this._showWebkitNotification(message);
 					} else {
-						var view = this;
 						window.webkitNotifications.requestPermission(function() {
 							view._showWebkitNotification(message);
 						});
@@ -330,10 +329,10 @@ define(
 			 * @param  {String} message
 			 */
 			_showHTML5Notification: function(message) {
-				
+
 				if (!(Notification && Notification.permission))
 					return;
-				
+
 				// if permission denied, simply show Alert
 				if (Notification.permission !== PERMISSION_GRANTED) {
 					alert(message);
@@ -353,13 +352,13 @@ define(
 					setTimeout(notification.close, NOTIFICATION_TIMEOUT);
 				};
 			},
-			
+
 			/**
 			 * Show a Webkit desktop notification (Google Chrome).
 			 * @param  {String} message
 			 */
 			_showWebkitNotification: function(message) {
-				
+
 				if (!window.webkitNotifications)
 					return;
 
@@ -562,7 +561,7 @@ define(
 		});
 
 		var OPT_SILENT = { silent: true };
-		
+
 		var PERMISSION_GRANTED = "granted";
 		var NOTIFICATION_TIMEOUT = 5000;
 
