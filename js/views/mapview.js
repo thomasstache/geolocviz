@@ -56,11 +56,11 @@ define(
 		 */
 		function pushIfNewLocation(latLngArray, latLng) {
 			if (!(latLngArray instanceof Array &&
-			      latLng instanceof google.maps.LatLng))
-			    return;
+				  latLng instanceof google.maps.LatLng))
+				return;
 			if (latLngArray.length === 0 ||
-			    !latLng.equals(latLngArray[latLngArray.length - 1]))
-			    latLngArray.push(latLng);
+				!latLng.equals(latLngArray[latLngArray.length - 1]))
+				latLngArray.push(latLng);
 		}
 
 		var MapView = Backbone.View.extend({
@@ -692,8 +692,8 @@ define(
 
 					// check if the result sample matches the current filter
 					if (view.resultFilterFct !== null &&
-					    view.resultFilterFct(sample) === false)
-					    return;
+						view.resultFilterFct(sample) === false)
+						return;
 
 					if (sample instanceof AccuracyResult) {
 						var refLoc = view.makeLatLng(sample.get('position'));
@@ -1225,7 +1225,7 @@ define(
 			highlightResult: function(result) {
 
 				if (result !== null &&
-				    result !== undefined) {
+					result !== undefined) {
 
 					var latLng = this.makeLatLng(result.get('position'));
 					// draw a highlight around the result
