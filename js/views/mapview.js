@@ -121,6 +121,8 @@ define(
 						mapTypeId: STYLED_MAPTYPE_ID
 					};
 
+					google.maps.visualRefresh = true;
+
 					// (from https://developers.google.com/maps/documentation/javascript/styling)
 					// Create a new StyledMapType object, passing it the array of styles,
 					// as well as the name to be displayed on the map type control.
