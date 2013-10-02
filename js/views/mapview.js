@@ -218,20 +218,20 @@ define(
 
 			/**
 			 * Update the visibility of the given marker.
-			 * @param {Marker}  marker Google Maps Marker or Polyline object
-			 * @param {Boolean} bShow
+			 * @param {Marker}  marker   Google Maps Marker or Polyline object
+			 * @param {Boolean} bVisible
 			 */
-			setMarkerVisible: function(marker, bShow) {
+			setMarkerVisible: function(marker, bVisible) {
 				if (marker)
-					marker.setMap(bShow ? this.map : null);
+					marker.setMap(bVisible ? this.map : null);
 			},
 
 			/**
 			 * Update the visibility of all overlays in the given array.
-			 * @param {Array}   overlays list of Overlay models
-			 * @param {Boolean} bShow
+			 * @param {Array}   overlays The list of Overlay models
+			 * @param {Boolean} bVisible
 			 */
-			setOverlaysVisible: function(overlays, bShow) {
+			setOverlaysVisible: function(overlays, bVisible) {
 
 				// make ref to capture in inner function
 				var view = this;
@@ -240,15 +240,15 @@ define(
 					overlays,
 					function(overlay) {
 						var marker = overlay.get('ref');
-						view.setMarkerVisible(marker, bShow);
+						view.setMarkerVisible(marker, bVisible);
 					}
 				);
 			},
 
 			/**
 			 * Update the visibility of all overlays that match the custom filter criterium.
-			 * @param {Function} filterFct the callback function for _.filter()
-			 * @param {Boolean}  bShow     true to show, false to hide
+			 * @param {Function} filterFct The callback function for _.filter()
+			 * @param {Boolean}  bShow     True to show, false to hide
 			 */
 			showOverlaysForFilter: function(filterFct, bShow) {
 
@@ -263,8 +263,8 @@ define(
 
 			/**
 			 * Update the visibility of all overlays registered under the given type.
-			 * @param {OverlayTypes} type overlay type
-			 * @param {Boolean} bShow     true to show, false to hide
+			 * @param {OverlayTypes} type  Overlay type
+			 * @param {Boolean}      bShow True to show, false to hide
 			 */
 			showOverlaysForType: function(type, bShow) {
 
@@ -274,8 +274,8 @@ define(
 
 			/**
 			 * Update visibility of results markers with the given MarkerColor
-			 * @param {MarkerColors} colorDef defines the category
-			 * @param {Boolean} bShow         true to show, false to hide
+			 * @param {MarkerColors} colorDef Defines the category
+			 * @param {Boolean}      bShow    True to show, false to hide
 			 */
 			showMarkersForCategory: function(colorDef, bShow) {
 
@@ -406,7 +406,7 @@ define(
 			 * Store a reference to the maps overlay object by type.
 			 * @param {OverlayTypes} type The type of the overlay
 			 * @param {Overlay} overlay   The GoogleMaps overlay object. One of {Marker/Line/Polyline}
-			 * @param {String} category   (optional) for results we can store the category for filtering.
+			 * @param {String}  category  (optional) for results we can store the category for filtering.
 			 */
 			registerOverlay: function(type, overlay, category) {
 				this.overlays.add({
@@ -419,7 +419,7 @@ define(
 			/**
 			 * Filter function for result markers.
 			 * @param  {Overlay} overlay The model to check
-			 * @return {Boolean}         true if this is a result marker overlay
+			 * @return {Boolean}         True if this is a result marker overlay
 			 */
 			isResultMarker: function(overlay) {
 
@@ -431,9 +431,9 @@ define(
 
 			/**
 			 * Filter function for result models.
-			 * @param  {BaseResult} result   Result model
-			 * @param  {Object}  sectorProps Property hash of attributes to match
-			 * @return {Boolean}             True if result matches serving sector
+			 * @param  {BaseResult} result      Result model
+			 * @param  {Object}     sectorProps Property hash of attributes to match
+			 * @return {Boolean}                True if result matches serving sector
 			 */
 			isResultMatchingSector: function(result, sectorProps) {
 
@@ -523,8 +523,8 @@ define(
 
 			/**
 			 * Creates a marker for a site and adds it to the map.
-			 * @param  {Site}    site           model for the site
-			 * @param  {Boolean} bZoomToNetwork controls whether the current bounds should be updated
+			 * @param  {Site}    site           The model for the site
+			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
 			 * @return {void}
 			 */
 			drawSite: function(site, bZoomToNetwork) {
@@ -786,12 +786,12 @@ define(
 
 			/**
 			 * Creates a marker pin and adds it to the map.
-			 * @param {OverlayTypes} type: the type of the marker
-			 * @param {LatLng} latlng: the geographical position for the marker
-			 * @param {String} label: tooltip for the marker
-			 * @param {MarkerColors} colorDef: the color definition to use
-			 * @param {BaseResult} sample: reference to the result for which the marker is created
-			 * @param {LocationCandidate} candidate: (optional) reference to the subresult/locationCandidate for which the marker is created
+			 * @param {OverlayTypes}      type      The type of the marker
+			 * @param {LatLng}            latlng    The geographical position for the marker
+			 * @param {String}            label     Tooltip for the marker
+			 * @param {MarkerColors}      colorDef  The color definition to use
+			 * @param {BaseResult}        sample    Reference to the result for which the marker is created
+			 * @param {LocationCandidate} candidate (optional) reference to the subresult/locationCandidate for which the marker is created
 			 */
 			createMarker: function(type, latlng, label, colorDef, sample, candidate) {
 
@@ -926,8 +926,8 @@ define(
 
 			/**
 			 * Creates a line overlay connecting measured and calculated points.
-			 * @param {LatLng} startLatLng: the geographical position for the start of the line
-			 * @param {LatLng} endLatLng: the geographical position for the end of the line
+			 * @param {LatLng} startLatLng The geographical position for the start of the line
+			 * @param {LatLng} endLatLng   The geographical position for the end of the line
 			 */
 			drawReferenceLine: function(startLatLng, endLatLng) {
 
@@ -938,7 +938,6 @@ define(
 			/**
 			 * Draws polylines connecting all reference locations and best-candidate locations in a session.
 			 * @param  {Session} session The session model.
-			 * @return {void}
 			 */
 			drawSessionLines: function(session) {
 
@@ -998,11 +997,11 @@ define(
 
 			/**
 			 * Creates a polyline overlay and adds it to the map.
-			 * @param {Array} points: array of LatLng positions for the polyline
-			 * @param {string} color: a hexadecimal HTML color of the format "#FFFFFF"
-			 * @param {int} weight: line weight in pixels
-			 * @param {number} opacity: opacity
-			 * @param {OverlayTypes} type: the type of the overlay
+			 * @param {Array}        points  Array of LatLng positions for the polyline
+			 * @param {string}       color   A hexadecimal HTML color of the format "#FFFFFF"
+			 * @param {int}          weight  Line weight in pixels
+			 * @param {number}       opacity The opacity (0..1.0)
+			 * @param {OverlayTypes} type    The type of the overlay
 			 */
 			createLine: function(points, color, weight, opacity, type) {
 
@@ -1082,8 +1081,8 @@ define(
 
 			/**
 			 * Helper method for visual inspection of the bounding box.
-			 * @param {LatLngBounds} bounds
-			 * @param {String} color The stroke color as HTML color of the format "#FFFFFF"
+			 * @param {LatLngBounds} bounds Coordinates for the rectangle
+			 * @param {String}       color  The stroke color as HTML color of the format "#FFFFFF"
 			 */
 			drawRectangle: function(bounds, color) {
 
@@ -1273,8 +1272,8 @@ define(
 
 			/**
 			 * Highlight the given site by drawing an overlay.
-			 * @param {Site}    site
-			 * @param {Boolean} ensureVisible Flag to control if map viewport should be adjusted
+			 * @param {Site}    site          The model of the site
+			 * @param {Boolean} ensureVisible Controls if map viewport should be adjusted
 			 */
 			highlightSite: function(site, ensureVisible) {
 
