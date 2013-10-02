@@ -32,6 +32,7 @@ define(
 			SITE: 10,
 			SECTOR: 20,
 			RESULT: 100,
+			ONTOP: 200, // additional offset to bump markers to top
 		});
 
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
@@ -93,6 +94,9 @@ define(
 
 			// cid of the sample/result for which candidate markers are drawn (see drawCandidateMarkers())
 			highlightedCandidateSampleCid: -1,
+
+			// offset applied to the z-index of site/sector markers according to 'drawNetworkOnTop' setting
+			networkMarkerZOffset: 0,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -215,6 +219,50 @@ define(
 			/**
 			 * Overlay handling
 			 */
+
+			/**
+			 * Update the z-index of the given marker according to the current "on top" offset.
+			 * @param {Marker} marker  Google Maps Marker or Polyline object
+			 * @param {Number} zIndex
+			 */
+			setMarkerZIndex: function(marker, zIndex) {
+				if (marker)
+					marker.setZIndex(zIndex + this.networkMarkerZOffset);
+			},
+
+			/**
+			 * Change the z-index offset for network markers and updates all existing markers.
+			 * @param {Boolean} drawNetworkOnTop True for "on top", false for below.
+			 */
+			setNetworkOnTop: function(drawNetworkOnTop) {
+				this.networkMarkerZOffset = drawNetworkOnTop ? Z_Index.ONTOP : 0;
+				this.updateZIndexForNetworkOverlays();
+			},
+
+			/**
+			 * Updates the z-index for all network overlays.
+			 */
+			updateZIndexForNetworkOverlays: function() {
+
+				var sites = this.overlays.byType(OverlayTypes.SITE),
+				    sectors = this.overlays.byType(OverlayTypes.SECTOR),
+				    overlays = sites.concat(sectors);
+
+				var view = this;
+
+				_.each(
+					overlays,
+					function(overlay) {
+						var marker = overlay.get('ref'),
+						    zIndex = overlay.get('type') === OverlayTypes.SITE ? Z_Index.SITE : Z_Index.SECTOR;
+						view.setMarkerZIndex(marker, zIndex);
+					}
+				);
+
+				if (this.selectedSiteHighlight) {
+					this.setMarkerZIndex(this.selectedSiteHighlight, Z_Index.SITE + 10);
+				}
+			},
 
 			/**
 			 * Update the visibility of the given marker.
@@ -489,6 +537,10 @@ define(
 				if (event.changed.showScaleControl !== undefined) {
 					this.map.setOptions({ scaleControl: event.changed.showScaleControl });
 				}
+
+				if (event.changed.drawNetworkOnTop !== undefined) {
+					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
+				}
 			},
 
 
@@ -552,7 +604,7 @@ define(
 						position: latLng,
 						map: this.map,
 						title: makeTooltip(site),
-						zIndex: Z_Index.SITE
+						zIndex: Z_Index.SITE + this.networkMarkerZOffset
 					});
 					marker.metaData = {
 						model: site
@@ -633,7 +685,7 @@ define(
 					position: siteLatLng,
 					map: this.map,
 					title: sector.getTooltipText(),
-					zIndex: Z_Index.SECTOR - _scale // the bigger the symbol, the lower we place it
+					zIndex: Z_Index.SECTOR + this.networkMarkerZOffset - _scale // the bigger the symbol, the lower we place it
 				});
 
 				marker.metaData = {
@@ -690,7 +742,7 @@ define(
 
 				session.results.each(function(sample) {
 
-					var color = null;
+					var color = null, visible = true;
 
 					// check if the result sample matches the current filter
 					if (view.resultFilterFct !== null &&
@@ -709,19 +761,34 @@ define(
 											  refLoc,
 											  "#" + sample.get('msgId'),
 											  MarkerColors.REFERENCE,
+											  view.appsettings.get("drawMarkers_R"),
 											  sample);
 						}
 
 						var bestCand = sample.getBestLocationCandidate();
 						var bestLoc = view.makeLatLng(bestCand.get('position'));
-						color = (bestCand.category() == "S") ? MarkerColors.STATIONARY
-							  : (bestCand.category() == "I") ? MarkerColors.INDOOR
-							  : MarkerColors.GEOLOCATED;
+
+						switch (bestCand.category()) {
+							case "S":
+								color = MarkerColors.STATIONARY;
+								visible = view.appsettings.get("drawMarkers_S");
+								break;
+							case "I":
+								color = MarkerColors.INDOOR;
+								visible = view.appsettings.get("drawMarkers_I");
+								break;
+							case "M":
+							default:
+								color = MarkerColors.GEOLOCATED;
+								visible = view.appsettings.get("drawMarkers_M");
+								break;
+						}
 
 						view.createMarker(OverlayTypes.GEOLOCMARKER,
 										  bestLoc,
 										  "#" + sample.get('msgId'),
 										  color,
+										  visible,
 										  sample);
 
 						view.bounds.extend(bestLoc);
@@ -732,14 +799,26 @@ define(
 					else if (sample instanceof AxfResult) {
 
 						var location = view.makeLatLng(sample.get('position'));
-						color = (sample.category() == "S") ? MarkerColors.STATIONARY
-							  : (sample.category() == "I") ? MarkerColors.INDOOR
-							  : MarkerColors.GEOLOCATED;
+						switch (sample.category()) {
+							case "S":
+								color = MarkerColors.STATIONARY;
+								visible = view.appsettings.get("drawMarkers_S");
+								break;
+							case "I":
+								color = MarkerColors.INDOOR;
+								visible = view.appsettings.get("drawMarkers_I");
+								break;
+							case "M":
+								color = MarkerColors.GEOLOCATED;
+								visible = view.appsettings.get("drawMarkers_M");
+								break;
+						}
 
 						view.createMarker(OverlayTypes.AXFMARKER,
 										  location,
 										  "#" + sample.get('msgId'),
 										  color,
+										  visible,
 										  sample);
 
 						view.bounds.extend(location);
@@ -790,10 +869,11 @@ define(
 			 * @param {LatLng}            latlng    The geographical position for the marker
 			 * @param {String}            label     Tooltip for the marker
 			 * @param {MarkerColors}      colorDef  The color definition to use
+			 * @param {Boolean}           bVisible  Controls whether the marker is shown or hidden
 			 * @param {BaseResult}        sample    Reference to the result for which the marker is created
 			 * @param {LocationCandidate} candidate (optional) reference to the subresult/locationCandidate for which the marker is created
 			 */
-			createMarker: function(type, latlng, label, colorDef, sample, candidate) {
+			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
 
 				var view = this;
 				var letter = candidate ? candidate.category() : colorDef.smb;
@@ -812,7 +892,7 @@ define(
 				var marker = new google.maps.Marker(
 					{
 						position: latlng,
-						map: this.map,
+						map: bVisible ? this.map : null,
 						icon: icon,
 						title: label,
 						zIndex: Z_Index.RESULT
@@ -1072,7 +1152,7 @@ define(
 				var marker = new google.maps.Marker({
 					icon: this.getMarkerImage("site", "selected"),
 					map: this.map,
-					zIndex: Z_Index.SITE + 10
+					zIndex: Z_Index.SITE + this.networkMarkerZOffset + 10
 				});
 				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
 

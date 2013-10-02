@@ -15,7 +15,8 @@ define(
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
 				"click #checkConnectSessions": "toggleSessionLines",
-				"click #checkShowScaleControl": "toggleScaleControl"
+				"click #checkShowScaleControl": "toggleScaleControl",
+				"click #checkDrawNetworkOnTop": "toggleNetworkOnTop"
 			},
 
 			initialize: function() {
@@ -25,6 +26,7 @@ define(
 				this.$checkConnectMarkers = $("#checkConnectMarkers");
 				this.$checkConnectSessions = $("#checkConnectSessions");
 				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
+				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");
 
 				this.model.on("change", this.render, this);
 
@@ -47,6 +49,7 @@ define(
 				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
 				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
 				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
+				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
 			},
 
 			toggleReferenceLines: function() {
@@ -59,6 +62,10 @@ define(
 
 			toggleScaleControl: function() {
 				this.model.set("showScaleControl", this.$checkShowScaleControl.prop("checked"));
+			},
+
+			toggleNetworkOnTop: function() {
+				this.model.set("drawNetworkOnTop", this.$checkDrawNetworkOnTop.prop("checked"));
 			}
 		});
 

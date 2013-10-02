@@ -24,6 +24,9 @@ define(
 
 				// show or hide the map scale control
 				showScaleControl: false,
+				
+				// draw network above result markers
+				drawNetworkOnTop: false,
 			}
 		});
 
