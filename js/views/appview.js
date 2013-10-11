@@ -125,6 +125,8 @@ define(
 			 */
 			clearData: function() {
 
+				this.model.set("busy", true);
+
 				this.sessions.reset();
 				this.siteList.reset();
 
@@ -133,6 +135,8 @@ define(
 
 				this.clearSearchField();
 				this.clearFileForm();
+
+				this.model.set("busy", false);
 			},
 
 			// reset the form to clear old file names
@@ -175,7 +179,6 @@ define(
 
 			// Called when all files have been loaded. Triggers marker rendering.
 			loadComplete: function() {
-				this.model.set("busy", false);
 
 				if (this.model.get("sessionsDirty") === true) {
 					this.mapview.drawResultMarkers();
@@ -191,6 +194,7 @@ define(
 						radioNetworkAvailable: this.siteList.length > 0,
 					});
 				}
+				this.model.set("busy", false);
 			},
 
 			// Callback for FileLoader
