@@ -2,7 +2,7 @@ define(
 	["jquery", "underscore", "backbone",
 	 "hbs!../../templates/legend"],
 
-	function($, _, Backbone, tmplFct) {
+	function($, _, Backbone, legendTemplate) {
 
 		var LegendView = Backbone.View.extend({
 
@@ -45,7 +45,7 @@ define(
 
 			render: function() {
 
-				this.$el.html(tmplFct(this.colorData));
+				this.$el.html(legendTemplate(this.colorData));
 				this.showLegendItem("R", this.appstate.get("referenceLocationsAvailable"));
 				this.showLegendItem("C", this.appstate.get("candidateLocationsAvailable"));
 			},
