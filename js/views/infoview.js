@@ -254,6 +254,7 @@ define(
 					el.dataset.netsegment !== undefined) {
 
 					var query = {
+						title:        el.dataset.sector,
 						netSegment:   parseInt(el.dataset.netsegment, 10),
 						cellIdentity: parseInt(el.dataset.ci, 10)
 					};

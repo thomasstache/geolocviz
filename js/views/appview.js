@@ -435,10 +435,11 @@ define(
 			},
 
 			// Handler for the MapView's "results:filtered" event.
-			resultsFiltered: function() {
+			resultsFiltered: function(query) {
 
 				this.model.set({
 					resultsFilterActive: true,
+					resultsFilterQuery: query,
 					focussedSessionId: -1
 				});
 			},
@@ -446,7 +447,10 @@ define(
 			// Handler for the FilterView's "results:clear-filter" event.
 			resultsClearFilter: function() {
 
-				this.model.set("resultsFilterActive", false);
+				this.model.set({
+					resultsFilterActive: false,
+					resultsFilterQuery: null
+				});
 				this.mapview.clearAllResultFilters();
 			},
 

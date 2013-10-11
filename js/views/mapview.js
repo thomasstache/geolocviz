@@ -342,10 +342,10 @@ define(
 
 			/**
 			 * Shows only result markers where the given sector is primary cell, and hides all other result markers.
-			 * @param  {Object} sectorProps List of key-value pairs that should match
+			 * @param  {Object} query List of key-value pairs that should match
 			 * @return {void}
 			 */
-			filterResultsBySector: function(sectorProps) {
+			filterResultsBySector: function(query) {
 
 				var view = this;
 
@@ -357,11 +357,11 @@ define(
 				if (this.collection.length === 0)
 					return;
 
-				this.trigger("results:filtered");
+				this.trigger("results:filtered", query);
 
 				// set a filter function, capturing the sector properties in the closure.
 				this.resultFilterFct = function(result) {
-					return view.isResultMatchingSector(result, sectorProps);
+					return view.isResultMatchingSector(result, query);
 				};
 
 				// draw overlays
@@ -1211,7 +1211,8 @@ define(
 
 						var sector = md.model;
 						var query = {
-							netSegment: sector.get('netSegment'),
+							title:        sector.get('id'),
+							netSegment:   sector.get('netSegment'),
 							cellIdentity: sector.get('cellIdentity'),
 						};
 						this.filterResultsBySector(query);

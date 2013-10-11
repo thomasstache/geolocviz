@@ -1,7 +1,8 @@
 define(
-	["jquery", "backbone"],
+	["jquery", "backbone",
+	 "hbs!../../templates/filterbar"],
 
-	function($, Backbone) {
+	function($, Backbone, filterbarTemplate) {
 
 		var FilterView = Backbone.View.extend({
 			el: $("#filterBar"),
@@ -17,7 +18,15 @@ define(
 
 				// "model" is the AppState
 				this.model.on("change:resultsFilterActive", this.onFilterChanged, this);
+				this.model.on("change:resultsFilterQuery", this.onQueryChanged, this);
 				this.render();
+			},
+
+			render: function() {
+
+				var context = this.model.get("resultsFilterQuery");
+				$("#clearFilters").html(filterbarTemplate(context !== null ? context : {}));
+				return this;
 			},
 
 			onFilterChanged: function(event) {
@@ -26,6 +35,11 @@ define(
 					this.$el.show();
 				else
 					this.$el.hide();
+			},
+
+			onQueryChanged: function() {
+
+				this.render();
 			},
 
 			clearFilterClicked: function() {

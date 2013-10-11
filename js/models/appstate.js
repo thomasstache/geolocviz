@@ -26,6 +26,8 @@ define(
 
 				// if the results are currently filtered
 				resultsFilterActive: false,
+				// last result query (after results:filtered)
+				resultsFilterQuery: null,
 
 				// last element query (after results:lookupElement)
 				elementSearchQuery: null,
@@ -54,6 +56,7 @@ define(
 					referenceLocationsAvailable: false,
 					candidateLocationsAvailable: false,
 					resultsFilterActive: false,
+					resultsFilterQuery: null,
 					elementSearchQuery: null,
 					selectedSession: null,
 					selectedResult: null,
