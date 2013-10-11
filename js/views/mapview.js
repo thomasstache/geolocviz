@@ -161,7 +161,7 @@ define(
 				this.siteList = this.options.siteList;
 				this.siteList.on("reset", this.deleteNetworkOverlays, this);
 
-				this.collection.on("reset", this.deleteResultOverlays, this);
+				this.collection.on("reset", this.onSessionsReset, this);
 
 				// listen for settings changes
 				this.appsettings = this.options.settings;
@@ -500,6 +500,14 @@ define(
 
 
 
+			/**
+			 * Listener for "reset" on sessions collection. Removes all result markers.
+			 */
+			onSessionsReset: function() {
+
+				this.deleteResultOverlays();
+				this.clearAllResultFilters();
+			},
 
 			/**
 			 * Update map overlay visibility according to current settings.
