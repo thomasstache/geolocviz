@@ -997,7 +997,7 @@ define(
 							geometry.anchor = new google.maps.Point(6,6);
 						}
 						else {
-							imagePath = 'images/site.png';
+							imagePath = 'images/siteBright.png';
 							geometry.size = new google.maps.Size(9,9);
 							geometry.anchor = new google.maps.Point(4,4);
 						}
