@@ -1232,7 +1232,7 @@ define(
 						this.trigger("result:selected", md.model);
 
 					if (md.sessionId !== undefined &&
-						md.sessionId > 0) {
+						md.sessionId !== 0) {
 
 						var session = this.collection.get(md.sessionId);
 						if (session) {

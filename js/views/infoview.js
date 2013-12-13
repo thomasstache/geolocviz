@@ -105,8 +105,14 @@ define(
 
 			renderSessionInfo: function() {
 
-				var context = this.model.get("selectedSession");
-				$("#sessionInfo").html(sessionTemplate(context !== null ? context : {}));
+				var session = this.model.get("selectedSession");
+				var context = session !== null ? session.toJSON() : {};
+				if (session &&
+					session.results) {
+					context.resultCount = session.results.length;
+				}
+
+				$("#sessionInfo").html(sessionTemplate(context));
 				return this;
 			},
 

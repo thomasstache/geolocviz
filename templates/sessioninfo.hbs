@@ -1,7 +1,14 @@
 {{#if id}}
 <h3 class="etched">Selected Session</h3>
 <ul class="propertyList">
+{{#if fileId}}
+	{{! new: sessions by fileId }}
+	<li><span class="label">Calltrace:</span> <span class="value">{{fileId}}</span></li>
+	<li><span class="label">Session:</span> <span class="value">{{sessionId}}</span></li>
+{{else}}
+	{{! the old way: session from id }}
 	<li><span class="label">Session:</span> <span class="value">{{id}}</span></li>
-	<li><span class="label">Records:</span> <span class="value">{{results.length}}</span></li>
+{{/if}}
+	<li><span class="label">Records:</span> <span class="value">{{resultCount}}</span></li>
 </ul>
 {{/if}}

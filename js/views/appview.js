@@ -392,6 +392,7 @@ define(
 			searchInputChanged: function(evt) {
 
 				var searchText = evt.target.value;
+				// TODO: fix this for new sessions-by-fileId world
 				var session = this.sessions.get(searchText);
 				if (session) {
 					this.sessionSelected(session);

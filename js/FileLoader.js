@@ -117,6 +117,7 @@ define(
 								bOk = processCSV(rowData, currentFileType, fileStatistics);
 						}
 						catch (e) {
+							console.error(e.toString());
 							alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
 						}
 					}
@@ -182,7 +183,7 @@ define(
 			/**
 			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
-			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId
+			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId | Controller | PrimaryCellId
 			 */
 			function parseAccuracyRecordV3(record, stats) {
 
@@ -202,19 +203,28 @@ define(
 					CELL_ID: 12
 				});
 
+				var fileId = record[IDX.FILEID];
 				var msgId = record[IDX.MSGID];
 				var sessId = record[IDX.SESSIONID];
+				// the same SessionId can appear in multiple calltrace files, make unique.
+				var sessionUId = makeSessionUId(fileId, sessId);
+				// also store original identifiers
+				var addOpts = {
+					fileId: fileId,
+					sessionId: sessId
+				};
+
 
 				// when the CT message ID changes, create a new AccuracyResult
 				if (currentAccuracyResult === null ||
 					currentAccuracyResult.get('msgId') != msgId) {
 
 					// get the session if existing
-					var session = getSession(sessId);
+					var session = getSession(sessionUId, addOpts);
 
 					currentAccuracyResult = new AccuracyResult({
 						msgId: msgId,
-						sessionId: sessId,
+						sessionId: sessionUId,
 						position: new Position(parseNumber(record[IDX.REF_LAT]),
 											   parseNumber(record[IDX.REF_LON]))
 					});
@@ -304,17 +314,38 @@ define(
 				stats.numResults++;
 			}
 
-			function getSession(sessId) {
+			/**
+			 * Generates a unique ID for a session as a combination of numeric ID and calltrace file ID.
+			 * @param  {String} fileId
+			 * @param  {String} sessionId
+			 * @return {String}
+			 */
+			function makeSessionUId(fileId, sessionId) {
+
+				return fileId + "$$" + sessionId;
+			}
+
+			/**
+			 * Returns the session with the given Id from the sessionList collection. If none exists yet, it is created.
+			 * @param  {String} sessionId Unique Id of the session
+			 * @param  {Object} addOpts   Additional options to store if a new session is created.
+			 * @return {Session}
+			 */
+			function getSession(sessionId, addOpts) {
 
 				// get the session if existing
-				var session = sessionList.get(sessId);
+				var session = sessionList.get(sessionId);
 				if (!session) {
 					// create missing session
 					sessionList.add({
-						id: sessId
+						id: sessionId
 					}, OPT_SILENT);
 
 					session = sessionList.at(sessionList.length - 1);
+
+					if (addOpts !== undefined) {
+						session.set(addOpts);
+					}
 				}
 				return session;
 			}

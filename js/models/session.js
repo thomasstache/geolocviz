@@ -8,7 +8,9 @@ define(
 
 			defaults: {
 				// id of the "call" session
-				id: -1,
+				sessionId: null,
+				// identifier of the calltrace file
+				fileId: null
 			},
 
 			/** @type {ResultList} collection of results (with base type BaseResult) */
