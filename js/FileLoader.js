@@ -209,18 +209,17 @@ define(
 				// the same SessionId can appear in multiple calltrace files, make unique.
 				var sessionUId = makeSessionUId(fileId, sessId);
 				// also store original identifiers
-				var addOpts = {
+				var additionalProps = {
 					fileId: fileId,
 					sessionId: sessId
 				};
-
 
 				// when the CT message ID changes, create a new AccuracyResult
 				if (currentAccuracyResult === null ||
 					currentAccuracyResult.get('msgId') != msgId) {
 
 					// get the session if existing
-					var session = getSession(sessionUId, addOpts);
+					var session = getSession(sessionUId, additionalProps);
 
 					currentAccuracyResult = new AccuracyResult({
 						msgId: msgId,
@@ -322,16 +321,16 @@ define(
 			 */
 			function makeSessionUId(fileId, sessionId) {
 
-				return fileId + "$$" + sessionId;
+				return fileId + "__" + sessionId;
 			}
 
 			/**
 			 * Returns the session with the given Id from the sessionList collection. If none exists yet, it is created.
-			 * @param  {String} sessionId Unique Id of the session
-			 * @param  {Object} addOpts   Additional options to store if a new session is created.
+			 * @param  {String} sessionId       Unique Id of the session
+			 * @param  {Object} additionalProps Additional properties to store if a new session is created.
 			 * @return {Session}
 			 */
-			function getSession(sessionId, addOpts) {
+			function getSession(sessionId, additionalProps) {
 
 				// get the session if existing
 				var session = sessionList.get(sessionId);
@@ -343,8 +342,8 @@ define(
 
 					session = sessionList.at(sessionList.length - 1);
 
-					if (addOpts !== undefined) {
-						session.set(addOpts);
+					if (additionalProps !== undefined) {
+						session.set(additionalProps);
 					}
 				}
 				return session;
