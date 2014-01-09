@@ -4,6 +4,9 @@
 	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span> <span class="value">{{num}}/{{resultCount}}</span>
 		{{#if msgId}}&nbsp;<span class="label">Msg:</span> <span class="value">#{{msgId}}</span>{{/if}}
 	</li>
+	{{#if timestamp}}
+	<li><span class="label">Time:</span> <span class="value">{{timestamp}}</span></li>
+	{{/if}}
 	{{#if primaryCellId}}
 	<li><span class="label">CI:</span> <span class="value">{{primaryCellId}}</span>
 		<span class="label">RNC:</span> <span class="value">{{controllerId}}</span>
