@@ -142,7 +142,7 @@ define(
 
 				currentAccuracyResult = null;
 
-				stats.numResults = 0,
+				stats.numResults = 0;
 				stats.numResultsAndCandidates = 0;
 
 				var parsingFct = null;
