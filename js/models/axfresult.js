@@ -38,16 +38,10 @@ define(
 
 			getInfo: function() {
 
-				return {
-					num: this.getIndex() + 1,
-					resultCount: this.collection.length,
-					msgId: this.get('msgId'),
-					confidence: this.get('confidence'),
-					probMobility: this.get('probMobility'),
-					probIndoor: this.get('probIndoor'),
-					controllerId: this.get('controllerId'),
-					primaryCellId: this.get('primaryCellId'),
-				};
+				var rv = this.toJSON();
+				rv.num = this.getIndex() + 1;
+				rv.resultCount = this.collection.length;
+				return rv;
 			},
 
 			/**
