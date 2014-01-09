@@ -1,0 +1,13 @@
+{
+  "browser": true,
+  "jquery": true,
+  "devel": true,
+  "undef": true,
+  "unused": true,
+  "smarttabs": true,
+  "trailing": true,
+  "predef": [
+    "define",
+    "google"
+  ]
+}
