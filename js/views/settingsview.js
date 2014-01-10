@@ -15,6 +15,7 @@ define(
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
 				"click #checkConnectSessions": "toggleSessionLines",
+				"click #checkDynamicMarkerColors": "toggleDynamicMarkerColors",
 				"click #checkShowScaleControl": "toggleScaleControl",
 				"click #checkDrawNetworkOnTop": "toggleNetworkOnTop"
 			},
@@ -25,6 +26,7 @@ define(
 
 				this.$checkConnectMarkers = $("#checkConnectMarkers");
 				this.$checkConnectSessions = $("#checkConnectSessions");
+				this.$checkDynamicMarkerColors = this.$("#checkDynamicMarkerColors");
 				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
 				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");
 
@@ -42,12 +44,17 @@ define(
 			render: function() {
 
 				var bFiltered = this.appstate.get('resultsFilterActive');
+				var bResultsAvailable = this.appstate.get('resultsAvailable');
 				var bReferenceData = this.appstate.get('referenceLocationsAvailable');
 				this.$checkConnectMarkers.prop("disabled", bReferenceData === false || bFiltered);
 				this.$checkConnectSessions.prop("disabled", bFiltered);
 
+				// dynamic marker colors not for .distance files...
+				this.$checkDynamicMarkerColors.prop("disabled", bResultsAvailable === false || bReferenceData);
+
 				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
 				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
+				this.$checkDynamicMarkerColors.prop("checked", this.model.get("useDynamicMarkerColors"));
 				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
 				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
 			},
@@ -58,6 +65,10 @@ define(
 
 			toggleSessionLines: function() {
 				this.model.set("drawSessionLines", this.$checkConnectSessions.prop("checked"));
+			},
+
+			toggleDynamicMarkerColors: function() {
+				this.model.set("useDynamicMarkerColors", this.$checkDynamicMarkerColors.prop("checked"));
 			},
 
 			toggleScaleControl: function() {
