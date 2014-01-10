@@ -14,6 +14,12 @@ define(
 			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", label: "Home" },*/
 		});
 
+		var IconTypes = Object.freeze({
+			PIN: "pin",
+			DOT: "dot",
+			SITE: "site",
+		});
+
 		var OverlayTypes = Object.freeze({
 			SITE: "siteSymbol",
 			SECTOR: "sectorSymbol",
@@ -38,8 +44,8 @@ define(
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
 		var DEFAULT_SECTOR_SCALE = 2.0;
 
-		// "map" of already created MarkerImages by type
-		var MarkerImages = {};
+		// "map" of already created Marker icons by type
+		var IconCache = {};
 
 		/**
 		 * Validate LatLngs. Returns false if one of the coordinates is NaN.
@@ -608,7 +614,7 @@ define(
 						this.bounds.extend(latLng);
 
 					var marker = new google.maps.Marker({
-						icon: this.getMarkerImage("site"),
+						icon: this.getMarkerIcon(IconTypes.SITE),
 						position: latLng,
 						map: this.map,
 						title: makeTooltip(site),
@@ -872,7 +878,7 @@ define(
 			},
 
 			/**
-			 * Creates a marker pin and adds it to the map.
+			 * Creates a marker and adds it to the map.
 			 * @param {OverlayTypes}      type      The type of the marker
 			 * @param {LatLng}            latlng    The geographical position for the marker
 			 * @param {String}            label     Tooltip for the marker
@@ -889,12 +895,12 @@ define(
 
 				if (type === OverlayTypes.AXFMARKER) {
 
-					icon = this.getMarkerImage("dot", letter);
+					icon = this.getMarkerIcon(IconTypes.DOT, letter);
 				}
 				else {
 					var color = colorDef.bgcolor + "|" + colorDef.color;
 
-					icon = this.getMarkerImage("pin", letter + "|" + color);
+					icon = this.getMarkerIcon(IconTypes.PIN, letter + "|" + color);
 				}
 
 				var marker = new google.maps.Marker(
@@ -942,24 +948,25 @@ define(
 			},
 
 			/**
-			 * Return the Marker image for the given type. Creates it on first request and caches it.
-			 * @param  {String} type   General type of the marker - one of "dot", "pin", "site"
-			 * @param  {String} option (optional) parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
+			 * Return the Marker icon for the given type. Creates it on first request and caches it.
+			 * @param  {IconTypes} type General type of the marker - e.g. dot, pin, site...
+			 * @param  {String} option    (optional) parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
 			 * @return {MarkerImage}
 			 */
-			getMarkerImage: function(type, option) {
+			getMarkerIcon: function(type, option) {
 
 				// option is optional
 				option = option || "";
 
-				var code = type + "_" + option;
+				var key = type + "_" + option;
 
 				// already in cache?
-				if (MarkerImages[code] !== undefined) {
-					return MarkerImages[code];
+				if (IconCache[key] !== undefined) {
+					return IconCache[key];
 				}
 
 				var imagePath = null;
+				var icon;
 
 				// the common size+offsets of our AXF marker images
 				var geometry = {
@@ -969,7 +976,7 @@ define(
 				};
 
 				switch (type) {
-					case "dot":
+					case IconTypes.DOT:
 						if (option == "M") {
 							imagePath = 'images/circle_red.png';
 						}
@@ -981,7 +988,7 @@ define(
 						}
 						break;
 
-					case "pin":
+					case IconTypes.PIN:
 						imagePath = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + option;
 						geometry = {
 							size: null,
@@ -990,7 +997,7 @@ define(
 						};
 						break;
 
-					case "site":
+					case IconTypes.SITE:
 						if (option == "selected") {
 							imagePath = 'images/siteSelectedBig.png';
 							geometry.size = new google.maps.Size(13,13);
@@ -1004,12 +1011,12 @@ define(
 						break;
 				}
 
-				var img = new google.maps.MarkerImage(imagePath,
-													  geometry.size, geometry.origin, geometry.anchor);
+				icon = new google.maps.MarkerImage(imagePath,
+												   geometry.size, geometry.origin, geometry.anchor);
 
-				MarkerImages[code] = img;
+				IconCache[key] = icon;
 
-				return img;
+				return icon;
 			},
 
 			/**
@@ -1158,7 +1165,7 @@ define(
 			createHighlightForSites: function() {
 
 				var marker = new google.maps.Marker({
-					icon: this.getMarkerImage("site", "selected"),
+					icon: this.getMarkerIcon(IconTypes.SITE, "selected"),
 					map: this.map,
 					zIndex: Z_Index.SITE + this.networkMarkerZOffset + 10
 				});
