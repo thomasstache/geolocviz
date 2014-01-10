@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult", "models/position"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position) {
+	 "models/AccuracyResult", "models/axfresult", "models/position", "ColorMapper"],
+	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -104,6 +104,9 @@ define(
 
 			// offset applied to the z-index of site/sector markers according to 'drawNetworkOnTop' setting
 			networkMarkerZOffset: 0,
+
+			// maps the values to colors
+			colorMapper: null,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -901,8 +904,10 @@ define(
 				if (type === OverlayTypes.AXFMARKER) {
 
 					if (this.appsettings.get("useDynamicMarkerColors")) {
+						if (this.colorMapper === null)
+							this.colorMapper = new ColorMapper(0.0, 1.0);
 						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
-						icon.fillColor = "#" + colorDef.bgcolor;
+						icon.fillColor = this.colorMapper.getColor(sample.get("confidence"));
 					}
 					else {
 						icon = this.getMarkerIcon(IconTypes.DOT, letter);
