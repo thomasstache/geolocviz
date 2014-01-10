@@ -34,14 +34,15 @@ define(
 
 				// listen to some state changes
 				if (this.appstate) {
-					this.appstate.on("change:resultsFilterActive", this.render, this);
-					this.appstate.on("change:referenceLocationsAvailable", this.render, this);
+					this.appstate.on("change:resultsAvailable", this.enableControls, this);
+					this.appstate.on("change:resultsFilterActive", this.enableControls, this);
+					this.appstate.on("change:referenceLocationsAvailable", this.enableControls, this);
 				}
 
 				this.render();
 			},
 
-			render: function() {
+			enableControls: function() {
 
 				var bFiltered = this.appstate.get('resultsFilterActive');
 				var bResultsAvailable = this.appstate.get('resultsAvailable');
@@ -51,6 +52,11 @@ define(
 
 				// dynamic marker colors not for .distance files...
 				this.$checkDynamicMarkerColors.prop("disabled", bResultsAvailable === false || bReferenceData);
+			},
+
+			render: function() {
+
+				this.enableControls();
 
 				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
 				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
