@@ -5,7 +5,7 @@
 		{{#if msgId}}&nbsp;<span class="label">Msg:</span> <span class="value">#{{msgId}}</span>{{/if}}
 	</li>
 	{{#if timestamp}}
-	<li><span class="label">Time:</span> <span class="value">{{timestamp}}</span></li>
+	<li><span class="label">Time:</span> <span class="value">{{formattime timestamp "ms"}}</span></li>
 	{{/if}}
 	{{#if primaryCellId}}
 	<li><span class="label">CI:</span> <span class="value">{{primaryCellId}}</span>
