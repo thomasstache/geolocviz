@@ -17,6 +17,7 @@ define(
 		var IconTypes = Object.freeze({
 			PIN: "pin",
 			DOT: "dot",
+			DYNAMIC: "dynamic",
 			SITE: "site",
 		});
 
@@ -552,6 +553,10 @@ define(
 					this.map.setOptions({ scaleControl: event.changed.showScaleControl });
 				}
 
+				if (event.changed.useDynamicMarkerColors !== undefined) {
+					this.toggleMarkerColors(event.changed.useDynamicMarkerColors);
+				}
+
 				if (event.changed.drawNetworkOnTop !== undefined) {
 					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
 				}
@@ -895,7 +900,13 @@ define(
 
 				if (type === OverlayTypes.AXFMARKER) {
 
-					icon = this.getMarkerIcon(IconTypes.DOT, letter);
+					if (this.appsettings.get("useDynamicMarkerColors")) {
+						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
+						icon.fillColor = "#" + colorDef.bgcolor;
+					}
+					else {
+						icon = this.getMarkerIcon(IconTypes.DOT, letter);
+					}
 				}
 				else {
 					var color = colorDef.bgcolor + "|" + colorDef.color;
@@ -1009,6 +1020,19 @@ define(
 							geometry.anchor = new google.maps.Point(4,4);
 						}
 						break;
+
+					case IconTypes.DYNAMIC:
+						icon = {
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: "#000", // dummy color
+							fillOpacity: 1,
+							scale: 5,
+							strokeColor: "#333",
+							strokeOpacity: "0.6",
+							strokeWeight: 1,
+						};
+						// return directly, no MarkerImage is needed.
+						return icon;
 				}
 
 				icon = new google.maps.MarkerImage(imagePath,
@@ -1277,6 +1301,30 @@ define(
 						this.deleteCandidateMarkers();
 					}
 				}
+			},
+
+			/**
+			 * Toggles result markers between default and colored-by-value modes.
+			 * @param  {Session} session The session model.
+			 */
+			toggleMarkerColors: function(bDynamicColors) {
+
+				// redraw all the markers
+				this.drawResultMarkers();
+
+				// TODO: filter somehow, as performance with dynamic colors gets bad > 1000 results.
+/*				// get the currently highlighted session
+				var session = this.collection.get(this.highlightedSessionId);
+
+				if (!session)
+					return;
+
+				// update markers of the session...
+				session.results.each(function(){
+					//
+					bDynamicColors;
+				});
+*/
 			},
 
 			/**
