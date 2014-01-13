@@ -1329,7 +1329,7 @@ define(
 
 				// remove markers to change
 				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
-				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
+				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
 				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
 
 				// redraw all the markers
