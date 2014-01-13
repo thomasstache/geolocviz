@@ -24,9 +24,12 @@ define(
 
 				// show or hide the map scale control
 				showScaleControl: false,
-				
+
 				// draw network above result markers
 				drawNetworkOnTop: false,
+
+				// use record values for dynamic marker colors
+				useDynamicMarkerColors: false,
 			}
 		});
 

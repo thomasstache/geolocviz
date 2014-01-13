@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult", "models/position"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position) {
+	 "models/AccuracyResult", "models/axfresult", "models/position", "ColorMapper"],
+	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -12,6 +12,13 @@ define(
 			INDOOR:		{ bgcolor: "FBEC5D", color: "000000", smb: "I", label: "Indoor" }, // yellow
 			CANDIDATE:	{ bgcolor: "CCFFFF", color: "000000", smb: "C", label: "Location Candidate" }, // skyblue
 			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", label: "Home" },*/
+		});
+
+		var IconTypes = Object.freeze({
+			PIN: "pin",
+			DOT: "dot",
+			DYNAMIC: "dynamic",
+			SITE: "site",
 		});
 
 		var OverlayTypes = Object.freeze({
@@ -38,8 +45,8 @@ define(
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
 		var DEFAULT_SECTOR_SCALE = 2.0;
 
-		// "map" of already created MarkerImages by type
-		var MarkerImages = {};
+		// "map" of already created Marker icons by type
+		var IconCache = {};
 
 		/**
 		 * Validate LatLngs. Returns false if one of the coordinates is NaN.
@@ -97,6 +104,9 @@ define(
 
 			// offset applied to the z-index of site/sector markers according to 'drawNetworkOnTop' setting
 			networkMarkerZOffset: 0,
+
+			// maps the values to colors
+			colorMapper: null,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -546,6 +556,10 @@ define(
 					this.map.setOptions({ scaleControl: event.changed.showScaleControl });
 				}
 
+				if (event.changed.useDynamicMarkerColors !== undefined) {
+					this.toggleMarkerColors(event.changed.useDynamicMarkerColors);
+				}
+
 				if (event.changed.drawNetworkOnTop !== undefined) {
 					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
 				}
@@ -608,7 +622,7 @@ define(
 						this.bounds.extend(latLng);
 
 					var marker = new google.maps.Marker({
-						icon: this.getMarkerImage("site"),
+						icon: this.getMarkerIcon(IconTypes.SITE),
 						position: latLng,
 						map: this.map,
 						title: makeTooltip(site),
@@ -713,7 +727,7 @@ define(
 			/**
 			 * Draw result markers for all sessions according to current filter
 			 */
-			drawResultMarkers: function() {
+			drawResultMarkers: function(options) {
 
 				if (!this.hasGoogleMaps())
 					return;
@@ -721,7 +735,9 @@ define(
 				// clear all result markers
 				this.deleteResultOverlays();
 
-				var bZoomToResults = this.resultFilterFct === null;
+				var suppressZoom = (options && options.suppressZoom) || false;
+
+				var bZoomToResults = !suppressZoom && this.resultFilterFct === null;
 
 				if (bZoomToResults)
 					this.resetBounds();
@@ -872,7 +888,7 @@ define(
 			},
 
 			/**
-			 * Creates a marker pin and adds it to the map.
+			 * Creates a marker and adds it to the map.
 			 * @param {OverlayTypes}      type      The type of the marker
 			 * @param {LatLng}            latlng    The geographical position for the marker
 			 * @param {String}            label     Tooltip for the marker
@@ -889,12 +905,23 @@ define(
 
 				if (type === OverlayTypes.AXFMARKER) {
 
-					icon = this.getMarkerImage("dot", letter);
+					if (this.appsettings.get("useDynamicMarkerColors")) {
+						if (this.colorMapper === null)
+							this.colorMapper = new ColorMapper(0.0, 1.0);
+
+						var value = sample.get("confidence");
+						label += ": " + value.toString();
+						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
+						icon.fillColor = this.colorMapper.getColor(value);
+					}
+					else {
+						icon = this.getMarkerIcon(IconTypes.DOT, letter);
+					}
 				}
 				else {
 					var color = colorDef.bgcolor + "|" + colorDef.color;
 
-					icon = this.getMarkerImage("pin", letter + "|" + color);
+					icon = this.getMarkerIcon(IconTypes.PIN, letter + "|" + color);
 				}
 
 				var marker = new google.maps.Marker(
@@ -942,24 +969,25 @@ define(
 			},
 
 			/**
-			 * Return the Marker image for the given type. Creates it on first request and caches it.
-			 * @param  {String} type   General type of the marker - one of "dot", "pin", "site"
-			 * @param  {String} option (optional) parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
+			 * Return the Marker icon for the given type. Creates it on first request and caches it.
+			 * @param  {IconTypes} type General type of the marker - e.g. dot, pin, site...
+			 * @param  {String} option    (optional) parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
 			 * @return {MarkerImage}
 			 */
-			getMarkerImage: function(type, option) {
+			getMarkerIcon: function(type, option) {
 
 				// option is optional
 				option = option || "";
 
-				var code = type + "_" + option;
+				var key = type + "_" + option;
 
 				// already in cache?
-				if (MarkerImages[code] !== undefined) {
-					return MarkerImages[code];
+				if (IconCache[key] !== undefined) {
+					return IconCache[key];
 				}
 
 				var imagePath = null;
+				var icon;
 
 				// the common size+offsets of our AXF marker images
 				var geometry = {
@@ -969,7 +997,7 @@ define(
 				};
 
 				switch (type) {
-					case "dot":
+					case IconTypes.DOT:
 						if (option == "M") {
 							imagePath = 'images/circle_red.png';
 						}
@@ -981,7 +1009,7 @@ define(
 						}
 						break;
 
-					case "pin":
+					case IconTypes.PIN:
 						imagePath = "http://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=" + option;
 						geometry = {
 							size: null,
@@ -990,26 +1018,39 @@ define(
 						};
 						break;
 
-					case "site":
+					case IconTypes.SITE:
 						if (option == "selected") {
 							imagePath = 'images/siteSelectedBig.png';
 							geometry.size = new google.maps.Size(13,13);
 							geometry.anchor = new google.maps.Point(6,6);
 						}
 						else {
-							imagePath = 'images/siteBright.png';
+							imagePath = 'images/site.png';
 							geometry.size = new google.maps.Size(9,9);
 							geometry.anchor = new google.maps.Point(4,4);
 						}
 						break;
+
+					case IconTypes.DYNAMIC:
+						icon = {
+							path: google.maps.SymbolPath.CIRCLE,
+							fillColor: "#000", // dummy color
+							fillOpacity: 1,
+							scale: 5,
+							strokeColor: "#333",
+							strokeOpacity: "0.6",
+							strokeWeight: 1,
+						};
+						// return directly, no MarkerImage is needed.
+						return icon;
 				}
 
-				var img = new google.maps.MarkerImage(imagePath,
-													  geometry.size, geometry.origin, geometry.anchor);
+				icon = new google.maps.MarkerImage(imagePath,
+												   geometry.size, geometry.origin, geometry.anchor);
 
-				MarkerImages[code] = img;
+				IconCache[key] = icon;
 
-				return img;
+				return icon;
 			},
 
 			/**
@@ -1064,7 +1105,7 @@ define(
 							}
 						});
 
-						this.createLine(refLocations, "#4AB0F5", 6, 0.8, OverlayTypes.SESSIONLINE);
+						this.createLine(refLocations, "#A0B1BC", 6, 0.8, OverlayTypes.SESSIONLINE);
 						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE);
 					}
 				}
@@ -1158,7 +1199,7 @@ define(
 			createHighlightForSites: function() {
 
 				var marker = new google.maps.Marker({
-					icon: this.getMarkerImage("site", "selected"),
+					icon: this.getMarkerIcon(IconTypes.SITE, "selected"),
 					map: this.map,
 					zIndex: Z_Index.SITE + this.networkMarkerZOffset + 10
 				});
@@ -1270,6 +1311,30 @@ define(
 						this.deleteCandidateMarkers();
 					}
 				}
+			},
+
+			/**
+			 * Toggles result markers between default and colored-by-value modes.
+			 * @param  {Session} session The session model.
+			 */
+			toggleMarkerColors: function(bDynamicColors) {
+
+				// redraw all the markers
+				this.drawResultMarkers({suppressZoom: true});
+
+				// TODO: filter somehow, as performance with dynamic colors gets bad > 1000 results.
+/*				// get the currently highlighted session
+				var session = this.collection.get(this.highlightedSessionId);
+
+				if (!session)
+					return;
+
+				// update markers of the session...
+				session.results.each(function(){
+					//
+					bDynamicColors;
+				});
+*/
 			},
 
 			/**
