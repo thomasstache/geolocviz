@@ -5,6 +5,11 @@ define(
 
 		var TEST = false;
 
+		/**
+		 * Creates a new Color Mapper for the given value range.
+		 * @param {Number} min Value corresponding to the lowest color entry
+		 * @param {Number} max Value corresponding to the highest color entry
+		 */
 		function ColorMapper(min, max) {
 
 			this.setLimits(min, max);
@@ -13,8 +18,8 @@ define(
 
 		/**
 		 * Set scale limits.
-		 * @param {Number} min Value matching to lowest color entry
-		 * @param {Number} max Value matching to highest color entry
+		 * @param {Number} min Value corresponding to the lowest color entry
+		 * @param {Number} max Value corresponding to the highest color entry
 		 */
 		ColorMapper.prototype.setLimits = function(min, max) {
 			this.scaleMin = min;
@@ -68,7 +73,7 @@ define(
 			return rv;
 		};
 
-		// more readable to define colors as arrays
+		// the color scale
 		var COLORS = [
 			new Color(  0,   0, 255), // blue
 			new Color(  0, 128, 255), // cyan
@@ -77,7 +82,7 @@ define(
 			new Color(255,   0,   0) // red
 		];
 
-		// debug
+		// "unit test"
 		function test() {
 			console.log("ColorMapper test:");
 			var c = new ColorMapper(0, 1);
