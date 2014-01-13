@@ -1022,7 +1022,7 @@ define(
 							geometry.anchor = new google.maps.Point(6,6);
 						}
 						else {
-							imagePath = 'images/siteBright.png';
+							imagePath = 'images/site.png';
 							geometry.size = new google.maps.Size(9,9);
 							geometry.anchor = new google.maps.Point(4,4);
 						}
@@ -1102,7 +1102,7 @@ define(
 							}
 						});
 
-						this.createLine(refLocations, "#4AB0F5", 6, 0.8, OverlayTypes.SESSIONLINE);
+						this.createLine(refLocations, "#A0B1BC", 6, 0.8, OverlayTypes.SESSIONLINE);
 						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE);
 					}
 				}
