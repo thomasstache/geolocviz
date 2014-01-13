@@ -1,8 +1,8 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/legend"],
+	 "hbs!../../templates/legend", "hbs!../../templates/colorscale"],
 
-	function($, _, Backbone, legendTemplate) {
+	function($, _, Backbone, legendTemplate, colorScaleTemplate) {
 
 		var LegendView = Backbone.View.extend({
 
@@ -30,24 +30,50 @@ define(
 					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
 				}
 
+				if (this.settings) {
+					this.settings.on("change:useDynamicMarkerColors", this.onSettingsChanged, this);
+				}
+
 				// translate the colors dictionary into an array for our templating
 				var colorDict = this.options.colors;
 				this.colorData = {
-					colors: []
+					swatches: []
 				};
 
-				for (var prop in colorDict) {
-					this.colorData.colors.push(colorDict[prop]);
+				for (var key in colorDict) {
+					this.colorData.swatches.push(colorDict[key]);
 				}
+
+				this.$swatchList = this.$("#swatchList");
+				this.$colorScale = this.$("#colorScale");
 
 				this.render();
 			},
 
 			render: function() {
 
-				this.$el.html(legendTemplate(this.colorData));
+				this.$swatchList.html(legendTemplate(this.colorData));
+				this.renderColorScale();
+
 				this.showLegendItem("R", this.appstate.get("referenceLocationsAvailable"));
 				this.showLegendItem("C", this.appstate.get("candidateLocationsAvailable"));
+
+				this.toggleLegendMode(this.settings.get("useDynamicMarkerColors"));
+				return this;
+			},
+
+			// Render only the legend for dynamic marker colors.
+			renderColorScale: function() {
+
+				// define properties statically for the moment
+				var context = {
+					attribute: "Confidence",
+					bgGradient: "linear-gradient(to right, blue, cyan, lime, yellow, red)",
+					minScale: "0.0",
+					maxScale: "1.0"
+				};
+				this.$colorScale.html(colorScaleTemplate(context));
+				return this;
 			},
 
 			/**
@@ -61,6 +87,23 @@ define(
 				if (event.changed.candidateLocationsAvailable !== undefined) {
 					this.showLegendItem("C", event.changed.candidateLocationsAvailable);
 				}
+			},
+
+			/**
+			 * Handler for "change" event on Settings.
+			 */
+			onSettingsChanged: function(event) {
+
+				if (event.changed.useDynamicMarkerColors !== undefined) {
+					this.toggleLegendMode(event.changed.useDynamicMarkerColors);
+				}
+			},
+
+			// Toggle rendering mode, display either swatches for categories or color scale.
+			toggleLegendMode: function(bDynamicMarkerColors) {
+
+				this.$swatchList.toggleClass("hidden", bDynamicMarkerColors);
+				this.$colorScale.toggleClass("hidden", !bDynamicMarkerColors);
 			},
 
 			showLegendItem: function(symbol, bShow) {

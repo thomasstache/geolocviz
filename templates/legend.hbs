@@ -1,5 +1,3 @@
-	<ul class="legend mapcontrols bottom">
-		{{#each colors}}
-			<li class="legendItem clickable" data-markertype="{{smb}}"><span class="colorswatch" style="background: #{{bgcolor}}"></span><span>{{label}}</span></li>
-		{{/each}}
-	</ul>
+{{#each swatches}}
+	<li class="legendItem clickable" data-markertype="{{smb}}"><span class="colorswatch" style="background: #{{bgcolor}}"></span><span>{{label}}</span></li>
+{{/each}}
