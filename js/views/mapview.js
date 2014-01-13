@@ -908,8 +908,11 @@ define(
 					if (this.appsettings.get("useDynamicMarkerColors")) {
 						if (this.colorMapper === null)
 							this.colorMapper = new ColorMapper(0.0, 1.0);
+
+						var value = sample.get("confidence");
+						label += ": " + value.toString();
 						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
-						icon.fillColor = this.colorMapper.getColor(sample.get("confidence"));
+						icon.fillColor = this.colorMapper.getColor(value);
 					}
 					else {
 						icon = this.getMarkerIcon(IconTypes.DOT, letter);
