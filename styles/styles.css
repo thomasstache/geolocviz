@@ -184,6 +184,12 @@ button:not([disabled]):active {
 	height: 2.5ex;
 }
 
+.legendItem .colorscale {
+	width: 150px;
+	border: 1px solid rgba(120, 120, 120, .8);
+	background-color: rgba(220, 220, 220, 0.8);
+}
+
 /* filter bar UL */
 #filters {
 	font-size: 1.1em;

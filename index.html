@@ -85,7 +85,10 @@
 		</section>
 
 		<!-- container for the legend controls, will be placed onto the map -->
-		<section id="mapLegend" style="display: none" ><!-- {{template}} --></section>
+		<section id="mapLegend" style="display: none" >
+			<ul id="swatchList" class="legend mapcontrols bottom"><!-- {{template}} --></ul>
+			<ul id="colorScale" class="legend mapcontrols bottom hidden"><!-- {{template}} --></ul>
+		</section>
 
 		<!-- filter controls, will be placed onto the map. markup similar to mapLegend -->
 		<section id="filterBar" class="hidden">
