@@ -1,12 +1,14 @@
-define(function() {
+define(
+	["models/color"],
+
+	function(Color) {
+
+		var TEST = false;
 
 		function ColorMapper(min, max) {
 
 			this.setLimits(min, max);
 			this.colorCount = COLORS.length;
-			[0, 0.1, 0.2, .4,.5,.6,.7,.8,.9,1].forEach(function(v) {
-				console.log(this.getColor(v));
-			}.bind(this));
 		}
 
 		/**
@@ -27,14 +29,14 @@ define(function() {
 		ColorMapper.prototype.getColor = function(value) {
 
 			var rv = "#000";
-			if (typeof value === "number") {
-				var r, g, b, rgb;
+			if (typeof value === "number" && !isNaN(value)) {
+				var color;
 
 				if (value <= this.scaleMin) {
-					rgb = COLORS[0];
+					color = COLORS[0];
 				}
 				else if (value >= this.scaleMax) {
-					rgb = COLORS[this.colorCount - 1];
+					color = COLORS[this.colorCount - 1];
 				}
 				else {
 					// determine bounding colors
@@ -45,15 +47,22 @@ define(function() {
 					var rgb1 = COLORS[lower],
 						rgb2 = COLORS[upper];
 
-					console.log("v" + value + " rv" + relValue + " l" + lower + " u" + upper + " d" + delta);
 					// interpolate
-					r = rgb1[0] + (rgb2[0] - rgb1[0]) * delta;
-					g = rgb1[1] + (rgb2[1] - rgb1[1]) * delta;
-					b = rgb1[2] + (rgb2[2] - rgb1[2]) * delta;
-					rgb = toRGB(r, g, b);
+					var r, g, b;
+					r = rgb1.r + (rgb2.r - rgb1.r) * delta;
+					g = rgb1.g + (rgb2.g - rgb1.g) * delta;
+					b = rgb1.b + (rgb2.b - rgb1.b) * delta;
+
+					color = new Color(r, g, b);
 				}
 
-				rv = "#" + toHexString(rgb);
+				rv = color.toCSSHexString();
+
+				if (TEST)
+					console.log(" val:" + value + " -> " + rv + ", rgb:" + color.toRGB());
+			}
+			else {
+				console.log("ColorMapper: illegal value '" + value + "'.");
 			}
 
 			return rv;
@@ -61,25 +70,25 @@ define(function() {
 
 		// more readable to define colors as arrays
 		var COLORS = [
-			[  0,   0, 255], // blue
-			[  0, 128, 255], // cyan
-			[  0, 255,   0], // green
-			[255, 255,   0], // yellow
-			[255,   0,   0], // red
+			new Color(  0,   0, 255), // blue
+			new Color(  0, 128, 255), // cyan
+			new Color(  0, 255,   0), // green
+			new Color(255, 255,   0), // yellow
+			new Color(255,   0,   0) // red
 		];
 
-		/**
-		 * Combine color components into one number.
-		 */
-		function toRGB(r, g, b) {
-			return (b | (g << 8) | (r << 16));
+		// debug
+		function test() {
+			console.log("ColorMapper test:");
+			var c = new ColorMapper(0, 1);
+			[NaN, "a", 0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0].forEach(function(v) {
+				c.getColor(v);
+			});
+			console.log("ColorMapper test complete.");
 		}
 
-		// Format
-		function toHexString(rgb) {
-			// see http://stackoverflow.com/questions/11683992/convert-rgb-to-hex-color
-			return (0x1000000 | rgb).toString(16).substring(1);
-		}
+		if (TEST)
+			test();
 
 		return ColorMapper;
 	}
