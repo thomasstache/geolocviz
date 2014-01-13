@@ -29,7 +29,7 @@ define(
 				drawNetworkOnTop: false,
 
 				// use record values for dynamic marker colors
-				useDynamicMarkerColors: false,
+				useDynamicMarkerColors: true,
 			}
 		});
 
