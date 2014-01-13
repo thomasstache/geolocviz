@@ -42,14 +42,14 @@
 				<h2 class="caption etched">Info</h2>
 
 				<section class="infoBlock">
-					<output id="sessionInfo"></output>
+					<output id="sessionInfo"><!-- {{template}} --></output>
 					<div class="toolbar sessionControls hidden">
 						<button class="translucent tiny focus-session" disabled>Focus</button>
 						<button class="translucent tiny unfocus-session" disabled>Done</button>
 					</div>
 				</section>
 				<section class="infoBlock">
-					<output id="resultInfo"></output>
+					<output id="resultInfo"><!-- {{template}} --></output>
 					<div class="toolbar resultControls hidden">
 						<button class="translucent tiny results-first" disabled title="First result">|&lt;</button>
 						<button class="translucent tiny results-prev" disabled title="Previous result">&lt;</button>
@@ -59,10 +59,10 @@
 					</div>
 				</section>
 				<section class="infoBlock">
-					<output id="siteInfo"></output>
+					<output id="siteInfo"><!-- {{template}} --></output>
 				</section>
 				<section class="infoBlock">
-					<output id="statistics"></output>
+					<output id="statistics"><!-- {{template}} --></output>
 				</section>
 				<hr class="invisible clearfix" />
 
@@ -85,12 +85,12 @@
 		</section>
 
 		<!-- container for the legend controls, will be placed onto the map -->
-		<section id="mapLegend" style="display: none" ></section>
+		<section id="mapLegend" style="display: none" ><!-- {{template}} --></section>
 
 		<!-- filter controls, will be placed onto the map. markup similar to mapLegend -->
 		<section id="filterBar" class="hidden">
 			<ul id="filters" class="mapcontrols top">
-				<li id="clearFilters" class="filterItem clickable"></li>
+				<li id="clearFilters" class="filterItem clickable"><!-- {{template}} --></li>
 			</ul>
 		</section>
 
