@@ -727,7 +727,7 @@ define(
 			/**
 			 * Draw result markers for all sessions according to current filter
 			 */
-			drawResultMarkers: function() {
+			drawResultMarkers: function(options) {
 
 				if (!this.hasGoogleMaps())
 					return;
@@ -735,7 +735,9 @@ define(
 				// clear all result markers
 				this.deleteResultOverlays();
 
-				var bZoomToResults = this.resultFilterFct === null;
+				var suppressZoom = (options && options.suppressZoom) || false;
+
+				var bZoomToResults = !suppressZoom && this.resultFilterFct === null;
 
 				if (bZoomToResults)
 					this.resetBounds();
@@ -1315,7 +1317,7 @@ define(
 			toggleMarkerColors: function(bDynamicColors) {
 
 				// redraw all the markers
-				this.drawResultMarkers();
+				this.drawResultMarkers({suppressZoom: true});
 
 				// TODO: filter somehow, as performance with dynamic colors gets bad > 1000 results.
 /*				// get the currently highlighted session
