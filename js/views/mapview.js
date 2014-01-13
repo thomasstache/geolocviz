@@ -77,6 +77,9 @@ define(
 
 			map: null,
 
+			/** @type {Settings} the application settings */
+			appsettings: null,
+
 			// bounding rectangle around all reference and geolocated markers
 			bounds: null,
 
