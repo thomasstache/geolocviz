@@ -560,7 +560,7 @@ define(
 				}
 
 				if (event.changed.useDynamicMarkerColors !== undefined) {
-					this.toggleMarkerColors(event.changed.useDynamicMarkerColors);
+					this.toggleMarkerColors();
 				}
 
 				if (event.changed.drawNetworkOnTop !== undefined) {
@@ -728,7 +728,7 @@ define(
 			},
 
 			/**
-			 * Draw result markers for all sessions according to current filter
+			 * Redraw result markers for all sessions, deleting all existing markers and highlights.
 			 */
 			drawResultMarkers: function() {
 
@@ -743,17 +743,25 @@ define(
 				if (bZoomToResults)
 					this.resetBounds();
 
-				// capture the "this" scope
-				var view = this;
-				this.collection.each(function(session) {
-					view.drawSession(session);
-				});
+				this.drawSessions();
 
 				if (bZoomToResults)
 					this.zoomToBounds();
 
 				// debug code
 				//this.drawRectangle(this.bounds, "#00FF00");
+			},
+
+			/**
+			 * Draw result markers for all sessions in the SessionList collection.
+			 */
+			drawSessions: function() {
+
+				// capture the "this" scope
+				var view = this;
+				this.collection.each(function(session) {
+					view.drawSession(session);
+				});
 			},
 
 			/**
@@ -1316,12 +1324,16 @@ define(
 
 			/**
 			 * Toggles result markers between default and colored-by-value modes.
-			 * @param  {Session} session The session model.
 			 */
-			toggleMarkerColors: function(bDynamicColors) {
+			toggleMarkerColors: function() {
+
+				// remove markers to change
+				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
+				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
+				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
 
 				// redraw all the markers
-				this.drawResultMarkers();
+				this.drawSessions();
 
 				// TODO: filter somehow, as performance with dynamic colors gets bad > 1000 results.
 /*				// get the currently highlighted session
