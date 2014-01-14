@@ -1337,11 +1337,6 @@ define(
 			 */
 			updateMarkerColors: function() {
 
-				// remove markers to change
-				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
-				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
-				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
-
 				// initialize the color mapper
 				if ( this.appsettings.get("useDynamicMarkerColors") &&
 					!this.appstate.has("markerColorMapper")) {
@@ -1350,8 +1345,15 @@ define(
 					if (this.appsettings.get("markerColorAttribute") === "Confidence")
 						colorMapper = new ColorMapper(0.0, 1.0);
 
+					// this will trigger a render via onColorMapperChanged(), so return here
 					this.appstate.set("markerColorMapper", colorMapper);
+					return;
 				}
+
+				// remove markers to change
+				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
+				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
+				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
 
 				// redraw all the markers
 				this.drawSessions();
