@@ -180,6 +180,9 @@ define(
 				this.appsettings = this.options.settings;
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
+				this.appstate = this.options.appstate;
+				this.appstate.on("change:markerColorMapper", this.onColorMapperChanged, this);
+
 				// make available for console scripting
 //				window.mapview = this;
 			},
@@ -560,7 +563,7 @@ define(
 				}
 
 				if (event.changed.useDynamicMarkerColors !== undefined) {
-					this.toggleMarkerColors();
+					this.updateMarkerColors();
 				}
 
 				if (event.changed.drawNetworkOnTop !== undefined) {
@@ -568,7 +571,16 @@ define(
 				}
 			},
 
+			onColorMapperChanged: function(event) {
 
+				if (event.changed.markerColorMapper !== undefined) {
+
+					// cache the reference
+					this.colorMapper = event.changed.markerColorMapper;
+					// redraw markers
+					this.updateMarkerColors();
+				}
+			},
 
 
 
@@ -915,8 +927,6 @@ define(
 				if (type === OverlayTypes.AXFMARKER) {
 
 					if (this.appsettings.get("useDynamicMarkerColors")) {
-						if (this.colorMapper === null)
-							this.colorMapper = new ColorMapper(0.0, 1.0);
 
 						var value = sample.get("confidence");
 						label += ": " + value.toString();
@@ -1325,12 +1335,23 @@ define(
 			/**
 			 * Toggles result markers between default and colored-by-value modes.
 			 */
-			toggleMarkerColors: function() {
+			updateMarkerColors: function() {
 
 				// remove markers to change
 				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
 				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
 				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
+
+				// initialize the color mapper
+				if ( this.appsettings.get("useDynamicMarkerColors") &&
+					!this.appstate.has("markerColorMapper")) {
+
+					var colorMapper = null;
+					if (this.appsettings.get("markerColorAttribute") === "Confidence")
+						colorMapper = new ColorMapper(0.0, 1.0);
+
+					this.appstate.set("markerColorMapper", colorMapper);
+				}
 
 				// redraw all the markers
 				this.drawSessions();

@@ -66,7 +66,8 @@ define(
 				this.mapview = new MapView({
 					collection: this.sessions,
 					siteList: this.siteList,
-					settings: this.settings
+					settings: this.settings,
+					appstate: this.model,
 				});
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
@@ -561,6 +562,8 @@ define(
 					this.resultSelected(newResult);
 				}
 			},
+
+			/*********************** Misc events ***********************/
 
 			// Handler for changes to the "busy" attribute in AppState. Updates the wait cursor.
 			busyStateChanged: function(event) {
