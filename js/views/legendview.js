@@ -28,10 +28,11 @@ define(
 				if (this.appstate) {
 					this.appstate.on("change:referenceLocationsAvailable", this.onStateChanged, this);
 					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
+					this.appstate.on("change:markerColorMapper", this.onColorMapperChanged, this);
 				}
 
 				if (this.settings) {
-					this.settings.on("change:useDynamicMarkerColors", this.onSettingsChanged, this);
+					this.settings.on("change:useDynamicMarkerColors", this.onScaleSettingsChanged, this);
 				}
 
 				// translate the colors dictionary into an array for our templating
@@ -65,14 +66,20 @@ define(
 			// Render only the legend for dynamic marker colors.
 			renderColorScale: function() {
 
-				// define properties statically for the moment
-				var context = {
-					attribute: "Confidence",
-					bgGradient: "linear-gradient(to right, blue, cyan, lime, yellow, red)",
-					minScale: "0.0",
-					maxScale: "1.0"
-				};
-				this.$colorScale.html(colorScaleTemplate(context));
+				var colorMapper = this.appstate.get("markerColorMapper");
+				if (colorMapper !== null) {
+
+					var scaleSetup = colorMapper.getInfo();
+
+					var context = {
+						attribute: this.settings.get("markerColorAttribute"),
+						bgGradient: "linear-gradient(to right, blue, cyan, lime, yellow, red)",
+						scaleMin: scaleSetup.scaleMin,
+						scaleMax: scaleSetup.scaleMax
+					};
+					this.$colorScale.html(colorScaleTemplate(context));
+				}
+
 				return this;
 			},
 
@@ -90,9 +97,21 @@ define(
 			},
 
 			/**
+			 * Update color scale legend according to ColorMapper.
+			 */
+			onColorMapperChanged: function(event) {
+
+				if (event.changed.markerColorMapper !== undefined) {
+					// the ColorMapper reference has changed
+
+					this.renderColorScale();
+				}
+			},
+
+			/**
 			 * Handler for "change" event on Settings.
 			 */
-			onSettingsChanged: function(event) {
+			onScaleSettingsChanged: function(event) {
 
 				if (event.changed.useDynamicMarkerColors !== undefined) {
 					this.toggleLegendMode(event.changed.useDynamicMarkerColors);

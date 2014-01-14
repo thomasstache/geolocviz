@@ -73,6 +73,20 @@ define(
 			return rv;
 		};
 
+		/**
+		 * Returns the properties of the current setup, e.g. for legend rendering.
+		 * @return {Object} a property hash with scaleMin, scaleMax
+		 */
+		ColorMapper.prototype.getInfo = function() {
+			var rv = {
+				scaleMin: this.scaleMin,
+				scaleMax: this.scaleMax,
+				// TODO: if colors become configurable include the list
+				//colors: COLORS
+			};
+			return rv;
+		};
+
 		// the color scale
 		var COLORS = [
 			new Color(  0,   0, 255), // blue
