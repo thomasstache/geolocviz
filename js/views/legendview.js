@@ -33,6 +33,7 @@ define(
 
 				if (this.settings) {
 					this.settings.on("change:useDynamicMarkerColors", this.onScaleSettingsChanged, this);
+					this.settings.on("change:markerColorAttribute", this.onColorMapperChanged, this);
 				}
 
 				// translate the colors dictionary into an array for our templating
@@ -101,8 +102,8 @@ define(
 			 */
 			onColorMapperChanged: function(event) {
 
-				if (event.changed.markerColorMapper !== undefined) {
-					// the ColorMapper reference has changed
+				if (event.changed.markerColorMapper !== undefined ||
+					event.changed.markerColorAttribute !== undefined) {
 
 					this.renderColorScale();
 				}

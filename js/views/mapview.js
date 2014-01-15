@@ -564,10 +564,20 @@ define(
 				if (event.changed.useDynamicMarkerColors !== undefined) {
 					this.updateMarkerColors();
 				}
+				if (event.changed.markerColorAttribute !== undefined) {
+					this.markerAttributeChanged(event.changed.markerColorAttribute);
+				}
 
 				if (event.changed.drawNetworkOnTop !== undefined) {
 					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
 				}
+			},
+
+			markerAttributeChanged: function(attributeName) {
+
+				this.configureColorMapperForAttribute(attributeName);
+				// redraw markers
+				this.updateMarkerColors();
 			},
 
 
@@ -728,6 +738,25 @@ define(
 			},
 
 			/**
+			 * Configures ColorMapper for the attribute.
+			 * @param  {String} attributeName
+			 */
+			configureColorMapperForAttribute: function(attributeName) {
+
+				var colorMapper = null;
+				// TODO: need to manage legend limits using a map by attribute
+				if (attributeName === "confidence")
+					colorMapper = new ColorMapper(0.0, 1.0);
+				else if (attributeName === "probMobility")
+					colorMapper = new ColorMapper(0.0, 1.0);
+				else if (attributeName === "probIndoor")
+					colorMapper = new ColorMapper(0.0, 1.0);
+
+				this.appstate.set("markerColorMapper", colorMapper);
+				this.colorMapper = colorMapper;
+			},
+
+			/**
 			 * Redraw result markers for all sessions, deleting all existing markers and highlights.
 			 */
 			drawResultMarkers: function() {
@@ -742,15 +771,7 @@ define(
 				if ( this.appsettings.get("useDynamicMarkerColors") &&
 					!this.appstate.has("markerColorMapper")) {
 
-					var colorMapper = null;
-					// TODO: need to manage legend limits using a map by attribute
-					if (this.appsettings.get("markerColorAttribute") === "Confidence")
-						colorMapper = new ColorMapper(0.0, 1.0);
-
-					// this will trigger a render via onColorMapperChanged(), so return here
-					this.appstate.set("markerColorMapper", colorMapper);
-					// cache the reference
-					this.colorMapper = colorMapper;
+					this.configureColorMapperForAttribute(this.appsettings.get("markerColorAttribute"));
 				}
 
 				var bZoomToResults = this.resultFilterFct === null;
@@ -931,7 +952,7 @@ define(
 
 					if (this.appsettings.get("useDynamicMarkerColors")) {
 
-						var value = sample.get("confidence");
+						var value = sample.get(this.appsettings.get("markerColorAttribute"));
 						label += ": " + value.toString();
 						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
 						icon.fillColor = this.colorMapper.getColor(value);
