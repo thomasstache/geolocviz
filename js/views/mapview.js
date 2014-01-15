@@ -181,7 +181,6 @@ define(
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
 				this.appstate = this.options.appstate;
-				this.appstate.on("change:markerColorMapper", this.onColorMapperChanged, this);
 
 				// make available for console scripting
 //				window.mapview = this;
@@ -571,17 +570,6 @@ define(
 				}
 			},
 
-			onColorMapperChanged: function(event) {
-
-				if (event.changed.markerColorMapper !== undefined) {
-
-					// cache the reference
-					this.colorMapper = event.changed.markerColorMapper;
-					// redraw markers
-					this.updateMarkerColors();
-				}
-			},
-
 
 
 			/**
@@ -749,6 +737,21 @@ define(
 
 				// clear all result markers
 				this.deleteResultOverlays();
+
+				// initialize the color mapper
+				if ( this.appsettings.get("useDynamicMarkerColors") &&
+					!this.appstate.has("markerColorMapper")) {
+
+					var colorMapper = null;
+					// TODO: need to manage legend limits using a map by attribute
+					if (this.appsettings.get("markerColorAttribute") === "Confidence")
+						colorMapper = new ColorMapper(0.0, 1.0);
+
+					// this will trigger a render via onColorMapperChanged(), so return here
+					this.appstate.set("markerColorMapper", colorMapper);
+					// cache the reference
+					this.colorMapper = colorMapper;
+				}
 
 				var bZoomToResults = this.resultFilterFct === null;
 
@@ -1341,17 +1344,6 @@ define(
 				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
 				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
 				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
-
-				// initialize the color mapper
-				if ( this.appsettings.get("useDynamicMarkerColors") &&
-					!this.appstate.has("markerColorMapper")) {
-
-					var colorMapper = null;
-					if (this.appsettings.get("markerColorAttribute") === "Confidence")
-						colorMapper = new ColorMapper(0.0, 1.0);
-
-					this.appstate.set("markerColorMapper", colorMapper);
-				}
 
 				// redraw all the markers
 				this.drawSessions();
