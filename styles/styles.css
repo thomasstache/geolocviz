@@ -143,6 +143,11 @@ button:not([disabled]):active {
 	margin: 0 1ex;
 }
 
+#selectMarkerColorsAttribute {
+	margin-left: 10px;
+	min-width: 14em;
+}
+
 /* Overlays on top of map */
 
 .mapcontrols {

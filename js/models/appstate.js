@@ -44,6 +44,9 @@ define(
 				// id of the last focussed session
 				focussedSessionId: -1,
 
+				/** @type {ColorMapper} reference to the ColorMapper for the currently selected attribute */
+				markerColorMapper: null,
+
 				/** @type {Statistics} model containing statistics about loaded files and records */
 				statistics: null
 			},

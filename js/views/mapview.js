@@ -180,6 +180,8 @@ define(
 				this.appsettings = this.options.settings;
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
+				this.appstate = this.options.appstate;
+
 				// make available for console scripting
 //				window.mapview = this;
 			},
@@ -560,7 +562,10 @@ define(
 				}
 
 				if (event.changed.useDynamicMarkerColors !== undefined) {
-					this.toggleMarkerColors();
+					this.updateMarkerColors();
+				}
+				if (event.changed.markerColorAttribute !== undefined) {
+					this.markerAttributeChanged(event.changed.markerColorAttribute);
 				}
 
 				if (event.changed.drawNetworkOnTop !== undefined) {
@@ -568,7 +573,12 @@ define(
 				}
 			},
 
+			markerAttributeChanged: function(attributeName) {
 
+				this.configureColorMapperForAttribute(attributeName);
+				// redraw markers
+				this.updateMarkerColors();
+			},
 
 
 
@@ -728,6 +738,25 @@ define(
 			},
 
 			/**
+			 * Configures ColorMapper for the attribute.
+			 * @param  {String} attributeName
+			 */
+			configureColorMapperForAttribute: function(attributeName) {
+
+				var colorMapper = null;
+				// TODO: need to manage legend limits using a map by attribute
+				if (attributeName === "confidence")
+					colorMapper = new ColorMapper(0.0, 1.0);
+				else if (attributeName === "probMobility")
+					colorMapper = new ColorMapper(0.0, 1.0);
+				else if (attributeName === "probIndoor")
+					colorMapper = new ColorMapper(0.0, 1.0);
+
+				this.appstate.set("markerColorMapper", colorMapper);
+				this.colorMapper = colorMapper;
+			},
+
+			/**
 			 * Redraw result markers for all sessions, deleting all existing markers and highlights.
 			 */
 			drawResultMarkers: function() {
@@ -737,6 +766,13 @@ define(
 
 				// clear all result markers
 				this.deleteResultOverlays();
+
+				// initialize the color mapper
+				if ( this.appsettings.get("useDynamicMarkerColors") &&
+					!this.appstate.has("markerColorMapper")) {
+
+					this.configureColorMapperForAttribute(this.appsettings.get("markerColorAttribute"));
+				}
 
 				var bZoomToResults = this.resultFilterFct === null;
 
@@ -915,10 +951,8 @@ define(
 				if (type === OverlayTypes.AXFMARKER) {
 
 					if (this.appsettings.get("useDynamicMarkerColors")) {
-						if (this.colorMapper === null)
-							this.colorMapper = new ColorMapper(0.0, 1.0);
 
-						var value = sample.get("confidence");
+						var value = sample.get(this.appsettings.get("markerColorAttribute"));
 						label += ": " + value.toString();
 						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
 						icon.fillColor = this.colorMapper.getColor(value);
@@ -1325,7 +1359,7 @@ define(
 			/**
 			 * Toggles result markers between default and colored-by-value modes.
 			 */
-			toggleMarkerColors: function() {
+			updateMarkerColors: function() {
 
 				// remove markers to change
 				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
