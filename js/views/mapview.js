@@ -767,13 +767,6 @@ define(
 				// clear all result markers
 				this.deleteResultOverlays();
 
-				// initialize the color mapper
-				if ( this.appsettings.get("useDynamicMarkerColors") &&
-					!this.appstate.has("markerColorMapper")) {
-
-					this.configureColorMapperForAttribute(this.appsettings.get("markerColorAttribute"));
-				}
-
 				var bZoomToResults = this.resultFilterFct === null;
 
 				if (bZoomToResults)
@@ -792,6 +785,13 @@ define(
 			 * Draw result markers for all sessions in the SessionList collection.
 			 */
 			drawSessions: function() {
+
+				// initialize the color mapper
+				if ( this.appsettings.get("useDynamicMarkerColors") &&
+					!this.appstate.has("markerColorMapper")) {
+
+					this.configureColorMapperForAttribute(this.appsettings.get("markerColorAttribute"));
+				}
 
 				// capture the "this" scope
 				var view = this;
