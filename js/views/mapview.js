@@ -80,6 +80,9 @@ define(
 			/** @type {Settings} the application settings */
 			appsettings: null,
 
+			/** @type {AppState} the shared application state */
+			appstate: null,
+
 			// bounding rectangle around all reference and geolocated markers
 			bounds: null,
 
