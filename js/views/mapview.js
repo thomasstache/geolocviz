@@ -1,7 +1,7 @@
 define(
 	["underscore", "backbone",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult", "models/position", "ColorMapper"],
+	 "models/AccuracyResult", "models/axfresult", "types/position", "ColorMapper"],
 	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position, ColorMapper) {
 
 		// marker types 'n colors

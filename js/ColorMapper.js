@@ -1,5 +1,5 @@
 define(
-	["models/color"],
+	["types/color"],
 
 	function(Color) {
 

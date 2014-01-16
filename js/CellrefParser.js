@@ -1,7 +1,7 @@
 define(
 	["underscore",
 	 "collections/sites",
-	 "models/site", "models/position"],
+	 "models/site", "types/position"],
 
 	function(_, SiteList, Site, Position) {
 
@@ -43,7 +43,7 @@ define(
 				WCDMA_CI: "WCDMA_CI",
 				WCDMA_UARFCN: "UARFCN",
 				WCDMA_RNCID: "RNCID",
-				
+
 				LTE_ECI: "ECI",
 				LTE_PCI: "PCI",
 				LTE_EARFCN: "DL_EARFCN",
@@ -345,9 +345,9 @@ define(
 							case "LTE_Cell":
 								props.earfcn = getAttr(record, SectorAttributes.LTE_EARFCN, DataTypes.INTEGER);
 								props.pci = getAttr(record, SectorAttributes.LTE_PCI, DataTypes.INTEGER);
-								
+
 								props.cellIdentity = getAttr(record, SectorAttributes.LTE_ECI, DataTypes.INTEGER);
-								
+
 								// pick between "TAC" and "TrackingArea", prefer the former
 								var tac = 0;
 								var colTAC = attributeColumnIndex[SectorAttributes.LTE_TAC];

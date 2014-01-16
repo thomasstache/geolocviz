@@ -1,7 +1,7 @@
 define(
 	["underscore",
 	 "collections/sessions", "collections/results",
-	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "models/position",
+	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "types/position",
 	 "CellrefParser", "jquery.csv"],
 
 	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, CellrefParser) {
