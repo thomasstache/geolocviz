@@ -26,7 +26,17 @@
 			<div class="right">
 				<button id="cmdClearResults">Clear results</button>
 				<button id="cmdClearAllData">Clear data</button>
-				<input type="search" id="searchInput" placeholder="Search..." autocomplete="off"/>
+				<div id="searchView">
+					<input type="search" id="searchInput" placeholder="Search..." autocomplete="off"/>
+					<div id="searchHelp" class="hidden" >
+						<span>Search for:</span>
+						<ul>
+							<li><b>#</b>&nbsp;Message ID</li>
+							<li><b>:</b>&nbsp;Session ID</li>
+							<li><b>@</b>&nbsp;Site/Sector</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</section>
 
