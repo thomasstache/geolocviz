@@ -4,19 +4,19 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
-	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics", "FileLoader"],
+	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview", "views/searchview",
+	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
+	 "types/searchquery", "FileLoader"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView,
-			 SessionList, SiteList, Settings, AppState, Statistics, FileLoader) {
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView,
+			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader) {
 
 		var AppView = Backbone.View.extend({
 			el: $("#playground-app"),
 
 			events: {
 				"change #fileInput"      : "fileInputChanged",
-				"change #searchInput"    : "searchInputChanged",
 				"click #cmdClearAllData" : "clearData",
 				"click #cmdClearResults" : "clearResults",
 				"drop #fileDropZone"     : "dropHandler"
@@ -33,6 +33,14 @@ define(
 
 			/** @type {Settings} model for user controlable settings */
 			settings: null,
+
+			// all our views
+			settingsview: null,
+			mapview: null,
+			infoview: null,
+			legendview: null,
+			filterview: null,
+			searchview: null,
 
 			// the counter tracking file loads
 			numFilesQueued: 0,
@@ -62,6 +70,10 @@ define(
 				this.settings = new Settings();
 				this.settingsview = new SettingsView({ model: this.settings, appstate: this.model });
 
+				this.infoview = new InfoView({ model: this.model });
+				this.filterview = new FilterView({ model: this.model });
+				this.searchview = new SearchView();
+
 				// setup map
 				this.mapview = new MapView({
 					collection: this.sessions,
@@ -71,8 +83,6 @@ define(
 				});
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
-				this.infoview = new InfoView({ model: this.model });
-				this.filterview = new FilterView({ model: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
@@ -89,6 +99,7 @@ define(
 				this.infoview.on("result:filterByElement", this.resultsFilterByElement, this);
 
 				this.filterview.on("results:clear-filter", this.resultsClearFilter, this);
+				this.searchview.on("search", this.searchHandler, this);
 
 				$("#fileInput").prop("disabled", false);
 			},
@@ -134,7 +145,7 @@ define(
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
-				this.clearSearchField();
+				this.searchview.clearSearchField();
 				this.clearFileForm();
 
 				this.model.set("busy", false);
@@ -143,9 +154,6 @@ define(
 			// reset the form to clear old file names
 			clearFileForm: function() {
 				$("#fileForm")[0].reset();
-			},
-			clearSearchField: function() {
-				$("#searchInput").prop("value", "");
 			},
 
 			// Check for the various File API support.
@@ -389,30 +397,41 @@ define(
 
 			/*********************** Search and Lookups ***********************/
 
-			// Handler for "change" event from the search field.
-			searchInputChanged: function(evt) {
+			/**
+			 * Handler for "search" event from the search view.
+			 * @param  {SearchQuery} query
+			 */
+			searchHandler: function(query) {
 
-				var searchText = evt.target.value;
-				// TODO: fix this for new sessions-by-fileId world
-				var session = this.sessions.get(searchText);
-				if (session) {
-					this.sessionSelected(session);
-					this.sessionFocussed(session);
-				}
-				else {
-					this.sessionSelected(null);
-					this.sessionUnfocussed();
-				}
-				// check if it's a site/sector
-				var site = this.siteList.get(searchText);
-				if (site) {
-					this.siteSelected(site);
-				}
-				else {
-					this.siteSelected(null);
-				}
+				switch (query.topic) {
+					case SearchQuery.TOPIC_SESSION:
+						// TODO: fix this for new sessions-by-fileId world
+						var session = this.sessions.get(query.searchterm);
+						if (session) {
+							this.sessionSelected(session);
+							this.sessionFocussed(session);
+						}
+						else {
+							this.sessionSelected(null);
+							this.sessionUnfocussed();
+						}
+						// ensure previous selections (likely from other session) is reset
+						this.resultSelected(null);
+						break;
 
-				this.resultSelected(null);
+					case SearchQuery.TOPIC_NETWORK:
+						// look for ID matches in sites/sectors
+						var site = this.siteList.get(query.searchterm) ||
+								   this.siteList.findSiteWithSector({ id: query.searchterm });
+
+						this.siteSelected(site);
+						break;
+
+					case SearchQuery.TOPIC_RESULT:
+						var result = this.sessions.findResult(parseInt(query.searchterm));
+						this.resultSelected(result);
+						break;
+				}
 			},
 
 			/*********************** Selection Handling ***********************/
@@ -483,7 +502,10 @@ define(
 
 			/*********************** Result Interaction ***********************/
 
-			// Handler for "results:lookupElement" event. Lookup site/sector
+			/**
+			 * Handler for "results:lookupElement" event. Lookup site/sector
+			 * @param  {Object} query
+			 */
 			resultsLookupElement: function(query) {
 
 				if (query.elementType === "sector") {
