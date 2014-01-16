@@ -1116,8 +1116,10 @@ define(
 			 */
 			drawSessionLines: function(session) {
 
-				if (!session)
+				if (!session) {
+					this.deleteSessionOverlays();
 					return;
+				}
 
 				var view = this;
 
