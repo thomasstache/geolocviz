@@ -20,13 +20,6 @@ define(
 				// the list of geolocation results
 				this.results = new ResultList();
 			},
-
-			/**
-			 * Returns the result with the given CID (Backbone client id), if we have it. Otherwise null.
-			 */
-			getByCid: function(cid) {
-				return this.results.getByCid(cid);
-			}
 		});
 
 		return Session;
