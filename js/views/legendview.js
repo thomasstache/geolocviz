@@ -100,7 +100,10 @@ define(
 			onStateChanged: function(event) {
 
 				if (event.changed.referenceLocationsAvailable !== undefined) {
-					this.showLegendItem("R", event.changed.referenceLocationsAvailable);
+					var bReferenceLocations = event.changed.referenceLocationsAvailable;
+					if (bReferenceLocations)
+						this.toggleLegendMode(false);
+					this.showLegendItem("R", bReferenceLocations);
 				}
 				if (event.changed.candidateLocationsAvailable !== undefined) {
 					this.showLegendItem("C", event.changed.candidateLocationsAvailable);
