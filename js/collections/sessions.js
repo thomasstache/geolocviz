@@ -8,6 +8,23 @@ define(
 			model: Session,
 
 			/**
+			 * Returns the session with the given ID.
+			 * @param  {Number} sessionId
+			 * @return {Session}
+			 */
+			findSession: function(sessionId) {
+
+				// try to find by "id" (for AXF sessions)
+				var session = this.get(sessionId);
+				if (!session) {
+					// look in the model attributes (for accuracy sessions, where "id" is mangled with fileId)
+					var properties = { sessionId: sessionId };
+					session = this.findWhere(properties);
+				}
+				return session;
+			},
+
+			/**
 			 * Returns the first session whose result list has a match for all the properties.
 			 * @param  {Object} resultProps List of key-value pairs that should match
 			 * @return {Session}
@@ -25,12 +42,12 @@ define(
 
 			/**
 			 * Returns the result with the given ID.
-			 * @param  {Number} id
+			 * @param  {Number} messageId
 			 * @return {BaseResult}
 			 */
-			findResult: function(id) {
+			findResult: function(messageId) {
 
-				var resultProps = { msgId: id };
+				var resultProps = { msgId: messageId };
 				// lookup session including the result
 				var session = this.findSessionWithResult(resultProps);
 
