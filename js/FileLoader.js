@@ -39,10 +39,14 @@ define(
 			/** @type {SiteList} reference to the Sites collection */
 			var siteList = null;
 
-			var callbackFct = null;
+			var fileCompleteCallback = null,
+				loadCompleteCallback = null;
 
 			// reference to the accuracy result while we parse the records with the location candidates
 			var currentAccuracyResult = null;
+
+			// the counter tracking file loads
+			var numFilesQueued = 0;
 
 			/**
 			 * Parse and load a file. Supported types are *.axf, *.distances and *.txt
@@ -123,11 +127,17 @@ define(
 					}
 
 					// notify about completion of this file (TODO: notify when whole batch is completed!)
-					if (callbackFct !== null)
-						callbackFct(bOk, fileStatistics);
+					if (fileCompleteCallback !== null)
+						fileCompleteCallback(bOk, fileStatistics);
 				}
 				else {
 					console.log("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
+				}
+
+				numFilesQueued--;
+				if (numFilesQueued === 0 &&
+					loadCompleteCallback !== null) {
+					loadCompleteCallback();
 				}
 			}
 
@@ -367,12 +377,15 @@ define(
 
 				/**
 				 * Load all files in the array. Supported types are .axf and .distances
-				 * @param {Array}       files    Array of File objects (e.g. as retrieved from a input[type="file"])
+				 * @param {FileList}    files    List of File objects (e.g. as retrieved from a input[type="file"])
 				 * @param {SessionList} sessions Session collection
 				 * @param {SiteList}    sites    Site collection
-				 * @param {Function}    callback Callback function to call when a file is done
+				 * @param {Function}    onFileComplete Callback function to call when a file is done
+				 * @param {Function}    onLoadComplete Callback function to call when all files are done
 				 */
-				loadFiles: function(files, sessions, sites, callback) {
+				loadFiles: function(files, sessions, sites, onFileComplete, onLoadComplete) {
+
+					numFilesQueued = files.length;
 
 					if (sessions)
 						sessionList = sessions;
@@ -380,8 +393,10 @@ define(
 					if (sites)
 						siteList = sites;
 
-					if (typeof callback === "function")
-						callbackFct = callback;
+					if (typeof onFileComplete === "function")
+						fileCompleteCallback = onFileComplete;
+					if (typeof onLoadComplete === "function")
+						loadCompleteCallback = onLoadComplete;
 
 					var f;
 					for (var i = 0; (f = files[i]); i++) {

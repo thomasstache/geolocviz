@@ -42,9 +42,6 @@ define(
 			filterview: null,
 			searchview: null,
 
-			// the counter tracking file loads
-			numFilesQueued: 0,
-
 			initialize: function() {
 
 				if (!this.checkFileAPIs()) {
@@ -175,15 +172,18 @@ define(
 				this.loadFiles(files);
 			},
 
+			/**
+			 * Load files from FileList.
+			 * @param  {FileList} files
+			 */
 			loadFiles: function(files) {
 
 				if (!files.length) {
 					return;
 				}
 
-				this.numFilesQueued += files.length;
 				this.model.set("busy", true);
-				FileLoader.loadFiles(files, this.sessions, this.siteList, this.fileLoaded.bind(this));
+				FileLoader.loadFiles(files, this.sessions, this.siteList, this.fileLoaded.bind(this), this.loadComplete.bind(this));
 			},
 
 			// Called when all files have been loaded. Triggers marker rendering.
@@ -208,6 +208,9 @@ define(
 
 			// Callback for FileLoader
 			fileLoaded: function(success, filestats) {
+
+				if (!success)
+					return;
 
 				if (!this.model.has("statistics"))
 					this.model.set("statistics", new Statistics());
@@ -235,10 +238,6 @@ define(
 				}
 
 				stats.trigger("change");
-
-				this.numFilesQueued--;
-				if (this.numFilesQueued === 0)
-					this.loadComplete();
 			},
 
 			// set up file drag-and-drop event handlers
@@ -287,14 +286,13 @@ define(
 				evt.preventDefault();
 
 				var dt = evt.originalEvent.dataTransfer;
-				var files = dt.files; // FileList object.
 
 				this.hideDropZone();
 
 				// reset the form to clear old file names
 				this.clearFileForm();
 
-				this.loadFiles(files);
+				this.loadFiles(dt.files);
 			},
 
 			/**
