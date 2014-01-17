@@ -404,7 +404,7 @@ define(
 				switch (query.topic) {
 					case SearchQuery.TOPIC_SESSION:
 						// TODO: fix this for new sessions-by-fileId world
-						var session = this.sessions.get(query.searchterm);
+						var session = this.sessions.findSession(query.searchterm);
 						if (session) {
 							this.sessionSelected(session);
 							this.sessionFocussed(session);

@@ -305,6 +305,10 @@ define(
 				var controllerId  = (record.length == LineLengths.AXF_XT) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
 				var primaryCellId = (record.length == LineLengths.AXF_XT) ? parseNumber(record[IDX.CELL_ID]) : NaN;
 
+				var sessionProperties = {
+					sessionId: sessionId
+				};
+
 				var props = {
 					msgId: parseNumber(record[IDX.MSGID]),
 					sessionId: sessionId, // intentionally as String, as it gets very long
@@ -318,7 +322,7 @@ define(
 					primaryCellId: primaryCellId
 				};
 
-				var session = getSession(sessionId);
+				var session = getSession(sessionId, sessionProperties);
 				session.results.add(new AxfResult(props), OPT_SILENT);
 				stats.numResults++;
 			}
