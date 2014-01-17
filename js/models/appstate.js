@@ -56,6 +56,7 @@ define(
 			 */
 			resetResultsData: function() {
 				this.set({
+					resultsAvailable: false,
 					referenceLocationsAvailable: false,
 					candidateLocationsAvailable: false,
 					resultsFilterActive: false,

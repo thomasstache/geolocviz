@@ -103,10 +103,6 @@ define(
 
 			render: function() {
 
-				if (this.sessions.length)
-					this.legendview.$el.show();
-				else
-					this.legendview.$el.hide();
 			},
 
 			/**

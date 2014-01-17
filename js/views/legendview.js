@@ -26,6 +26,7 @@ define(
 
 				// listen to some state changes
 				if (this.appstate) {
+					this.appstate.on("change:resultsAvailable", this.onResultsChanged, this);
 					this.appstate.on("change:referenceLocationsAvailable", this.onStateChanged, this);
 					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
 					this.appstate.on("change:markerColorMapper", this.onColorMapperChanged, this);
@@ -82,6 +83,15 @@ define(
 				}
 
 				return this;
+			},
+
+			// Show/hide legend when resultsAvailable state changes
+			onResultsChanged: function(event) {
+
+				if (event.changed.resultsAvailable)
+					this.$el.show();
+				else
+					this.$el.hide();
 			},
 
 			/**
