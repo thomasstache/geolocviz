@@ -1,8 +1,8 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/selectoptions"],
+	 "hbs!../../templates/settingsdialog", "hbs!../../templates/selectoptions"],
 
-	function($, _, Backbone, optionsTemplate) {
+	function($, _, Backbone, dialogTemplate, optionsTemplate) {
 
 		var SettingsView = Backbone.View.extend({
 			el: $("#settings"),
@@ -19,6 +19,7 @@ define(
 			$checkShowScaleControl: null,
 			$checkDrawNetworkOnTop: null,
 			$selectMarkerColorsAttribute: null,
+			$settingsDialog: null,
 
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
@@ -26,7 +27,8 @@ define(
 				"click #checkDynamicMarkerColors": "toggleDynamicMarkerColors",
 				"change #selectMarkerColorsAttribute": "attributeSelectionChanged",
 				"click #checkShowScaleControl": "toggleScaleControl",
-				"click #checkDrawNetworkOnTop": "toggleNetworkOnTop"
+				"click #checkDrawNetworkOnTop": "toggleNetworkOnTop",
+				"click #btnMore": "moreSettingsButtonClicked",
 			},
 
 			initialize: function() {
@@ -97,6 +99,41 @@ define(
 				this.$selectMarkerColorsAttribute.html(optionsTemplate(context));
 				return this;
 			},
+
+			/*********************** Popup dialog ***********************/
+
+			// show settings dialog
+			moreSettingsButtonClicked: function() {
+
+				$(document.body).append(dialogTemplate());
+				this.$settingsDialog = $("#settingsdialog");
+				this.$settingsDialog.on("click", "#apply-settings", this.commitSettingsDialog.bind(this));
+				this.$settingsDialog.on("click", "#cancel-settings", this.removeSettingsDialog.bind(this));
+
+				$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
+				$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+			},
+
+			commitSettingsDialog: function() {
+
+				var probMobility = $("#probMobilityInput") ? $("#probMobilityInput").val() : 0.5,
+					probIndoor = $("#probIndoorInput") ? $("#probIndoorInput").val() : 0.5;
+
+				this.model.set({
+					mobilityThreshold: parseFloat(probMobility),
+					indoorThreshold: parseFloat(probIndoor)
+				});
+
+				this.removeSettingsDialog();
+			},
+
+			removeSettingsDialog: function() {
+
+				this.$settingsDialog.remove();
+				this.$settingsDialog = null;
+			},
+
+			/*********************** Inline settings ***********************/
 
 			toggleReferenceLines: function() {
 				this.model.set("drawReferenceLines", this.$checkConnectMarkers.prop("checked"));

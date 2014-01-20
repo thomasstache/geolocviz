@@ -181,6 +181,7 @@ define(
 
 				// listen for settings changes
 				this.appsettings = this.options.settings;
+				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
 				this.appstate = this.options.appstate;
@@ -564,9 +565,6 @@ define(
 					this.map.setOptions({ scaleControl: event.changed.showScaleControl });
 				}
 
-				if (event.changed.useDynamicMarkerColors !== undefined) {
-					this.updateMarkerColors();
-				}
 				if (event.changed.markerColorAttribute !== undefined) {
 					this.markerAttributeChanged(event.changed.markerColorAttribute);
 				}
@@ -812,6 +810,11 @@ define(
 
 				var view = this;
 
+				var thresholds = {
+					mobility: this.appsettings.get("mobilityThreshold"),
+					indoor: this.appsettings.get("indoorThreshold"),
+				}
+
 				session.results.each(function(sample) {
 
 					var color = null, visible = true;
@@ -840,7 +843,7 @@ define(
 						var bestCand = sample.getBestLocationCandidate();
 						var bestLoc = view.makeLatLng(bestCand.get('position'));
 
-						switch (bestCand.category()) {
+						switch (bestCand.category(thresholds)) {
 							case "S":
 								color = MarkerColors.STATIONARY;
 								visible = view.appsettings.get("drawMarkers_S");
@@ -871,7 +874,7 @@ define(
 					else if (sample instanceof AxfResult) {
 
 						var location = view.makeLatLng(sample.get('position'));
-						switch (sample.category()) {
+						switch (sample.category(thresholds)) {
 							case "S":
 								color = MarkerColors.STATIONARY;
 								visible = view.appsettings.get("drawMarkers_S");

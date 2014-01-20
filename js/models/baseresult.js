@@ -14,11 +14,11 @@ define(
 				position: null,
 			},
 
-			category: function() {
+			category: function(thresholds) {
 				var cat = "M";
-				if (this.get('probMobility') <= 0.5) // stationary
+				if (this.get('probMobility') <= thresholds.mobility) // stationary
 					cat = "S";
-				if (this.get('probIndoor') > 0.5) // indoor
+				if (this.get('probIndoor') > thresholds.indoor) // indoor
 					cat = "I";
 				return cat;
 			},
