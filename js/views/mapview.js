@@ -181,6 +181,7 @@ define(
 
 				// listen for settings changes
 				this.appsettings = this.options.settings;
+				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
 				this.appstate = this.options.appstate;
@@ -564,9 +565,6 @@ define(
 					this.map.setOptions({ scaleControl: event.changed.showScaleControl });
 				}
 
-				if (event.changed.useDynamicMarkerColors !== undefined) {
-					this.updateMarkerColors();
-				}
 				if (event.changed.markerColorAttribute !== undefined) {
 					this.markerAttributeChanged(event.changed.markerColorAttribute);
 				}
