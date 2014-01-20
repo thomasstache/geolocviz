@@ -812,6 +812,11 @@ define(
 
 				var view = this;
 
+				var thresholds = {
+					mobility: this.appsettings.get("mobilityThreshold"),
+					indoor: this.appsettings.get("indoorThreshold"),
+				}
+
 				session.results.each(function(sample) {
 
 					var color = null, visible = true;
@@ -840,7 +845,7 @@ define(
 						var bestCand = sample.getBestLocationCandidate();
 						var bestLoc = view.makeLatLng(bestCand.get('position'));
 
-						switch (bestCand.category()) {
+						switch (bestCand.category(thresholds)) {
 							case "S":
 								color = MarkerColors.STATIONARY;
 								visible = view.appsettings.get("drawMarkers_S");
@@ -871,7 +876,7 @@ define(
 					else if (sample instanceof AxfResult) {
 
 						var location = view.makeLatLng(sample.get('position'));
-						switch (sample.category()) {
+						switch (sample.category(thresholds)) {
 							case "S":
 								color = MarkerColors.STATIONARY;
 								visible = view.appsettings.get("drawMarkers_S");

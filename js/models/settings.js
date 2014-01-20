@@ -32,6 +32,10 @@ define(
 				useDynamicMarkerColors: false,
 				// the name of the result attribute to use for dynamic marker colors
 				markerColorAttribute: "confidence",
+
+				// marker color thresholds
+				mobilityThreshold: 0.5,
+				indoorThreshold: 0.5,
 			}
 		});
 
