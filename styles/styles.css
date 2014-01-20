@@ -110,6 +110,28 @@ button:not([disabled]):active {
 				inset 0 -1px 1px rgba(235, 235, 235, 0.9);
 }
 
+/* center an element (see http://zerosixthree.se/vertical-align-anything-with-just-3-lines-of-css/) */
+.centered {
+	position: relative;
+	left: 50%;
+	top: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+/* a transient popup box, for e.g. settings input or data display */
+.dialog {
+	position: fixed;
+	display: flex; flex-direction: column;
+	padding: 1em;
+	background: white;
+	border: 1px solid rgba(120, 120, 120, .8);
+	border-radius: 5px;
+	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+}
+.dialog h3 { margin-top: 0 }
+.dialog .content { flex: 1; }
+
 /* Top controls */
 
 #mainToolbar {
@@ -162,6 +184,15 @@ button:not([disabled]):active {
 	margin-left: 10px;
 	min-width: 14em;
 }
+
+#settingsdialog .dialog {
+	width: 26em;
+	height: 13em;
+}
+#settingsdialog ul { display: table; width: 100%; padding: 0; }
+#settingsdialog li { display: table-row; }
+#settingsdialog li label { display: table-cell; }
+#settingsdialog input[type="number"] { width: 10ex; }
 
 /* Overlays on top of map */
 
