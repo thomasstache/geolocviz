@@ -304,7 +304,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, #filterBar, .tool
 	user-select: none;
 }
 
-#fileDropVeil {
+.veilBackground {
 	position: absolute;
 	top: 0; right: 0; bottom: 0; left: 0;
 	background: rgba(30, 30, 30, 0.2);
