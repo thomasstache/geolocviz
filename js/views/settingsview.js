@@ -42,8 +42,7 @@ define(
 				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");
 				this.$selectMarkerColorsAttribute = this.$("#selectMarkerColorsAttribute");
 
-				//TODO: (20140115) investigate if this is still needed, it destroys our <select> HTML!
-				// this.model.on("change", this.render, this);
+				this.model.on("reset", this.render, this);
 
 				// listen to some state changes
 				if (this.appstate) {
@@ -81,6 +80,8 @@ define(
 				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
 				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
 
+				this.updateSettingsDialog();
+
 				return this;
 			},
 
@@ -102,18 +103,40 @@ define(
 
 			/*********************** Popup dialog ***********************/
 
+			renderSettingsDialog: function() {
+
+				if (this.$settingsDialog === null) {
+					$(document.body).append(dialogTemplate());
+					this.$settingsDialog = $("#settingsdialog");
+					this.$settingsDialog.on("click", "#apply-settings", this.commitSettingsDialog.bind(this));
+					this.$settingsDialog.on("click", "#cancel-settings", this.removeSettingsDialog.bind(this));
+					this.$settingsDialog.on("click", "#reset-settings", this.resetSettings.bind(this));
+				}
+
+				return this;
+			},
+
+			/**
+			 * Update the controls in the settings dialog with the current values.
+			 */
+			updateSettingsDialog: function() {
+
+				if (this.$settingsDialog !== null) {
+					$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
+					$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+				}
+			},
+
 			// show settings dialog
 			moreSettingsButtonClicked: function() {
 
-				$(document.body).append(dialogTemplate());
-				this.$settingsDialog = $("#settingsdialog");
-				this.$settingsDialog.on("click", "#apply-settings", this.commitSettingsDialog.bind(this));
-				this.$settingsDialog.on("click", "#cancel-settings", this.removeSettingsDialog.bind(this));
-
-				$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
-				$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+				this.renderSettingsDialog();
+				this.updateSettingsDialog();
 			},
 
+			/**
+			 * Handler for the "Ok" button in the dialog. Commit the settings.
+			 */
 			commitSettingsDialog: function() {
 
 				var probMobility = $("#probMobilityInput") ? $("#probMobilityInput").val() : 0.5,
@@ -127,10 +150,23 @@ define(
 				this.removeSettingsDialog();
 			},
 
+			/**
+			 * Handler for the "Cancel" button in the dialog.
+			 * Removes the dialog from the DOM and destroys it.
+			 */
 			removeSettingsDialog: function() {
 
 				this.$settingsDialog.remove();
 				this.$settingsDialog = null;
+			},
+
+			/**
+			 * Handler for the "Reset" button in the dialog.
+			 */
+			resetSettings: function() {
+
+				if (confirm("This will revert all settings to their defaults..."))
+					this.model.reset();
 			},
 
 			/*********************** Inline settings ***********************/
