@@ -102,16 +102,34 @@ define(
 
 			/*********************** Popup dialog ***********************/
 
+			renderSettingsDialog: function() {
+
+				if (this.$settingsDialog === null) {
+					$(document.body).append(dialogTemplate());
+					this.$settingsDialog = $("#settingsdialog");
+					this.$settingsDialog.on("click", "#apply-settings", this.commitSettingsDialog.bind(this));
+					this.$settingsDialog.on("click", "#cancel-settings", this.removeSettingsDialog.bind(this));
+				}
+
+				return this;
+			},
+
+			/**
+			 * Update the controls in the settings dialog with the current values.
+			 */
+			updateSettingsDialog: function() {
+
+				if (this.$settingsDialog !== null) {
+					$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
+					$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+				}
+			},
+
 			// show settings dialog
 			moreSettingsButtonClicked: function() {
 
-				$(document.body).append(dialogTemplate());
-				this.$settingsDialog = $("#settingsdialog");
-				this.$settingsDialog.on("click", "#apply-settings", this.commitSettingsDialog.bind(this));
-				this.$settingsDialog.on("click", "#cancel-settings", this.removeSettingsDialog.bind(this));
-
-				$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
-				$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+				this.renderSettingsDialog();
+				this.updateSettingsDialog();
 			},
 
 			commitSettingsDialog: function() {
