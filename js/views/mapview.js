@@ -119,6 +119,8 @@ define(
 
 			initialize: function() {
 
+				this.appsettings = this.options.settings;
+
 				try {
 					var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
 
@@ -129,7 +131,7 @@ define(
 						disableDefaultUI: true,
 						zoomControl: true,
 						mapTypeControl: true,
-						//scaleControl: true,
+						scaleControl: this.appsettings.get("showScaleControl"),
 						mapTypeControlOptions: {
 							mapTypeIds: [
 								STYLED_MAPTYPE_ID,
@@ -180,7 +182,6 @@ define(
 				this.collection.on("reset", this.onSessionsReset, this);
 
 				// listen for settings changes
-				this.appsettings = this.options.settings;
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
