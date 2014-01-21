@@ -187,6 +187,8 @@ define(
 
 				this.appstate = this.options.appstate;
 
+				this.setNetworkOnTop(this.appsettings.get("drawNetworkOnTop"));
+
 				// make available for console scripting
 //				window.mapview = this;
 			},
