@@ -59,7 +59,6 @@ define(
 
 				// listen to changes
 				this.model.on("change:busy", this.busyStateChanged, this);
-				this.sessions.on("all", this.render, this);
 				this.sessions.on("add", this.sessionsUpdated, this);
 				this.siteList.on("add", this.networkUpdated, this);
 
@@ -99,10 +98,6 @@ define(
 				this.searchview.on("search", this.searchHandler, this);
 
 				$("#fileInput").prop("disabled", false);
-			},
-
-			render: function() {
-
 			},
 
 			/**
