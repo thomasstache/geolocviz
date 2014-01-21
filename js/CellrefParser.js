@@ -129,7 +129,7 @@ define(
 						var lineTypeId = rowItems[0];
 
 						if (lineTypeId.charAt(0) === ";") {
-							bOk &= parseCellrefComment(rowItems);
+							bOk = bOk && parseCellrefComment(rowItems);
 						}
 						else {
 							switch(lineTypeId)
@@ -137,13 +137,13 @@ define(
 								case 'GSM_Site':
 								case 'WCDMA_Site':
 								case 'LTE_Site':
-									bOk &= parseCellrefSiteRecord(rowItems);
+									bOk = bOk && parseCellrefSiteRecord(rowItems);
 									break;
 
 								case 'GSM_Cell':
 								case 'WCDMA_Cell':
 								case 'LTE_Cell':
-									bOk &= parseCellrefSectorRecord(rowItems);
+									bOk = bOk && parseCellrefSectorRecord(rowItems);
 									break;
 
 								default:
@@ -164,9 +164,11 @@ define(
 			/**
 			 * Parses a comment line to determine the column indices from the Cellref file format.
 			 * @param {Array} record The row items split from the CSV
+			 * @return {Boolean}     True if successful
 			 */
 			function parseCellrefComment(record) {
 
+				var bOk = true;
 				// identify the formatting lines, like ";ElementTypeName	SiteID	..."
 				if (record.length == 1) {
 					// probably a real comment line, ignore
@@ -251,6 +253,7 @@ define(
 						}
 */					}
 				}
+				return bOk;
 			}
 
 			/**
