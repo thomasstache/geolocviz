@@ -44,6 +44,11 @@ define(
 				this.on("change", this.save, this);
 			},
 
+			reset: function() {
+				this.set(this.defaults);
+				this.trigger("reset");
+			},
+
 			save: function(attributes) {
 				localStorage.setItem(STORAGE_NAME, JSON.stringify(this.toJSON()));
 			},
