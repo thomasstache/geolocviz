@@ -3,6 +3,7 @@ define(
 
 	function(_, Backbone) {
 
+		var STORAGE_NAME = "glv-user-settings";
 		var Settings = Backbone.Model.extend({
 
 			defaults: {
@@ -36,6 +37,19 @@ define(
 				// marker color thresholds
 				mobilityThreshold: 0.5,
 				indoorThreshold: 0.5,
+			},
+
+			initialize: function() {
+				this.fetch();
+				this.on("change", this.save, this);
+			},
+
+			save: function(attributes) {
+				localStorage.setItem(STORAGE_NAME, JSON.stringify(this.toJSON()));
+			},
+
+			fetch: function() {
+				this.set(JSON.parse(localStorage.getItem(STORAGE_NAME)));
 			}
 		});
 
