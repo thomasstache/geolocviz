@@ -203,8 +203,18 @@ button:not([disabled]):active {
 	border-radius: 5px;
 	box-shadow: rgb(100,100,100) 0 0 8px;
 }
+.mapbutton {
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	-ms-user-select: none;
+	user-select: none;
+}
 .mapcontrols.top { margin-top: 6px; }
 .mapcontrols.bottom { margin-bottom: 6px; }
+.mapbutton.left { margin-left: 5px; }
+
+#zoomBoundsBtn { margin-top: -8px; }
 
 /* Legend */
 

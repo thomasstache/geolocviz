@@ -158,13 +158,13 @@ define(
 					//Associate the styled map with the MapTypeId and set it to display.
 					this.map.mapTypes.set(STYLED_MAPTYPE_ID, styledMapType);
 
-					// pull legend into the map, add it to map controls
-					var legend = $("#mapLegend");
-					if (legend && legend.length > 0)
-						this.map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(legend[0]);
-					var filterbar = $("#filterBar");
-					if (filterbar && filterbar.length > 0)
-						this.map.controls[google.maps.ControlPosition.TOP_CENTER].push(filterbar[0]);
+					this.addMapControl("mapLegend", google.maps.ControlPosition.BOTTOM_CENTER);
+					this.addMapControl("filterBar", google.maps.ControlPosition.TOP_CENTER);
+					this.addMapControl("zoomBoundsBtn", google.maps.ControlPosition.LEFT_TOP);
+
+					$("#zoomBoundsBtn")
+						.on("click", this.zoomToBounds.bind(this))
+						.toggleClass("hidden");
 
 					this.initialized = true;
 				}
@@ -200,6 +200,18 @@ define(
 			hasGoogleMaps: function() {
 				return (window.google !== undefined &&
 						google.maps !== undefined);
+			},
+
+			/**
+			 * Add an HTML element from the DOM to the map controls
+			 * @param {String} elementId         ID of the DOM node
+			 * @param {ControlPosition} position One of the ControlPosition constants
+			 */
+			addMapControl: function(elementId, position) {
+
+				var element = document.getElementById(elementId);
+				if (element)
+					this.map.controls[position].push(element);
 			},
 
 			/**
