@@ -183,7 +183,9 @@ define(
 				var bUseDynamicColors = this.$checkDynamicMarkerColors.prop("checked");
 				this.$selectMarkerColorsAttribute.prop("disabled", !bUseDynamicColors);
 
-				this.model.set("useDynamicMarkerColors", bUseDynamicColors);
+				_.defer(function() {
+					this.model.set("useDynamicMarkerColors", bUseDynamicColors);
+				}.bind(this));
 			},
 
 			toggleScaleControl: function() {
