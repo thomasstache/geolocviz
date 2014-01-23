@@ -76,6 +76,8 @@ define(
 			el: $("#mapView"),
 
 			map: null,
+			// zoom-to-bounds map control
+			$zoomBoundsBtn: null,
 
 			/** @type {Settings} the application settings */
 			appsettings: null,
@@ -162,9 +164,8 @@ define(
 					this.addMapControl("filterBar", google.maps.ControlPosition.TOP_CENTER);
 					this.addMapControl("zoomBoundsBtn", google.maps.ControlPosition.LEFT_TOP);
 
-					$("#zoomBoundsBtn")
-						.on("click", this.zoomToBounds.bind(this))
-						.toggleClass("hidden");
+					this.$zoomBoundsBtn = $("#zoomBoundsBtn")
+						.on("click", this.zoomToBounds.bind(this));
 
 					this.initialized = true;
 				}
@@ -212,6 +213,13 @@ define(
 				var element = document.getElementById(elementId);
 				if (element)
 					this.map.controls[position].push(element);
+			},
+
+			enableZoomControls: function(enable) {
+				enable = enable || true;
+
+				if (this.$zoomBoundsBtn)
+					this.$zoomBoundsBtn.toggleClass("hidden", !enable);
 			},
 
 			/**
@@ -622,6 +630,8 @@ define(
 
 				if (bZoomToNetwork)
 					this.zoomToBounds();
+
+				this.enableZoomControls();
 			},
 
 			/**
@@ -793,6 +803,7 @@ define(
 				if (bZoomToResults)
 					this.zoomToBounds();
 
+				this.enableZoomControls();
 				// debug code
 				//this.drawRectangle(this.bounds, "#00FF00");
 			},
