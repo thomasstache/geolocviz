@@ -398,13 +398,18 @@ define(
 						if (session) {
 							this.sessionSelected(session);
 							this.sessionFocussed(session);
+							// select first result of session
+							if (session.results.length > 0) {
+								var firstResult = session.results.first();
+								this.resultSelected(firstResult);
+							}
 						}
 						else {
 							this.sessionSelected(null);
 							this.sessionUnfocussed();
+							// ensure previous selection (likely from other session) is reset
+							this.resultSelected(null);
 						}
-						// ensure previous selections (likely from other session) is reset
-						this.resultSelected(null);
 						break;
 
 					case SearchQuery.TOPIC_NETWORK:
@@ -424,7 +429,7 @@ define(
 
 			/*********************** Selection Handling ***********************/
 
-			// Handler for "session:selected" event. Update the info display.
+			// Handler for "session:selected" event. Update the info display and highlight session on map.
 			sessionSelected: function(session) {
 
 				this.model.set("selectedSession", session);
@@ -432,7 +437,7 @@ define(
 				this.mapview.drawSessionLines(session);
 			},
 
-			// Handler for "result:selected" event. Update the info display.
+			// Handler for "result:selected" event. Update the info display and highlight result on map.
 			resultSelected: function(result) {
 
 				this.model.set("selectedResult", result);
