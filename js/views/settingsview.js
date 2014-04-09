@@ -98,6 +98,8 @@ define(
 				};
 
 				this.$selectMarkerColorsAttribute.html(optionsTemplate(context));
+				this.$selectMarkerColorsAttribute.val(this.model.get("markerColorAttribute"));
+
 				return this;
 			},
 
