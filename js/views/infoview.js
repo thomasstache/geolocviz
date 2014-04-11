@@ -26,7 +26,8 @@ define(
 				"click .results-prev": "onPrevResultClicked",
 				"click .results-next": "onNextResultClicked",
 				"click .results-last": "onLastResultClicked",
-				"click .lookup-element": "onLookupElementClicked",
+				"click .lookup-cell": "onLookupCellClicked",
+				"click .lookup-ref-cell": "onLookupRefCellClicked",
 				"click .filter-by-element" : "onFilterByElementClicked",
 			},
 
@@ -55,7 +56,8 @@ define(
 				this.$navNextBtn = $("button.results-next");
 				this.$navLastBtn = $("button.results-last");
 
-				this.$lookupElementBtn = $("button.lookup-element");
+				this.$lookupCellBtn = $("button.lookup-cell");
+				this.$lookupRefCellBtn = $("button.lookup-ref-cell");
 			},
 
 			onSessionChanged: function() {
@@ -231,23 +233,52 @@ define(
 			},
 
 			/**
-			 * Click handler for the "lookup element" button.
+			 * Click handler for the "lookup primary cell" button.
 			 * If the result has a cell reference, the "result:lookupElement" event is triggered.
 			 * The event payload is an object containing primaryCellId and controllerId.
 			 */
-			onLookupElementClicked: function() {
+			onLookupCellClicked: function() {
+				this.triggerCellLookup(false);
+			},
+
+			/**
+			 * Click handler for the "lookup reference cell" button.
+			 * If the result has a cell reference, the "result:lookupElement" event is triggered.
+			 * The event payload is an object containing referenceCellId and refControllerId.
+			 */
+			onLookupRefCellClicked: function() {
+				this.triggerCellLookup(true);
+			},
+
+			triggerCellLookup: function(useRefCell) {
 
 				var result = this.model.get("selectedResult");
-
 				var sectorProps = result.getSectorProperties();
-				if (sectorProps.primaryCellId !== undefined && sectorProps.controllerId !== undefined) {
+
+				var params = null;
+				if (useRefCell) {
+					// use reference cell data
+					if (!isNaN(sectorProps.referenceCellId) && !isNaN(sectorProps.refControllerId))
+						params = {
+							cellIdentity: sectorProps.referenceCellId,
+							netSegment: sectorProps.refControllerId
+						};
+				}
+				else {
+					// use primary cell data
+					if (!isNaN(sectorProps.primaryCellId) && !isNaN(sectorProps.controllerId)) {
+						params = {
+							cellIdentity: sectorProps.primaryCellId,
+							netSegment: sectorProps.controllerId
+						};
+					}
+				}
+
+				if (params) {
 
 					var query = {
 						elementType: "sector",
-						properties: {
-							cellIdentity: sectorProps.primaryCellId,
-							netSegment: sectorProps.controllerId
-						}
+						properties: params
 					};
 					this.trigger("result:lookupElement", query);
 				}
@@ -290,12 +321,17 @@ define(
 				this.$navLastBtn.prop("disabled", !canNavigateFwd);
 
 				var sectorProps = result !== null ? result.getSectorProperties() : {};
-				var hasElementRef = this.model.get("radioNetworkAvailable") &&
+				var hasPrimaryCell = this.model.get("radioNetworkAvailable") &&
 									sectorProps.primaryCellId !== undefined &&
 									!isNaN(sectorProps.primaryCellId);
+				var hasRefCell = this.model.get("radioNetworkAvailable") &&
+								 sectorProps.referenceCellId !== undefined &&
+								 !isNaN(sectorProps.referenceCellId);
 
-				this.$lookupElementBtn.prop("disabled", !hasElementRef);
-				this.$lookupElementBtn.toggleClass("hidden", !hasElementRef);
+				this.$lookupCellBtn.prop("disabled", !hasPrimaryCell);
+				this.$lookupCellBtn.toggleClass("hidden", !hasPrimaryCell);
+				this.$lookupRefCellBtn.prop("disabled", !hasRefCell);
+				this.$lookupRefCellBtn.toggleClass("hidden", !hasRefCell);
 
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}

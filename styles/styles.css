@@ -335,8 +335,10 @@ button:not([disabled]):active {
 	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
 }
 
-button.lookup-element       { background-color: rgba(230, 180, 23, 0.2); }
-button.lookup-element:hover { background-color: rgba(247, 216, 119, 0.4); }
+button.lookup-cell       { background-color: rgba(230, 180, 23, 0.2); }
+button.lookup-cell:hover { background-color: rgba(247, 216, 119, 0.4); }
+button.lookup-ref-cell       { background-color: rgba(132, 230, 23, 0.2); }
+button.lookup-ref-cell:hover { background-color: rgba(163, 255, 61, 0.4); }
 
 
 /* UI should not be selectable */
