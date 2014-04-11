@@ -44,7 +44,9 @@ define(
 				};
 
 				for (var key in colorDict) {
-					this.colorData.swatches.push(colorDict[key]);
+					var color = colorDict[key];
+					color.enabled = this.settings.get(this.getSettingsName(color.smb));
+					this.colorData.swatches.push(color);
 				}
 
 				this.$swatchList = this.$("#swatchList");
@@ -162,13 +164,17 @@ define(
 				if (li.dataset &&
 					li.dataset.markertype) {
 
-					var setting = "drawMarkers_" + li.dataset.markertype;
+					var setting = this.getSettingsName(li.dataset.markertype);
 
 					var newValue = !this.settings.get(setting);
 					this.settings.set(setting, newValue);
 
 					$(li).toggleClass("markerOff", !newValue);
 				}
+			},
+
+			getSettingsName: function(smb) {
+				return "drawMarkers_" + smb;
 			}
 		});
 
