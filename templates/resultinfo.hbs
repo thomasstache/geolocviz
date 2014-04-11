@@ -8,8 +8,13 @@
 	<li><span class="label">Time:</span> <span class="value">{{formattime timestamp "ms"}}</span></li>
 	{{/if}}
 	{{#if primaryCellId}}
-	<li><span class="label">CI:</span> <span class="value">{{primaryCellId}}</span>
+	<li><span class="label">Primary CI:</span> <span class="value">{{primaryCellId}}</span>
 		<span class="label">RNC:</span> <span class="value">{{controllerId}}</span>
+	</li>
+	{{/if}}
+	{{#if referenceCellId}}
+	<li><span class="label">Refrnc. CI:</span> <span class="value">{{referenceCellId}}</span>
+		<span class="label">RNC:</span> <span class="value">{{refControllerId}}</span>
 	</li>
 	{{/if}}
 	{{#if distance}}
