@@ -132,6 +132,14 @@ define(
 				var site = this.model.get("selectedSite");
 				var context = site !== null ? site.getInfo() : {};
 
+				// decorate sectors according to celltype
+				if (context.sectors && context.sectors.length > 0) {
+					_.each(context.sectors, function(sector) {
+						sector.isSmall = sector.cellType == 1;
+						sector.isIndoor = sector.cellType == 2;
+					});
+				}
+
 				// highlight sectors according to current lookup query
 				if (context.sectors &&
 				    this.model.has("elementSearchQuery")) {

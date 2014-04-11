@@ -34,6 +34,7 @@ define(
 				AZIMUTH: "Azimuth",
 				BEAMWIDTH: "Beamwidth",
 				LAC: "LAC",
+				CELLTYPE: "CellType",
 
 				GSM_BCCH: "BCCH",
 				GSM_BSIC: "BSIC",
@@ -58,24 +59,29 @@ define(
 				"Longitude": true,
 			});
 
-			// "set" of sector fields applying to GSM (strings as they appear in the cellref files)
+			// Fields to import for each technology
+			// (strings as they appear in the cellref files)
+
+			// "set" of sector fields applying to GSM
 			var SECTOR_FIELDS_GSM = Object.freeze({
 				"GSM_SiteIDForCell": true,
 				"Sector_ID": true,
 				"Azimuth": true,
 				"Beamwidth": true,
+				"CellType": true,
 				"CI": true,
 				"LAC": true,
 				"BCCH": true,
 				"BSIC": true,
 			});
 
-			// "set" of sector fields applying to WCDMA (strings as they appear in the cellref files)
+			// "set" of sector fields applying to WCDMA
 			var SECTOR_FIELDS_WCDMA = Object.freeze({
 				"WCDMA_SiteIDForCell": true,
 				"Sector_ID": true,
 				"Azimuth": true,
 				"Beamwidth": true,
+				"CellType": true,
 				"LAC": true,
 				"WCDMA_CI": true,
 				"RNCID": true,
@@ -83,13 +89,13 @@ define(
 				"SC": true,
 			});
 
-			// "set" of sector fields applying to LTE (strings as they appear in the cellref files)
-			// TODO: 20121106 TBD!!!
+			// "set" of sector fields applying to LTE
 			var SECTOR_FIELDS_LTE = Object.freeze({
 				"LTE_SiteIDForCell": true,
 				"Sector_ID": true,
 				"Azimuth": true,
 				"Beamwidth": true,
+				"CellType": true,
 				"PCI": true,
 				"ECI": true,
 				"TrackingArea": true,
@@ -327,6 +333,9 @@ define(
 							azimuth: getAttr(record, SectorAttributes.AZIMUTH, DataTypes.INTEGER),
 							beamwidth: getAttr(record, SectorAttributes.BEAMWIDTH, DataTypes.FLOAT),
 						};
+
+						var colCellType = attributeColumnIndex[SectorAttributes.CELLTYPE];
+						props.cellType = (colCellType !== undefined && colCellType > 0) ? getAttr(record, SectorAttributes.CELLTYPE, DataTypes.INTEGER) : null;
 
 						// technology-dependent properties
 						var elementType = getAttr(record, SectorAttributes.ELEMENTTYPE);

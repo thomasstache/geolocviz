@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult", "types/position", "ColorMapper"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Position, ColorMapper) {
+	 "models/AccuracyResult", "models/axfresult", "models/sector", "types/position", "ColorMapper"],
+	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Sector, Position, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -12,6 +12,12 @@ define(
 			INDOOR:		{ bgcolor: "FBEC5D", color: "000000", smb: "I", label: "Indoor" }, // yellow
 			CANDIDATE:	{ bgcolor: "CCFFFF", color: "000000", smb: "C", label: "Location Candidate" }, // skyblue
 			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", label: "Home" },*/
+		});
+
+		var SectorColors = Object.freeze({
+			DEFAULT: { color: "#333", fillcolor: "#6AF" },
+			SMLCELL:  { color: "#5B720E", fillcolor: "#B5E61D" }, /* green*/
+			INDOOR:  { color: "#A349A4", fillcolor: "#C878E7"}, /* violet */
 		});
 
 		var IconTypes = Object.freeze({
@@ -731,15 +737,28 @@ define(
 
 				var _scale = scale || DEFAULT_SECTOR_SCALE;
 				var azi = sector.get('azimuth');
+
+				var colorDef;
+				var cellType = sector.get('cellType');
+				if (cellType == Sector.TYPE_INDOOR) {
+					colorDef = SectorColors.INDOOR;
+				}
+				else if (cellType == Sector.TYPE_SMALLCELL) {
+					colorDef = SectorColors.SMLCELL;
+				}
+				else {
+					colorDef = SectorColors.DEFAULT;
+				}
+
 				var marker = new google.maps.Marker({
 
 					icon: {
 						path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
 						rotation: azi,
-						fillColor: "#6AF",
+						fillColor: colorDef.fillcolor,
 						fillOpacity: 1,
 						scale: _scale,
-						strokeColor: "#333",
+						strokeColor: colorDef.color,
 						strokeOpacity: "0.6",
 						strokeWeight: 2,
 					},

@@ -18,6 +18,9 @@ define(
 				// "network segment" in which the cellIdentity is valid (WCDMA: "RNCID", GSM: "LAC")
 				netSegment: null,
 
+				// CellType: calculated attribute (0: default, 1: isSmallCell, 2: isIndoor)
+				cellType: null,
+
 				// GSM sector attributes
 				bcch: null,
 				bsic: null,
@@ -44,7 +47,7 @@ define(
 					s += ", SC: " + this.get('scramblingCode');
 				if (this.has('uarfcn'))
 					s += ", UARFCN: " + this.get('uarfcn');
-				
+
 				// LTE
 				if (this.has('pci'))
 					s += ", PCI: " + this.get('pci');
@@ -54,6 +57,12 @@ define(
 				s += ")";
 				return s;
 			}
+		},
+		{
+			// known CellTypes
+			TYPE_DEFAULT: 0,
+			TYPE_SMALLCELL: 1,
+			TYPE_INDOOR: 2,
 		});
 
 		return Sector;

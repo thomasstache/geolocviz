@@ -8,12 +8,16 @@
 {{#if sectors}}
 	<li><span class="label">Sectors:</span></li>
 	{{#each sectors}}
-		<li class="sectoritem{{#if highlight}} highlighted{{/if}}"><span>{{id}}</span>
+		<li class="sectoritem{{#if highlight}} highlighted{{/if}}"
+			title="{{id}}{{#if uarfcn}}, f:{{uarfcn}}{{/if}}{{#if earfcn}}, f:{{earfcn}}{{/if}}{{#if isIndoor}}, Indoor{{/if}}" >
+			<span>{{id}}</span>
 			<span class="value">(CI:{{cellIdentity}}
 								{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
 								{{#if bcch}}BCCH:{{bcch}}{{/if}}
 								{{#if pci}}PCI:{{pci}}{{/if}}
 								&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}})</span>
+			<span class="value small">{{#if isIndoor}} Indoor{{/if}}</span>
+			<span class="value small">{{#if isSmall}} SmallCell{{/if}}</span>
 		{{#if ../enableFilter}}
 			<button class="translucent tiny symbolic filter-by-element"
 					title="Filter results served by sector"
