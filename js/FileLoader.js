@@ -24,7 +24,8 @@ define(
 				ACCURACY_612: 13,
 				AXF_60: 10,
 				AXF_61: 11,
-				AXF_XT: 14
+				AXF_XT: 14, /* with primary cells */
+				AXF_XT2: 16, /* with ref cells */
 			});
 
 			// common Collection.add() options (add silently)
@@ -172,7 +173,8 @@ define(
 				else if (currentFileType == FileTypes.AXF &&
 						 (header.length == LineLengths.AXF_60 ||
 						  header.length == LineLengths.AXF_61 ||
-						  header.length == LineLengths.AXF_XT)) {
+						  header.length == LineLengths.AXF_XT ||
+						  header.length == LineLengths.AXF_XT2)) {
 					parsingFct = parseAxfRecord;
 				}
 
@@ -210,7 +212,7 @@ define(
 					PROB_INDOOR: 9,
 					SESSIONID: 10,
 					CONTROLLER: 11, // 6.1.2+
-					CELL_ID: 12
+					PRIM_CELL_ID: 12,
 				});
 
 				var fileId = record[IDX.FILEID];
@@ -248,7 +250,7 @@ define(
 				var distReported = record[IDX.DIST];
 
 				var controllerId  = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
-				var primaryCellId = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CELL_ID]) : NaN;
+				var primaryCellId = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
 
 				var props = {
 					msgId: msgId,
@@ -287,7 +289,9 @@ define(
 					PROB_INDOOR: 10, // 6.1
 					SESSIONID: 11, // XT
 					CONTROLLER: 12, // XT
-					CELL_ID: 13 // XT
+					PRIM_CELL_ID: 13, // XT
+					REF_CONTROLLER: 14, // XT2
+					REF_CELL_ID: 15, // XT2
 				});
 
 				function percent2Decimal(value) {
@@ -297,13 +301,18 @@ define(
 					return value;
 				}
 
+				var isExtended = record.length == LineLengths.AXF_XT || record.length == LineLengths.AXF_XT2;
+				var isExtended2 = record.length == LineLengths.AXF_XT2;
+
 				// indoor probability only in 6.1+
 				var probIndoor    = (record.length >= LineLengths.AXF_61) ? record[IDX.PROB_INDOOR] : NaN;
 
 				// session id and primary cell only in extended (XT) files
-				var sessionId     = (record.length == LineLengths.AXF_XT) ? record[IDX.SESSIONID] : SESSION_ID_DEFAULT;
-				var controllerId  = (record.length == LineLengths.AXF_XT) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
-				var primaryCellId = (record.length == LineLengths.AXF_XT) ? parseNumber(record[IDX.CELL_ID]) : NaN;
+				var sessionId     = isExtended ? record[IDX.SESSIONID] : SESSION_ID_DEFAULT;
+				var controllerId  = isExtended ? parseNumber(record[IDX.CONTROLLER]) : NaN;
+				var primaryCellId = isExtended ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
+				var refControllerId = isExtended2 ? parseNumber(record[IDX.REF_CONTROLLER]) : NaN;
+				var referenceCellId = isExtended2 ? parseNumber(record[IDX.REF_CELL_ID]) : NaN;
 
 				var sessionProperties = {
 					sessionId: sessionId
@@ -319,7 +328,9 @@ define(
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
 					probIndoor: percent2Decimal(probIndoor),
 					controllerId: controllerId,
-					primaryCellId: primaryCellId
+					primaryCellId: primaryCellId,
+					refControllerId: refControllerId,
+					referenceCellId: referenceCellId,
 				};
 
 				var session = getSession(sessionId, sessionProperties);

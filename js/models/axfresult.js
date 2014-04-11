@@ -21,15 +21,19 @@ define(
 				// indoor probability as decimal
 				probIndoor: 0.0,
 
-				// id of the controller (WCDMA RNC)
-				// (optional) only available in extended .axf files
-				controllerId: null,
-				// id of the serving cell (corresponds to "CI" or "WCDMA_CI")
-				// (optional) only available in extended .axf files
-				primaryCellId: null,
-
 				// time offset
 				timestamp: 0,
+
+				// (optional) only available in extended .axf files:
+				// serving cell controller (WCDMA RNC)
+				controllerId: null,
+				// id of the serving cell (corresponds to "CI" or "WCDMA_CI")
+				primaryCellId: null,
+
+				// reference cell controller (WCDMA RNC)
+				refControllerId: null,
+				// id of the reference cell (corresponds to "CI" or "WCDMA_CI")
+				referenceCellId: null,
 			},
 
 			initialize: function() {
@@ -52,6 +56,8 @@ define(
 				return {
 					controllerId: this.get('controllerId'),
 					primaryCellId: this.get('primaryCellId'),
+					refControllerId: this.get('refControllerId'),
+					referenceCellId: this.get('referenceCellId'),
 				};
 			}
 		});
