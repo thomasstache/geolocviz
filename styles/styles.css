@@ -311,6 +311,9 @@ button:not([disabled]):active {
 .propertyList .value {
 	font-size: 0.9em;
 }
+.propertyList .value.small {
+	font-size: 0.8em;
+}
 
 .propertyList .fileitem,
 .propertyList .sectoritem {
