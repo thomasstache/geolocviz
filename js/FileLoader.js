@@ -127,7 +127,7 @@ define(
 						}
 					}
 
-					// notify about completion of this file (TODO: notify when whole batch is completed!)
+					// notify about completion of this file
 					if (fileCompleteCallback !== null)
 						fileCompleteCallback(bOk, fileStatistics);
 				}
@@ -136,6 +136,7 @@ define(
 				}
 
 				numFilesQueued--;
+				// notify that whole batch is completed
 				if (numFilesQueued === 0 &&
 					loadCompleteCallback !== null) {
 					loadCompleteCallback();
