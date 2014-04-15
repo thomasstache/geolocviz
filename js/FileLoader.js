@@ -1,10 +1,10 @@
 define(
 	["underscore",
 	 "collections/sessions", "collections/results",
-	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "types/position",
+	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "types/position", "types/filestatistics",
 	 "CellrefParser", "jquery.csv"],
 
-	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, CellrefParser) {
+	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, FileStatistics, CellrefParser) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -78,9 +78,6 @@ define(
 					var filename = rdr.file ? rdr.file.name : "";
 
 					var bOk = false;
-					var fileStatistics = {
-						name: filename
-					};
 
 					// check which type of file we're dealing with
 					var currentFileType = null;
@@ -102,7 +99,7 @@ define(
 							currentFileType = null;
 					}
 
-					fileStatistics.type = currentFileType;
+					var fileStatistics = new FileStatistics(filename, currentFileType);
 
 					if (currentFileType === null) {
 						alert("Could not recognize this file type!");
@@ -147,7 +144,7 @@ define(
 			 * Parse the array of rows from the file
 			 * @param  {Array} rowData          array of row records
 			 * @param  {String} currentFileType see FileTypes
-			 * @param  {Object} stats           statistics object literal
+			 * @param  {FileStatistics} stats   reference to statistics about the current file
 			 * @return {Boolean} true if successful, false on error (i.e. unknown file format)
 			 */
 			function processCSV(rowData, currentFileType, stats) {
@@ -197,6 +194,9 @@ define(
 			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
 			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId | Controller | PrimaryCellId
+			 *
+			 * @param {Array} record         array of data fields
+			 * @param {FileStatistics} stats reference to statistics about the current file
 			 */
 			function parseAccuracyRecordV3(record, stats) {
 
@@ -273,6 +273,9 @@ define(
 			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
 			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId | Controller | PrimaryCellId
+			 *
+			 * @param {Array} record         array of data fields
+			 * @param {FileStatistics} stats A reference to statistics about the current file
 			 */
 			function parseAxfRecord(record, stats) {
 				//to do: Replace column numbers by link related to col headings
