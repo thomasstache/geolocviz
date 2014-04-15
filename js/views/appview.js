@@ -227,6 +227,11 @@ define(
 						candidateLocationsAvailable: true,
 					});
 				}
+				else if (filestats.type === FileLoader.FileTypes.AXF) {
+
+					if (filestats.referenceCellsAvailable)
+						this.model.set("resultsReferenceCellsAvailable", true);
+				}
 
 				stats.trigger("change");
 			},

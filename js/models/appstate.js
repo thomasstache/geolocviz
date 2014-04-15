@@ -18,6 +18,8 @@ define(
 				radioNetworkAvailable: false,
 				// if result data was loaded
 				resultsAvailable: false,
+				// if result data with reference cells was loaded
+				resultsReferenceCellsAvailable: false,
 
 				// if there are AccuracyResults
 				referenceLocationsAvailable: false,
@@ -57,6 +59,7 @@ define(
 			resetResultsData: function() {
 				this.set({
 					resultsAvailable: false,
+					resultsReferenceCellsAvailable: false,
 					referenceLocationsAvailable: false,
 					candidateLocationsAvailable: false,
 					resultsFilterActive: false,

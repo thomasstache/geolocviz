@@ -339,7 +339,9 @@ define(
 
 				var session = getSession(sessionId, sessionProperties);
 				session.results.add(new AxfResult(props), OPT_SILENT);
+
 				stats.numResults++;
+				stats.referenceCellsAvailable = stats.referenceCellsAvailable || !isNaN(referenceCellId);
 			}
 
 			/**
