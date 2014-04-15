@@ -390,8 +390,7 @@ define(
 
 			/**
 			 * Shows only result markers where the given sector is primary cell, and hides all other result markers.
-			 * @param  {Object} query List of key-value pairs that should match
-			 * @return {void}
+			 * @param  {ResultsFilterQuery} query
 			 */
 			filterResultsBySector: function(query) {
 
@@ -527,11 +526,11 @@ define(
 
 			/**
 			 * Filter function for result models.
-			 * @param  {BaseResult} result      Result model
-			 * @param  {Object}     sectorProps Property hash of attributes to match
-			 * @return {Boolean}                True if result matches serving sector
+			 * @param  {BaseResult} result        Result model
+			 * @param  {ResultsFilterQuery} query Filter parameters
+			 * @return {Boolean}                  True if result matches serving sector
 			 */
-			isResultMatchingSector: function(result, sectorProps) {
+			isResultMatchingSector: function(result, query) {
 
 				var rv = false; // excluded by default
 
@@ -540,8 +539,8 @@ define(
 					result = result.getBestLocationCandidate();
 
 				if (result.has('controllerId') && result.has('primaryCellId')) {
-					rv = result.get('controllerId') === sectorProps.netSegment &&
-						 result.get('primaryCellId') === sectorProps.cellIdentity;
+					rv = result.get('controllerId') === query.netSegment &&
+						 result.get('primaryCellId') === query.cellIdentity;
 				}
 				return rv;
 			},

@@ -1,9 +1,10 @@
 define(
 	["jquery", "underscore", "backbone",
+	 "types/resultsfilterquery",
 	 "hbs!../../templates/sessioninfo", "hbs!../../templates/resultinfo",
 	 "hbs!../../templates/statisticsinfo", "hbs!../../templates/siteinfo"],
 
-	function($, _, Backbone, sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
+	function($, _, Backbone, ResultsFilterQuery, sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
 		 * Info View.
@@ -298,11 +299,12 @@ define(
 					el.dataset.ci !== undefined &&
 					el.dataset.netsegment !== undefined) {
 
-					var query = {
-						title:        el.dataset.sector,
-						netSegment:   parseInt(el.dataset.netsegment, 10),
-						cellIdentity: parseInt(el.dataset.ci, 10)
-					};
+					var query = new ResultsFilterQuery(
+						ResultsFilterQuery.TOPIC_PRIMARYCELL,
+						el.dataset.sector,
+						parseInt(el.dataset.netsegment, 10),
+						parseInt(el.dataset.ci, 10)
+					);
 					this.trigger("result:filterByElement", query);
 				}
 			},
