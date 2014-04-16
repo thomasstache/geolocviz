@@ -16,6 +16,7 @@ define(
 		 *   result:nav-next
 		 *   result:nav-last
 		 *   result:lookupElement
+		 *   result:filterByElement
 		 */
 		var InfoView = Backbone.View.extend({
 			el: $("#infoView"),
@@ -29,7 +30,8 @@ define(
 				"click .results-last": "onLastResultClicked",
 				"click .lookup-cell": "onLookupCellClicked",
 				"click .lookup-ref-cell": "onLookupRefCellClicked",
-				"click .filter-by-element" : "onFilterByElementClicked",
+				"click .filterByElement" : "onFilterByElementClicked",
+				"click .filterByRefcell" : "onFilterByElementClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -159,7 +161,10 @@ define(
 
 				// enable filter buttons
 				if (this.model.get("resultsAvailable")) {
-					context.enableFilter = true;
+					context.enableFilterPrimaryCells = true;
+				}
+				if (this.model.get("resultsReferenceCellsAvailable")) {
+					context.enableFilterRefCells = true;
 				}
 
 				$("#siteInfo").html(siteTemplate(context));
@@ -291,16 +296,23 @@ define(
 			 */
 			onFilterByElementClicked: function(evt) {
 
-				if (!(evt.currentTarget && evt.currentTarget.classList.contains("filter-by-element")))
+				if (!(evt.currentTarget && evt.currentTarget.classList.contains("filterButton")))
 					return;
 
 				var el = evt.currentTarget;
+
+				var topic;
+				if (el.classList.contains("filterByElement"))
+					topic = ResultsFilterQuery.TOPIC_PRIMARYCELL;
+				else if (el.classList.contains("filterByRefcell"))
+					topic = ResultsFilterQuery.TOPIC_REFERENCECELL;
+
 				if (el.dataset &&
 					el.dataset.ci !== undefined &&
 					el.dataset.netsegment !== undefined) {
 
 					var query = new ResultsFilterQuery(
-						ResultsFilterQuery.TOPIC_PRIMARYCELL,
+						topic,
 						el.dataset.sector,
 						parseInt(el.dataset.netsegment, 10),
 						parseInt(el.dataset.ci, 10)

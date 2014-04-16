@@ -328,8 +328,8 @@ button:not([disabled]):active {
 .sectoritem.highlighted { font-weight: bold; font-style: italic; }
 
 /* per-sector result filter buttons */
-.sectoritem > .filter-by-element { display: none; }
-.sectoritem:hover > .filter-by-element { display: inline-block; }
+.sectoritem > .filterButton { display: none; }
+.sectoritem:hover > .filterButton { display: inline-block; }
 
 .flexboxlegacy .fileitem {
 	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
