@@ -227,6 +227,11 @@ define(
 						candidateLocationsAvailable: true,
 					});
 				}
+				else if (filestats.type === FileLoader.FileTypes.AXF) {
+
+					if (filestats.referenceCellsAvailable)
+						this.model.set("resultsReferenceCellsAvailable", true);
+				}
 
 				stats.trigger("change");
 			},
@@ -448,7 +453,10 @@ define(
 				}, 200);
 			},
 
-			// Handler for the MapView's "results:filtered" event.
+			/**
+			 * Handler for the MapView's "results:filtered" (a filter is active) event.
+			 * @param  {ResultsFilterQuery} query The filter parameters
+			 */
 			resultsFiltered: function(query) {
 
 				this.model.set({
@@ -520,7 +528,10 @@ define(
 				}
 			},
 
-			// Handler for the "result:filterByElement" event from the InfoView.
+			/**
+			 * Handler for the "result:filterByElement" event from the InfoView.
+			 * @param  {ResultsFilterQuery} query The filter parameters
+			 */
 			resultsFilterByElement: function(query) {
 
 				if (query.cellIdentity !== undefined &&

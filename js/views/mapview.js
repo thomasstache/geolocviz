@@ -1,8 +1,9 @@
 define(
 	["underscore", "backbone",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult", "models/sector", "types/position", "ColorMapper"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Sector, Position, ColorMapper) {
+	 "models/AccuracyResult", "models/axfresult", "models/sector",
+	 "types/position", "types/resultsfilterquery", "ColorMapper"],
+	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Sector, Position, ResultsFilterQuery, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -390,8 +391,7 @@ define(
 
 			/**
 			 * Shows only result markers where the given sector is primary cell, and hides all other result markers.
-			 * @param  {Object} query List of key-value pairs that should match
-			 * @return {void}
+			 * @param  {ResultsFilterQuery} query
 			 */
 			filterResultsBySector: function(query) {
 
@@ -527,11 +527,11 @@ define(
 
 			/**
 			 * Filter function for result models.
-			 * @param  {BaseResult} result      Result model
-			 * @param  {Object}     sectorProps Property hash of attributes to match
-			 * @return {Boolean}                True if result matches serving sector
+			 * @param  {BaseResult} result        Result model
+			 * @param  {ResultsFilterQuery} query Filter parameters
+			 * @return {Boolean}                  True if result matches serving sector
 			 */
-			isResultMatchingSector: function(result, sectorProps) {
+			isResultMatchingSector: function(result, query) {
 
 				var rv = false; // excluded by default
 
@@ -539,9 +539,19 @@ define(
 				if (result instanceof AccuracyResult)
 					result = result.getBestLocationCandidate();
 
-				if (result.has('controllerId') && result.has('primaryCellId')) {
-					rv = result.get('controllerId') === sectorProps.netSegment &&
-						 result.get('primaryCellId') === sectorProps.cellIdentity;
+				if (query.topic === ResultsFilterQuery.TOPIC_PRIMARYCELL) {
+
+					if (result.has('controllerId') && result.has('primaryCellId')) {
+						rv = result.get('controllerId') === query.netSegment &&
+							 result.get('primaryCellId') === query.cellIdentity;
+					}
+				}
+				else if (query.topic === ResultsFilterQuery.TOPIC_REFERENCECELL) {
+
+					if (result.has('refControllerId') && result.has('referenceCellId')) {
+						rv = result.get('refControllerId') === query.netSegment &&
+							 result.get('referenceCellId') === query.cellIdentity;
+					}
 				}
 				return rv;
 			},

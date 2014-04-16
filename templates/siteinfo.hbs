@@ -18,9 +18,14 @@
 								&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}})</span>
 			<span class="value small">{{#if isIndoor}} Indoor{{/if}}</span>
 			<span class="value small">{{#if isSmall}} SmallCell{{/if}}</span>
-		{{#if ../enableFilter}}
-			<button class="translucent tiny symbolic filter-by-element"
-					title="Filter results served by sector"
+		{{#if ../enableFilterPrimaryCells}}
+			<button class="filterByElement filterButton translucent tiny symbolic"
+					title="Filter only serving sector results"
+					data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
+		{{/if}}
+		{{#if ../enableFilterRefCells}}
+			<button class="filterByRefcell filterButton translucent tiny symbolic"
+					title="Filter only reference sector results"
 					data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
 		{{/if}}
 		</li>
