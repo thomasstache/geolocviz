@@ -11,13 +11,13 @@ define(
 		var ResultsFilterQuery = function(topic, title, netSegment, cellIdentity) {
 			this.topic = topic;
 
-			this.title = title;
+			this.title = title + " " + topic;
 			this.netSegment = netSegment;
 			this.cellIdentity = cellIdentity;
 		};
 
-		Object.defineProperty(ResultsFilterQuery, "TOPIC_PRIMARYCELL", { value: "primarycell" });
-		Object.defineProperty(ResultsFilterQuery, "TOPIC_REFERENCECELL", { value: "referencecell" });
+		Object.defineProperty(ResultsFilterQuery, "TOPIC_PRIMARYCELL", { value: "Primary" });
+		Object.defineProperty(ResultsFilterQuery, "TOPIC_REFERENCECELL", { value: "Reference" });
 
 		return ResultsFilterQuery;
 	}
