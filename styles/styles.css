@@ -91,7 +91,8 @@ button.tiny {
 	padding: 1px 4px;
 }
 button.symbolic {
-	font-size: 125%;
+	font-size: 16px;
+	font-family: "Segoe UI Symbol", Arial, sans-serif;
 }
 
 /* various button states */
@@ -335,10 +336,10 @@ button:not([disabled]):active {
 	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
 }
 
-button.lookup-cell       { background-color: rgba(230, 180, 23, 0.2); }
-button.lookup-cell:hover { background-color: rgba(247, 216, 119, 0.4); }
-button.lookup-ref-cell       { background-color: rgba(132, 230, 23, 0.2); }
-button.lookup-ref-cell:hover { background-color: rgba(163, 255, 61, 0.4); }
+button.lookup-cell,       button.filterByElement       { background-color: rgba(230, 180, 23, 0.2); }
+button.lookup-cell:hover, button.filterByElement:hover { background-color: rgba(247, 216, 119, 0.4); }
+button.lookup-ref-cell,       button.filterByRefcell       { background-color: rgba(132, 230, 23, 0.2); }
+button.lookup-ref-cell:hover, button.filterByRefcell:hover { background-color: rgba(163, 255, 61, 0.4); }
 
 
 /* UI should not be selectable */
