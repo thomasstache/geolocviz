@@ -186,10 +186,6 @@ button:not([disabled]):active {
 	min-width: 14em;
 }
 
-#settingsdialog .dialog {
-	width: 26em;
-	height: 13em;
-}
 #settingsdialog ul { display: table; width: 100%; padding: 0; }
 #settingsdialog li { display: table-row; }
 #settingsdialog li label { display: table-cell; }
