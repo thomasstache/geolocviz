@@ -1,8 +1,9 @@
 define(
 	["jquery", "backbone",
+	 "types/viewport",
 	 "hbs!../../templates/viewportdialog"],
 
-	function($, Backbone, dialogTemplate) {
+	function($, Backbone, Viewport, dialogTemplate) {
 
 		var ViewportDialog = Backbone.View.extend({
 
@@ -10,9 +11,8 @@ define(
 			tagName: "div",
 			id: "viewportDialog",
 
-			/** @type {LatLngBounds} the model with the viewport data */
-			bounds: null,
-			zoom: -1,
+			/** @type {Viewport} the viewport model */
+			viewport: null,
 
 			events: {
 				"click #btnApply": "applyClicked",
@@ -21,8 +21,8 @@ define(
 
 			initialize: function() {
 
-				this.bounds = this.options.bounds || null;
-				this.zoom = this.options.zoom || null;
+				this.viewport = this.options.viewport || new Viewport();
+
 				this.render();
 				this.updateControls();
 			},
@@ -39,16 +39,18 @@ define(
 			// set the controls to the current model values
 			updateControls: function() {
 
-				if (this.bounds && !this.bounds.isEmpty()) {
-					this.$("#boundsInput").val(ViewportDialog.serializeBounds(this.bounds));
-					this.$("#centerInput").val(this.bounds.getCenter());
+				if (this.viewport.isValid()) {
+					this.$("#boundsInput").val(this.viewport.serialize());
+					this.$("#centerInput").val(this.viewport.center.toUrlValue());
+					this.$("#zoomInput").val(this.viewport.zoom);
 				}
-				this.$("#zoomInput").val(this.zoom);
 			},
 
 			applyClicked: function() {
 
-				this.trigger("viewport:set", this.bounds);
+				// TODO: retrieve values from controls
+
+				this.trigger("viewport:set", this.viewport);
 				this.remove();
 			},
 
@@ -56,25 +58,6 @@ define(
 
 				this.trigger("dialog:cancel");
 				this.remove();
-			},
-		},
-		{
-			/**
-			 * Format a bounds object in the canonical form.
-			 * @param  {LatLngBounds} bounds
-			 * @return {String}
-			 */
-			serializeBounds: function(bounds) {
-				var text = "";
-
-				if (!bounds.isEmpty()) {
-
-					var ne = bounds.getNorthEast(),
-						sw = bounds.getSouthWest();
-					text = "{NE:" + ne + ",SW:" + sw +"}";
-				}
-
-				return text;
 			},
 		});
 

@@ -3,8 +3,10 @@ define(
 	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/AccuracyResult", "models/axfresult", "models/sector",
-	 "types/position", "types/resultsfilterquery", "ColorMapper"],
-	function(_, Backbone, ViewportDialog, OverlayList, AccuracyResult, AxfResult, Sector, Position, ResultsFilterQuery, ColorMapper) {
+	 "types/position", "types/viewport", "types/resultsfilterquery", "ColorMapper"],
+	function(_, Backbone,
+			 ViewportDialog, OverlayList, AccuracyResult, AxfResult, Sector,
+			 Position, Viewport, ResultsFilterQuery, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -273,9 +275,9 @@ define(
 			 */
 			showViewportSettings: function() {
 
+				var vp = new Viewport(this.map.getBounds().getCenter(), this.map.getZoom());
 				var dialog = new ViewportDialog({
-					bounds: this.map.getBounds(),
-					zoom: this.map.getZoom()
+					viewport: vp
 				});
 				this.listenToOnce(dialog, "viewport:set", this.onViewportApplied);
 				this.listenToOnce(dialog, "dialog:cancel", this.onViewportDialogClosed);
@@ -284,12 +286,15 @@ define(
 
 			/**
 			 * Handler for the ViewportDialog's "viewport:set" event. Update the maps viewport.
-			 * @param  {Bounds} bounds
+			 * @param {Viewport} viewport the viewport settings
 			 */
-			onViewportApplied: function(bounds) {
+			onViewportApplied: function(viewport) {
 
-				if (!bounds.isEmpty()) {
-					this.map.fitBounds(bounds);
+				if (viewport !== null) {
+					if (isValidLatLng(viewport.center))
+						this.map.panTo(viewport.center);
+					if (!isNaN(viewport.zoom))
+						this.map.setZoom(viewport.zoom);
 				}
 				this.onViewportDialogClosed();
 			},
