@@ -48,7 +48,8 @@ define(
 
 			applyClicked: function() {
 
-				// TODO: retrieve values from controls
+				var input = $("#boundsInput").val();
+				this.viewport.parse(input);
 
 				this.trigger("viewport:set", this.viewport);
 				this.remove();

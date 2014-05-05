@@ -27,6 +27,27 @@ define(
 
 			return text;
 		};
+
+		/**
+		 * Parse text serialization of a Viewport.
+		 * @param {String} text
+		 */
+		Viewport.prototype.parse = function(text) {
+			// expected format: latitude/longitude as decimals, zoom as positive integer
+			// e.g. "{C:(-51.049035,13.73744),Z:12}"
+			var re = /{C:\((-?[0-9.]+),(-?[0-9.]+)\),Z:(\d+)}/;
+			var parts = text.match(re);
+
+			if (parts !== null && parts.length === 4){
+				var lat = parseFloat(parts[1]),
+					lng = parseFloat(parts[2]),
+					zoom = parseFloat(parts[3]);
+
+				this.center = new google.maps.LatLng(lat, lng);
+				this.zoom = zoom;
+			}
+		};
+
 		return Viewport;
 	}
 );
