@@ -45,6 +45,11 @@ body {
 	flex-direction: row;
 }
 
+.flexbox .stretching { flex: 1; }
+/* node is a flexbox for children */
+.flexbox .flexRow { display: flex; flex-direction: row; align-items: center; }
+.flexbox .flexColumn {display: flex; flex-direction: column; }
+
 /* main map container */
 #mapView {
 	margin: 10px 0;
@@ -190,6 +195,9 @@ button:not([disabled]):active {
 #settingsdialog li { display: table-row; }
 #settingsdialog li label { display: table-cell; }
 #settingsdialog input[type="number"] { width: 10ex; }
+
+#viewportDialog ul { padding: 0; }
+#viewportDialog li label { padding: 0 4px; }
 
 /* Overlays on top of map */
 

@@ -1,9 +1,10 @@
 define(
 	["underscore", "backbone",
+	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/AccuracyResult", "models/axfresult", "models/sector",
 	 "types/position", "types/resultsfilterquery", "ColorMapper"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Sector, Position, ResultsFilterQuery, ColorMapper) {
+	function(_, Backbone, ViewportDialog, OverlayList, AccuracyResult, AxfResult, Sector, Position, ResultsFilterQuery, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -85,6 +86,10 @@ define(
 			map: null,
 			// zoom-to-bounds map control
 			$zoomBoundsBtn: null,
+			// viewport settings map control
+			$viewportSettingsBtn: null,
+			// reference to the viewport settings dialog
+			viewportDialog: null,
 
 			/** @type {Settings} the application settings */
 			appsettings: null,
@@ -173,6 +178,8 @@ define(
 
 					this.$zoomBoundsBtn = $("#zoomBoundsBtn")
 						.on("click", this.zoomToBounds.bind(this));
+					this.$viewportSettingsBtn = $("#btnViewportSettings")
+						.on("click", this.showViewportSettings.bind(this));
 
 					this.initialized = true;
 				}
@@ -261,7 +268,37 @@ define(
 					this.map.fitBounds(this.bounds);
 			},
 
+			/**
+			 * Open the Viewport Settings dialog to allow to manage the map's viewport.
+			 */
+			showViewportSettings: function() {
 
+				var dialog = new ViewportDialog({
+					bounds: this.map.getBounds(),
+					zoom: this.map.getZoom()
+				});
+				this.listenToOnce(dialog, "viewport:set", this.onViewportApplied);
+				this.listenToOnce(dialog, "dialog:cancel", this.onViewportDialogClosed);
+				this.viewportDialog = dialog;
+			},
+
+			/**
+			 * Handler for the ViewportDialog's "viewport:set" event. Update the maps viewport.
+			 * @param  {Bounds} bounds
+			 */
+			onViewportApplied: function(bounds) {
+
+				if (!bounds.isEmpty()) {
+					this.map.fitBounds(bounds);
+				}
+				this.onViewportDialogClosed();
+			},
+
+			/** remove all listeners from the dialog */
+			onViewportDialogClosed: function() {
+				this.stopListening(this.viewportDialog);
+				this.viewportDialog = null;
+			},
 
 
 
