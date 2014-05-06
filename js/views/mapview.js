@@ -177,11 +177,13 @@ define(
 					this.addMapControl("mapLegend", google.maps.ControlPosition.BOTTOM_CENTER);
 					this.addMapControl("filterBar", google.maps.ControlPosition.TOP_CENTER);
 					this.addMapControl("zoomBoundsBtn", google.maps.ControlPosition.LEFT_TOP);
+					this.addMapControl("btnViewportSettings", google.maps.ControlPosition.LEFT_BOTTOM);
 
 					this.$zoomBoundsBtn = $("#zoomBoundsBtn")
 						.on("click", this.zoomToBounds.bind(this));
 					this.$viewportSettingsBtn = $("#btnViewportSettings")
-						.on("click", this.showViewportSettings.bind(this));
+						.on("click", this.showViewportSettings.bind(this))
+						.toggleClass("hidden");
 
 					this.initialized = true;
 				}
