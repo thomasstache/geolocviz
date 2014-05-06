@@ -1,9 +1,12 @@
 define(
 	["underscore", "backbone",
+	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/AccuracyResult", "models/axfresult", "models/sector",
-	 "types/position", "types/resultsfilterquery", "ColorMapper"],
-	function(_, Backbone, OverlayList, AccuracyResult, AxfResult, Sector, Position, ResultsFilterQuery, ColorMapper) {
+	 "types/position", "types/viewport", "types/resultsfilterquery", "ColorMapper"],
+	function(_, Backbone,
+			 ViewportDialog, OverlayList, AccuracyResult, AxfResult, Sector,
+			 Position, Viewport, ResultsFilterQuery, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -85,6 +88,10 @@ define(
 			map: null,
 			// zoom-to-bounds map control
 			$zoomBoundsBtn: null,
+			// viewport settings map control
+			$viewportSettingsBtn: null,
+			// reference to the viewport settings dialog
+			viewportDialog: null,
 
 			/** @type {Settings} the application settings */
 			appsettings: null,
@@ -170,9 +177,13 @@ define(
 					this.addMapControl("mapLegend", google.maps.ControlPosition.BOTTOM_CENTER);
 					this.addMapControl("filterBar", google.maps.ControlPosition.TOP_CENTER);
 					this.addMapControl("zoomBoundsBtn", google.maps.ControlPosition.LEFT_TOP);
+					this.addMapControl("btnViewportSettings", google.maps.ControlPosition.LEFT_BOTTOM);
 
 					this.$zoomBoundsBtn = $("#zoomBoundsBtn")
 						.on("click", this.zoomToBounds.bind(this));
+					this.$viewportSettingsBtn = $("#btnViewportSettings")
+						.on("click", this.showViewportSettings.bind(this))
+						.toggleClass("hidden");
 
 					this.initialized = true;
 				}
@@ -261,7 +272,40 @@ define(
 					this.map.fitBounds(this.bounds);
 			},
 
+			/**
+			 * Open the Viewport Settings dialog to allow to manage the map's viewport.
+			 */
+			showViewportSettings: function() {
 
+				var vp = new Viewport(this.map.getBounds().getCenter(), this.map.getZoom());
+				var dialog = new ViewportDialog({
+					viewport: vp
+				});
+				this.listenToOnce(dialog, "viewport:set", this.onViewportApplied);
+				this.listenToOnce(dialog, "dialog:cancel", this.onViewportDialogClosed);
+				this.viewportDialog = dialog;
+			},
+
+			/**
+			 * Handler for the ViewportDialog's "viewport:set" event. Update the maps viewport.
+			 * @param {Viewport} viewport the viewport settings
+			 */
+			onViewportApplied: function(viewport) {
+
+				if (viewport !== null) {
+					if (isValidLatLng(viewport.center))
+						this.map.panTo(viewport.center);
+					if (!isNaN(viewport.zoom))
+						this.map.setZoom(viewport.zoom);
+				}
+				this.onViewportDialogClosed();
+			},
+
+			/** remove all listeners from the dialog */
+			onViewportDialogClosed: function() {
+				this.stopListening(this.viewportDialog);
+				this.viewportDialog = null;
+			},
 
 
 

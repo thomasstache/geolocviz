@@ -1,0 +1,27 @@
+<div class="veilBackground" />
+
+<!-- the size is necessary to prevent blurry rendering in Chrome due to CSS centering -->
+<section class="dialog centered" style="width: 30em; height: 13em;" >
+	<div class="content">
+		<h3>Viewport</h3>
+
+		<ul>
+			<li class="flexRow" >
+				<label for="centerInput">Center:</label>
+				<input id="centerInput" placeholder="Center" disabled class="stretching" />
+				<label for="zoomInput">Zoom:</label>
+				<input id="zoomInput" placeholder="Zoom" disabled style="width: 4em;" />
+			</li>
+			<li class="flexRow" >
+				<input id="boundsInput" placeholder="Viewport bounds" class="stretching" onClick="this.setSelectionRange(0, this.value.length)" />
+			</li>
+			<li>
+				<p class="dialogTip">Synchronize views by copying this to another app instance</p>
+			</li>
+		</ul>
+	</div>
+	<div class="toolbar" style="position: relative;">
+		<button id="btnApply">Update</button>
+		<button id="btnCancel">Cancel</button>
+	</div>
+</section>

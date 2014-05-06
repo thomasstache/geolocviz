@@ -45,6 +45,11 @@ body {
 	flex-direction: row;
 }
 
+.flexbox .stretching { flex: 1; }
+/* node is a flexbox for children */
+.flexbox .flexRow { display: flex; flex-direction: row; align-items: center; }
+.flexbox .flexColumn {display: flex; flex-direction: column; }
+
 /* main map container */
 #mapView {
 	margin: 10px 0;
@@ -133,6 +138,14 @@ button:not([disabled]):active {
 .dialog h3 { margin-top: 0 }
 .dialog .content { flex: 1; }
 
+/* a gray info text in a dialog */
+.dialogTip {
+	margin: 0; /* override <p> style */
+	color: #bbbbbb;
+	font-size: .7em;
+	text-align: center;
+}
+
 /* Top controls */
 
 #mainToolbar {
@@ -186,14 +199,14 @@ button:not([disabled]):active {
 	min-width: 14em;
 }
 
-#settingsdialog .dialog {
-	width: 26em;
-	height: 13em;
-}
 #settingsdialog ul { display: table; width: 100%; padding: 0; }
 #settingsdialog li { display: table-row; }
 #settingsdialog li label { display: table-cell; }
 #settingsdialog input[type="number"] { width: 10ex; }
+
+#viewportDialog ul { padding: 0; }
+#viewportDialog li label { padding: 0 4px; }
+#viewportDialog li:first-of-type { margin-bottom: 5px; }
 
 /* Overlays on top of map */
 
