@@ -914,6 +914,8 @@ define(
 					indoor: this.appsettings.get("indoorThreshold"),
 				}
 
+				var refLinesEnabled = this.appsettings.get("drawReferenceLines");
+
 				session.results.each(function(sample) {
 
 					var color = null, visible = true;
@@ -968,7 +970,7 @@ define(
 						view.bounds.extend(bestLoc);
 
 						// connect measured and calculated points with lines
-						view.drawReferenceLine(refLoc, bestLoc);
+						view.drawReferenceLine(refLoc, bestLoc, refLinesEnabled);
 					}
 					else if (sample instanceof AxfResult) {
 
@@ -1205,11 +1207,11 @@ define(
 			 * Creates a line overlay connecting measured and calculated points.
 			 * @param {LatLng} startLatLng The geographical position for the start of the line
 			 * @param {LatLng} endLatLng   The geographical position for the end of the line
+			 * @param {Boolean} visible    Controls whether the line is shown or hidden
 			 */
-			drawReferenceLine: function(startLatLng, endLatLng) {
+			drawReferenceLine: function(startLatLng, endLatLng, visible) {
 
-				if (this.appsettings.get("drawReferenceLines"))
-					this.createLine([startLatLng, endLatLng], "#FF0000", 2, 0.3, OverlayTypes.REFERENCELINE);
+				this.createLine([startLatLng, endLatLng], "#FF0000", 2, 0.3, OverlayTypes.REFERENCELINE, visible);
 			},
 
 			/**
@@ -1234,8 +1236,7 @@ define(
 					this.highlightedSessionId = session.id;
 
 					// draw new lines
-					if (this.appsettings.get("drawSessionLines") &&
-						session.results &&
+					if (session.results &&
 						session.results.length > 1) {
 
 						var refLocations = [],
@@ -1255,8 +1256,9 @@ define(
 							}
 						});
 
-						this.createLine(refLocations, "#A0B1BC", 6, 0.8, OverlayTypes.SESSIONLINE);
-						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE);
+						var sessionLinesEnabled = this.appsettings.get("drawSessionLines");
+						this.createLine(refLocations, "#A0B1BC", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled);
+						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled);
 					}
 				}
 			},
@@ -1281,8 +1283,9 @@ define(
 			 * @param {int}          weight  Line weight in pixels
 			 * @param {number}       opacity The opacity (0..1.0)
 			 * @param {OverlayTypes} type    The type of the overlay
+			 * @param {Boolean}      visible Controls whether the line is shown or hidden
 			 */
-			createLine: function(points, color, weight, opacity, type) {
+			createLine: function(points, color, weight, opacity, type, visible) {
 
 				if (points && points.length > 1) {
 
@@ -1292,7 +1295,7 @@ define(
 						strokeOpacity: opacity,
 						strokeWeight: weight,
 						clickable: false,
-						map: this.map
+						map: visible ? this.map : null
 					};
 
 					// apply line symbols for session lines
