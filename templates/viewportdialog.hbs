@@ -13,7 +13,7 @@
 				<input id="zoomInput" placeholder="Zoom" disabled style="width: 4em;" />
 			</li>
 			<li class="flexRow" >
-				<input id="boundsInput" placeholder="Viewport bounds" class="stretching" onClick="this.setSelectionRange(0, this.value.length)" />
+				<input id="boundsInput" placeholder="Viewport bounds" class="stretching" onfocus="this.setSelectionRange(0, this.value.length)" />
 			</li>
 			<li>
 				<p class="dialogTip">Synchronize views by copying this to another app instance</p>
