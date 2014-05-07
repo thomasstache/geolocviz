@@ -40,9 +40,11 @@ define(
 			updateControls: function() {
 
 				if (this.viewport.isValid()) {
-					this.$("#boundsInput").val(this.viewport.serialize());
 					this.$("#centerInput").val(this.viewport.center.toUrlValue());
 					this.$("#zoomInput").val(this.viewport.zoom);
+					this.$("#boundsInput")
+						.val(this.viewport.serialize())
+						.focus();
 				}
 			},
 
