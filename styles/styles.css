@@ -95,7 +95,7 @@ button.tiny {
 	margin: 0;
 	padding: 1px 4px;
 }
-button.symbolic {
+.symbolic {
 	font-size: 16px;
 	font-family: "Segoe UI Symbol", Arial, sans-serif;
 }
@@ -148,6 +148,9 @@ button:not([disabled]):active {
 
 /* Top controls */
 
+header {
+	display: flex;
+}
 #mainToolbar {
 	position: relative;
 }
@@ -173,6 +176,39 @@ button:not([disabled]):active {
 
 #searchHelp ul { margin: 1ex; padding: 0; }
 #searchHelp ul b { font-family: Consolas, "Courier New", monospace; }
+
+#labelView {
+	flex: 1;
+	margin: auto 1em;
+}
+#labelInput {
+	font-size: 150%;
+	vertical-align: middle;
+	background: transparent;
+	border: 1px solid rgb(102, 102, 102);
+	padding: 3px;
+	width: 80%;
+	max-width: 800px;
+}
+#labelInput[disabled] {
+	border-color: rgb(224, 224, 224);
+	color: #888;
+}
+
+#editLabelLink {
+	display: inline-block;
+	width: 25px; height: 25px;
+	border-radius: 100%;
+	border: 1px solid #ccc;
+	color: #ccc;
+	font-size: 14px;
+	text-align: center;
+	text-decoration: none;
+}
+#editLabelLink:hover {
+	color: #aaa;
+	border-color: #bbb;
+}
 
 /* Map View */
 

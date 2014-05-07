@@ -4,12 +4,12 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview", "views/searchview",
+	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview", "views/searchview", "views/labelview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
 	 "types/searchquery", "FileLoader"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView,
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView,
 			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader) {
 
 		var AppView = Backbone.View.extend({
@@ -41,6 +41,7 @@ define(
 			legendview: null,
 			filterview: null,
 			searchview: null,
+			labelview: null,
 
 			initialize: function() {
 
@@ -69,6 +70,7 @@ define(
 				this.infoview = new InfoView({ model: this.model });
 				this.filterview = new FilterView({ model: this.model });
 				this.searchview = new SearchView();
+				this.labelview = new LabelView();
 
 				// setup map
 				this.mapview = new MapView({
