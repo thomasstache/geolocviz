@@ -65,7 +65,7 @@ define(
 
 			/**
 			 * Handler for the loadend event of the FileReader
-			 * @param  {Event} evt the ProgressEvent
+			 * @param  {ProgressEvent} evt
 			 */
 			function onFileReadComplete(evt) {
 				// evt: ProgressEvent, target is the FileReader
@@ -76,6 +76,7 @@ define(
 
 					// the current file should be tucked on the Reader object
 					var filename = rdr.file ? rdr.file.name : "";
+					var filecontent = rdr.result;
 
 					var bOk = false;
 
@@ -102,14 +103,14 @@ define(
 					var fileStatistics = new FileStatistics(filename, currentFileType);
 
 					if (currentFileType === null) {
-						alert("Could not recognize this file type!");
+						alert("Could not recognize the type of file '" + filename + "'!");
 					}
 					else {
 						// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
 						var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
 
 						// decompose the blob
-						rowData = jQuery.csv(separator)(rdr.result);
+						rowData = jQuery.csv(separator)(filecontent);
 
 						try {
 							// parse the data
