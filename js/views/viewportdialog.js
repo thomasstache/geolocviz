@@ -17,6 +17,7 @@ define(
 			events: {
 				"click #btnApply": "applyClicked",
 				"click #btnCancel": "close",
+				"keyup #boundsInput": "boundsInputKeyUp",
 			},
 
 			initialize: function() {
@@ -45,6 +46,17 @@ define(
 					this.$("#boundsInput")
 						.val(this.viewport.serialize())
 						.focus();
+				}
+			},
+
+			boundsInputKeyUp: function(evt) {
+				if (evt.keyCode == 13) {
+					// ENTER pressed, trigger commit
+					this.applyClicked();
+				}
+				else if (evt.keyCode == 27) {
+					// ESC pressed, trigger close
+					this.close();
 				}
 			},
 

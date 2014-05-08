@@ -16,6 +16,7 @@ define(
 			events: {
 				"click #editLabelLink": "startEditing",
 				"change #labelInput" : "labelChanged",
+				"keyup #labelInput"   : "labelInputKeyUp",
 				"blur #labelInput"   : "stopEditing",
 			},
 
@@ -53,6 +54,14 @@ define(
 				this.label = this.$labelInput.val();
 				this.stopEditing();
 				this.saveLabelInHistory();
+			},
+
+			labelInputKeyUp: function(evt) {
+				if (evt.keyCode != 13)
+					return;
+
+				// ENTER pressed, trigger commit
+				this.labelChanged();
 			},
 
 			/**

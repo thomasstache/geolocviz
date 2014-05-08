@@ -12,6 +12,7 @@ define(
 
 			events: {
 				"change #searchInput" : "searchInputChanged",
+				"keyup #searchInput"   : "searchInputKeyUp",
 				"focus #searchInput"  : "searchFocussed",
 				"blur #searchInput"   : "searchBlurred",
 			},
@@ -55,6 +56,14 @@ define(
 
 				this.trigger("search", new SearchQuery(topic, what));
 				this.$searchInput.focusout();
+			},
+
+			searchInputKeyUp: function(evt) {
+				if (evt.keyCode != 13)
+					return;
+
+				// ENTER pressed, trigger search
+				this.searchInputChanged(evt);
 			},
 
 			clearSearchField: function() {
