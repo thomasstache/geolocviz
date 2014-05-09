@@ -96,8 +96,10 @@ button.tiny {
 	padding: 1px 4px;
 }
 .symbolic {
-	font-size: 16px;
 	font-family: "Segoe UI Symbol", Arial, sans-serif;
+}
+button.symbolic {
+	font-size: 16px;
 }
 
 /* various button states */
@@ -123,6 +125,10 @@ button:not([disabled]):active {
 	top: 50%;
 	-webkit-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
+}
+
+.normalweight{
+	font-weight: normal;
 }
 
 /* a transient popup box, for e.g. settings input or data display */

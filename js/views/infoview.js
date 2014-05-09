@@ -115,6 +115,10 @@ define(
 				if (session &&
 					session.results) {
 					context.resultCount = session.results.length;
+
+					// calculate mean indoor probability
+					var probIndoorSum = session.results.reduce(sumIndoorProbabilities, 0);
+					context.probIndoor = probIndoorSum / context.resultCount;
 				}
 
 				$("#sessionInfo").html(sessionTemplate(context));
@@ -350,6 +354,18 @@ define(
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}
 		});
+
+		/**
+		 * Aggregator function for _.reduce() collecting the indoor probabilities of all results.
+		 * @param  {Number} sum        The map/reduce memo value
+		 * @param  {BaseResult} result The result model
+		 * @return {Number}            New aggregation result
+		 */
+		function sumIndoorProbabilities(sum, result) {
+			var data = result.getInfo(),
+				prob = data.probIndoor || 0.0;
+			return sum + prob;
+		}
 
 		return InfoView;
 	}
