@@ -218,7 +218,7 @@ define(
 				});
 
 				var fileId = record[IDX.FILEID];
-				var msgId = record[IDX.MSGID];
+				var msgId = parseNumber(record[IDX.MSGID]);
 				var sessId = record[IDX.SESSIONID];
 				// the same SessionId can appear in multiple calltrace files, make unique.
 				var sessionUId = makeSessionUId(fileId, sessId);
@@ -245,12 +245,6 @@ define(
 					stats.numResults++;
 				}
 
-				var confidence = record[IDX.CONF];
-				var probMobile = record[IDX.PROB_MOB];
-				var probIndoor = record[IDX.PROB_INDOOR];
-
-				var distReported = record[IDX.DIST];
-
 				var controllerId  = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
 				var primaryCellId = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
 
@@ -258,10 +252,10 @@ define(
 					msgId: msgId,
 					position: new Position(parseNumber(record[IDX.GEO_LAT]),
 										   parseNumber(record[IDX.GEO_LON])),
-					distance: distReported,
-					confidence: confidence,
-					probMobility: probMobile,
-					probIndoor: probIndoor,
+					distance: parseNumber(record[IDX.DIST]),
+					confidence: parseNumber(record[IDX.CONF]),
+					probMobility: parseNumber(record[IDX.PROB_MOB]),
+					probIndoor: parseNumber(record[IDX.PROB_INDOOR]),
 					controllerId: controllerId,
 					primaryCellId: primaryCellId
 				};
