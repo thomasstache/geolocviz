@@ -410,6 +410,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, #filterBar, .tool
 	position: fixed;
 	top: 0; right: 0; bottom: 0; left: 0;
 	background: rgba(30, 30, 30, 0.2);
+	background-image: radial-gradient(circle, rgba(180, 180, 180, 0.23), rgba(0, 0, 0, 0.3));
 	font-weight: bold;
 	color: white; text-shadow: 0 2px 3px rgb(70, 70, 70);
 	text-align: center;
