@@ -1,16 +1,16 @@
 {{#if files}}
 <h3 class="etched">Data Statistics</h3>
 <ul class="propertyList">
-	<li><span class="label">Sessions:</span> <span class="value">{{numSessions}}</span></li>
-	<li><span class="label">Geol. Results:</span> <span class="value">{{numResults}}</span></li>
+	<li><span class="label">Sessions:</span>&nbsp;<span class="value">{{numSessions}}</span></li>
+	<li><span class="label">Geol. Results:</span>&nbsp;<span class="value">{{numResults}}</span></li>
 	{{#if hasCandidates}}
-	<li title="Including location candidates"><span class="label">Total Results:</span> <span class="value">{{numResultsAndCandidates}}</span></li>
+	<li title="Including location candidates"><span class="label">Total Results:</span>&nbsp;<span class="value">{{numResultsAndCandidates}}</span></li>
 	{{/if}}
 	{{#if hasNetwork}}
-	<li><span class="label">Sites:</span> <span class="value">{{numSites}}</span></li>
-	<li><span class="label">Sectors:</span> <span class="value">{{numSectors}}</span></li>
+	<li><span class="label">Sites:</span>&nbsp;<span class="value">{{numSites}}</span></li>
+	<li><span class="label">Sectors:</span>&nbsp;<span class="value">{{numSectors}}</span></li>
 	{{/if}}
-	<li><span class="label">Files:</span> {{#if files}}<span class="value">{{files.length}}</span>{{/if}}</li>
+	<li><span class="label">Files:</span>&nbsp;{{#if files}}<span class="value">{{files.length}}</span>{{/if}}</li>
 	{{#each files}}
 		<li class="fileitem" title="{{name}}">{{name}}</li>
 	{{/each}}

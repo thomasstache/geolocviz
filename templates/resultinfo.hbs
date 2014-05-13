@@ -1,30 +1,30 @@
 {{#if num}}
 <h3 class="etched">Selected Result</h3>
 <ul class="propertyList">
-	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span> <span class="value">{{num}}/{{resultCount}}</span>
-		{{#if msgId}}&nbsp;<span class="label">Msg:</span> <span class="value">#{{msgId}}</span>{{/if}}
+	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span>&nbsp;<span class="value">{{num}}/{{resultCount}}</span>
+		{{#if msgId}}&nbsp;<span class="label">Msg:</span>&nbsp;<span class="value">#{{msgId}}</span>{{/if}}
 	</li>
 	{{#if timestamp}}
-	<li><span class="label">Time:</span> <span class="value">{{formattime timestamp "ms"}}</span></li>
+	<li><span class="label">Time:</span>&nbsp;<span class="value">{{formattime timestamp "ms"}}</span></li>
 	{{/if}}
 	{{#if primaryCellId}}
-	<li><span class="label">Primary CI:</span> <span class="value">{{primaryCellId}}</span>
-		<span class="label">RNC:</span> <span class="value">{{controllerId}}</span>
+	<li><span class="label">Primary CI:</span>&nbsp;<span class="value">{{primaryCellId}}</span>
+		<span class="label">RNC:</span>&nbsp;<span class="value">{{controllerId}}</span>
 	</li>
 	{{/if}}
 	{{#if referenceCellId}}
-	<li><span class="label">Refrnc. CI:</span> <span class="value">{{referenceCellId}}</span>
-		<span class="label">RNC:</span> <span class="value">{{refControllerId}}</span>
+	<li><span class="label">Refrnc. CI:</span>&nbsp;<span class="value">{{referenceCellId}}</span>
+		<span class="label">RNC:</span>&nbsp;<span class="value">{{refControllerId}}</span>
 	</li>
 	{{/if}}
 	{{#if distance}}
-	<li><span class="label">Distance:</span> <span class="value">{{withUnit distance "m"}}</span></li>
+	<li><span class="label">Distance:</span>&nbsp;<span class="value">{{withUnit distance "m"}}</span></li>
 	{{/if}}
-	<li><span class="label">Confidence:</span> <span class="value">{{percent confidence}}</span></li>
-	<li><span class="label">P_mobile:</span> <span class="value">{{percent probMobility}}</span></li>
-	<li><span class="label">P_indoor:</span> <span class="value">{{percent probIndoor}}</span></li>
+	<li><span class="label">Confidence:</span>&nbsp;<span class="value">{{percent confidence}}</span></li>
+	<li><span class="label">P_mobile:</span>&nbsp;<span class="value">{{percent probMobility}}</span></li>
+	<li><span class="label">P_indoor:</span>&nbsp;<span class="value">{{percent probIndoor}}</span></li>
 	{{#if candidateCount}}
-	<li><span class="label">Candidates:</span> <span class="value">{{candidateCount}}</span></li>
+	<li><span class="label">Candidates:</span>&nbsp;<span class="value">{{candidateCount}}</span></li>
 	{{/if}}
 </ul>
 {{/if}}
