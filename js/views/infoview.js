@@ -1,10 +1,13 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "types/resultsfilterquery",
+	 "models/AccuracyResult",
+	 "types/resultsfilterquery", "types/googlemapsutils",
 	 "hbs!../../templates/sessioninfo", "hbs!../../templates/resultinfo",
 	 "hbs!../../templates/statisticsinfo", "hbs!../../templates/siteinfo"],
 
-	function($, _, Backbone, ResultsFilterQuery, sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
+	function($, _, Backbone,
+			 AccuracyResult, ResultsFilterQuery, GoogleMapsUtils,
+			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
 		 * Info View.
@@ -116,11 +119,38 @@ define(
 					session.results) {
 					context.resultCount = session.results.length;
 
-					// calculate mean indoor probability
-					var probIndoorSum = session.results.reduce(sumIndoorProbabilities, 0);
-					context.probIndoor = probIndoorSum / context.resultCount;
-					var confidenceSum = session.results.reduce(sumConfidence, 0);
-					context.confidence = confidenceSum / context.resultCount;
+					if (context.resultCount > 0) {
+						// calculate mean indoor probability
+						var probIndoorSum = session.results.reduce(sumIndoorProbabilities, 0);
+						context.probIndoor = probIndoorSum / context.resultCount;
+						var confidenceSum = session.results.reduce(sumConfidence, 0);
+						context.confidence = confidenceSum / context.resultCount;
+
+						// calculate distance, duration and speed
+						var distance_m = computeDistance(session.results, false);
+						context.distance = Math.round(distance_m);
+
+						var firstResult = session.results.first();
+
+						// for AccuracyResults we can compute the distance between all reference locations
+						if (firstResult instanceof AccuracyResult) {
+							context.refDistance = Math.round(computeDistance(session.results, true));
+						}
+
+						// some files have no timestamp
+						if (firstResult.has("timestamp")) {
+
+							var lastResult = session.results.last(),
+								duration_ms = lastResult.get("timestamp") - firstResult.get("timestamp");
+
+							context.duration = duration_ms;
+
+							if (duration_ms > 0.0) {
+								var meanSpeed_m_s = distance_m / (duration_ms / 1000.0);
+								context.meanSpeed = Math.round(meanSpeed_m_s * 3.6 * 10.0) / 10.0;
+							}
+						}
+					}
 				}
 
 				$("#sessionInfo").html(sessionTemplate(context));
@@ -379,6 +409,21 @@ define(
 			var data = result.getInfo(),
 				conf = data.confidence || 0.0;
 			return sum + conf;
+		}
+
+		/**
+		 * Calculate the length of the path between all geolocated positions.
+		 * @param  {ResultList} results
+		 * @return {Number}
+		 */
+		function computeDistance(results, useRefLocation) {
+			var locations = [];
+			results.each(function(result) {
+				var pos = useRefLocation ? result.getRefPosition()
+										 : result.getGeoPosition();
+				GoogleMapsUtils.pushIfNew(locations, GoogleMapsUtils.makeLatLng(pos));
+			});
+			return GoogleMapsUtils.computeSphericDistance(locations);
 		}
 
 		return InfoView;

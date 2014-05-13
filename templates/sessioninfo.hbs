@@ -10,6 +10,18 @@
 	<li><span class="label">Session:</span>&nbsp;<span class="value">{{id}}</span></li>
 {{/if}}
 	<li><span class="label">Records:</span>&nbsp;<span class="value">{{resultCount}}</span></li>
+	<li>
+		<span class="label">Distance:</span>&nbsp;<span class="value">{{withUnit distance "m"}}</span>
+	{{#if refDistance}}
+		<span class="label">GPS&nbsp;Dist:</span>&nbsp;<span class="value">{{withUnit refDistance "m"}}</span>
+	{{/if}}
+	</li>
+{{#if duration}}
+	<li>
+		<span class="label">Duration:</span>&nbsp;<span class="value">{{formattime duration "ms"}}</span>
+		<span class="label">Speed&nbsp;<span class="symbolic normalweight">&Oslash;</span>:</span>&nbsp;<span class="value">{{withUnit meanSpeed "km/h"}}</span>
+	</li>
+{{/if}}
 	<li><span class="label">Confidence&nbsp;<span class="symbolic normalweight">&Oslash;</span>:</span>&nbsp;<span class="value">{{percent confidence}}</span></li>
 	<li><span class="label">P_indoor&nbsp;<span class="symbolic normalweight">&Oslash;</span>:</span>&nbsp;<span class="value">{{percent probIndoor}}</span></li>
 </ul>
