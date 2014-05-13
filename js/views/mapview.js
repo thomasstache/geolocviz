@@ -3,10 +3,10 @@ define(
 	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/AccuracyResult", "models/axfresult", "models/sector",
-	 "types/position", "types/viewport", "types/resultsfilterquery", "ColorMapper"],
+	 "types/position", "types/viewport", "types/resultsfilterquery", "types/googlemapsutils", "ColorMapper"],
 	function(_, Backbone,
 			 ViewportDialog, OverlayList, AccuracyResult, AxfResult, Sector,
-			 Position, Viewport, ResultsFilterQuery, ColorMapper) {
+			 Position, Viewport, ResultsFilterQuery, GoogleMapsUtils, ColorMapper) {
 
 		// marker types 'n colors
 		var MarkerColors = Object.freeze({
@@ -65,20 +65,6 @@ define(
 		function isValidLatLng(latLng) {
 			return !isNaN(latLng.lat()) &&
 				   !isNaN(latLng.lng());
-		}
-		/**
-		 * Adds a given location to the list, if the location differs from the previous one.
-		 * @param  {Array}  latLngArray The list of LatLng locations
-		 * @param  {LatLng} latLng      The new location
-		 * @return {void}
-		 */
-		function pushIfNewLocation(latLngArray, latLng) {
-			if (!(latLngArray instanceof Array &&
-				  latLng instanceof google.maps.LatLng))
-				return;
-			if (latLngArray.length === 0 ||
-				!latLng.equals(latLngArray[latLngArray.length - 1]))
-				latLngArray.push(latLng);
 		}
 
 		var MapView = Backbone.View.extend({
@@ -256,7 +242,7 @@ define(
 
 				var view = this;
 				this.siteList.each(function(site) {
-					var latLng = view.makeLatLng(site.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
 
 					if (isValidLatLng(latLng))
 						view.bounds.extend(latLng);
@@ -703,7 +689,7 @@ define(
 			drawSite: function(site, bZoomToNetwork) {
 
 				var view = this;
-				var latLng = this.makeLatLng(site.get('position'));
+				var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
 
 				// helper function to collect and format tooltip data
 				function makeTooltip(site) {
@@ -753,7 +739,7 @@ define(
 				if (site &&
 					site.getSectors().length > 0) {
 
-					var latLng = this.makeLatLng(site.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
 					if (isValidLatLng(latLng)) {
 
 						var sectors = site.getSectorsSortedBy('azimuth');
@@ -912,7 +898,7 @@ define(
 				var thresholds = {
 					mobility: this.appsettings.get("mobilityThreshold"),
 					indoor: this.appsettings.get("indoorThreshold"),
-				}
+				};
 
 				var refLinesEnabled = this.appsettings.get("drawReferenceLines");
 
@@ -926,7 +912,7 @@ define(
 						return;
 
 					if (sample instanceof AccuracyResult) {
-						var refLoc = view.makeLatLng(sample.get('position'));
+						var refLoc = GoogleMapsUtils.makeLatLng(sample.get('position'));
 
 						// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
 						if (isValidLatLng(refLoc)) {
@@ -942,7 +928,7 @@ define(
 						}
 
 						var bestCand = sample.getBestLocationCandidate();
-						var bestLoc = view.makeLatLng(bestCand.get('position'));
+						var bestLoc = GoogleMapsUtils.makeLatLng(bestCand.get('position'));
 
 						switch (bestCand.category(thresholds)) {
 							case "S":
@@ -974,7 +960,7 @@ define(
 					}
 					else if (sample instanceof AxfResult) {
 
-						var location = view.makeLatLng(sample.get('position'));
+						var location = GoogleMapsUtils.makeLatLng(sample.get('position'));
 						switch (sample.category(thresholds)) {
 							case "S":
 								color = MarkerColors.STATIONARY;
@@ -1022,7 +1008,7 @@ define(
 					for (var i = 1; i < sample.locationCandidates.length; i++) {
 
 						var candidate = sample.locationCandidates.at(i);
-						var latLng = this.makeLatLng(candidate.get('position'));
+						var latLng = GoogleMapsUtils.makeLatLng(candidate.get('position'));
 						this.createMarker(OverlayTypes.CANDIDATEMARKER,
 										  latLng,
 										  "#" + sample.get('msgId'),
@@ -1225,8 +1211,6 @@ define(
 					return;
 				}
 
-				var view = this;
-
 				// check if the session actually changed
 				if (this.highlightedSessionId !== session.id) {
 
@@ -1245,14 +1229,12 @@ define(
 						// extract the non-NaN locations
 						session.results.each(function(sample) {
 
-							var latLng = view.makeLatLng(sample.get('position'));
-							if (isValidLatLng(latLng))
-								pushIfNewLocation(refLocations, latLng);
+							var latLng = GoogleMapsUtils.makeLatLng(sample.get('position'));
+							GoogleMapsUtils.pushIfNew(refLocations, latLng);
 
 							if (sample instanceof AccuracyResult) {
-								latLng = view.makeLatLng(sample.getBestLocationCandidate().get('position'));
-								if (isValidLatLng(latLng))
-									pushIfNewLocation(bestLocations, latLng);
+								latLng = GoogleMapsUtils.makeLatLng(sample.getBestLocationCandidate().get('position'));
+								GoogleMapsUtils.pushIfNew(bestLocations, latLng);
 							}
 						});
 
@@ -1512,15 +1494,14 @@ define(
 				// determine the extents of the session
 				var sessionRect = new google.maps.LatLngBounds();
 
-				var view = this;
 				session.results.each(function(sample) {
 
-					var latLng = view.makeLatLng(sample.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(sample.get('position'));
 					if (isValidLatLng(latLng))
 						sessionRect.extend(latLng);
 
 					if (sample instanceof AccuracyResult) {
-						latLng = view.makeLatLng(sample.getBestLocationCandidate().get('position'));
+						latLng = GoogleMapsUtils.makeLatLng(sample.getBestLocationCandidate().get('position'));
 						if (isValidLatLng(latLng))
 							sessionRect.extend(latLng);
 					}
@@ -1539,7 +1520,7 @@ define(
 				if (result !== null &&
 					result !== undefined) {
 
-					var latLng = this.makeLatLng(result.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(result.get('position'));
 					// draw a highlight around the result
 
 					if (!this.selectedMarkerHighlight) {
@@ -1562,7 +1543,7 @@ define(
 							this.selectedMarkerHighlightBestLoc = this.createHighlightCircle();
 						}
 
-						latLng = this.makeLatLng(result.getBestLocationCandidate().get('position'));
+						latLng = GoogleMapsUtils.makeLatLng(result.getBestLocationCandidate().get('position'));
 						bShow = isValidLatLng(latLng);
 						if (bShow) {
 							this.selectedMarkerHighlightBestLoc.setPosition(latLng);
@@ -1595,7 +1576,7 @@ define(
 						this.selectedSiteHighlight = this.createHighlightForSites();
 					}
 
-					var latLng = this.makeLatLng(site.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
 					var bShow = isValidLatLng(latLng);
 					if (bShow) {
 						// update the position
@@ -1621,15 +1602,6 @@ define(
 					this.setMarkerVisible(this.selectedSiteHighlight, false);
 				}
 			},
-
-			makeLatLng: function(pos) {
-
-				var latLng;
-				if (pos instanceof Position) {
-					latLng = new google.maps.LatLng(pos.lat, pos.lon);
-				}
-				return latLng;
-			}
 
 		});
 
