@@ -23,10 +23,22 @@ define(
 				  latLng instanceof google.maps.LatLng))
 				return;
 
+			if (isNaN(latLng.lat()) || isNaN(latLng.lng()))
+				return;
+
 			if (latLngArray.length === 0 ||
 				!latLng.equals(latLngArray[latLngArray.length - 1])) {
 				latLngArray.push(latLng);
 			}
+		};
+
+		/**
+		 * Computes the length of a path using the Google Maps Geometry library.
+		 * @param  {Array} latLngArray A collection of LatLng locations
+		 * @return {Number}            path length in meters
+		 */
+		GoogleMapsUtils.computeSphericDistance = function(latLngArray) {
+			return google.maps.geometry.spherical.computeLength(latLngArray);
 		};
 
 		return GoogleMapsUtils;
