@@ -70,15 +70,12 @@ define(
 			function onFileReadComplete(evt) {
 				// evt: ProgressEvent, target is the FileReader
 				var rdr = evt.target;
-				var rowData = [];
 
 				if (rdr.readyState === FileReader.DONE) {
 
 					// the current file should be tucked on the Reader object
 					var filename = rdr.file ? rdr.file.name : "";
 					var filecontent = rdr.result;
-
-					var bOk = false;
 
 					// check which type of file we're dealing with
 					var currentFileType = null;
@@ -100,34 +97,7 @@ define(
 							currentFileType = null;
 					}
 
-					var fileStatistics = new FileStatistics(filename, currentFileType);
-
-					if (currentFileType === null) {
-						alert("Could not recognize the type of file '" + filename + "'!");
-					}
-					else {
-						// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
-						var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
-
-						// decompose the blob
-						rowData = jQuery.csv(separator)(filecontent);
-
-						try {
-							// parse the data
-							if (currentFileType === FileTypes.CELLREF)
-								bOk = CellrefParser.parse(siteList, rowData);
-							else
-								bOk = processCSV(rowData, currentFileType, fileStatistics);
-						}
-						catch (e) {
-							console.error(e.toString());
-							alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
-						}
-					}
-
-					// notify about completion of this file
-					if (fileCompleteCallback !== null)
-						fileCompleteCallback(bOk, fileStatistics);
+					processFileContent(filecontent, filename, currentFileType);
 				}
 				else {
 					console.log("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
@@ -139,6 +109,45 @@ define(
 					loadCompleteCallback !== null) {
 					loadCompleteCallback();
 				}
+			}
+
+			/**
+			 * Shared file processing function for local files and XMLHttpRequest from the server.
+			 * @param  {String} filecontent     The text content of the file
+			 * @param  {String} filename        The file name as information
+			 * @param  {FileTypes} currentFileType for selection of the file parser
+			 */
+			function processFileContent(filecontent, filename, currentFileType) {
+
+				var bOk = false,
+					fileStatistics = new FileStatistics(filename, currentFileType);
+
+				if (currentFileType === null) {
+					alert("Could not recognize the type of file '" + filename + "'!");
+				}
+				else {
+					// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
+					var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
+
+					// decompose the blob
+					var rowData = jQuery.csv(separator)(filecontent);
+
+					try {
+						// parse the data
+						if (currentFileType === FileTypes.CELLREF)
+							bOk = CellrefParser.parse(siteList, rowData);
+						else
+							bOk = processCSV(rowData, currentFileType, fileStatistics);
+					}
+					catch (e) {
+						console.error(e.toString());
+						alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
+					}
+				}
+
+				// notify about completion of this file
+				if (fileCompleteCallback !== null)
+					fileCompleteCallback(bOk, fileStatistics);
 			}
 
 			/**
