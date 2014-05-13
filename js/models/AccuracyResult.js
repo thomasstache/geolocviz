@@ -27,6 +27,22 @@ define(
 				return this.locationCandidates.at(0);
 			},
 
+			/**
+			 * Returns the geolocated position.
+			 * @return {Position}
+			 */
+			getGeoPosition: function() {
+				return this.getBestLocationCandidate().get('position');
+			},
+
+			/**
+			 * Returns the reference position.
+			 * @return {Position}
+			 */
+			getRefPosition: function() {
+				return this.get('position');
+			},
+
 			getInfo: function() {
 				var bestCand = this.getBestLocationCandidate();
 				return {

@@ -36,6 +36,14 @@ define(
 			},
 
 			/**
+			 * Returns the geolocated position.
+			 * @return {Position}
+			 */
+			getGeoPosition: function() {
+				return this.get('position');
+			},
+
+			/**
 			 * Returns the index of the result in its collection.
 			 * Returns -1 if there is no collection.
 			 */
