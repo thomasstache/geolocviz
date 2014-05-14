@@ -1386,11 +1386,12 @@ define(
 					if (md.model) {
 
 						var sector = md.model;
-						var query = {
-							title:        sector.get('id'),
-							netSegment:   sector.get('netSegment'),
-							cellIdentity: sector.get('cellIdentity'),
-						};
+						var query = new ResultsFilterQuery(
+							ResultsFilterQuery.TOPIC_PRIMARYCELL,
+							sector.get('id'),
+							sector.get('netSegment'),
+							sector.get('cellIdentity')
+						);
 						this.filterResultsBySector(query);
 					}
 				}
