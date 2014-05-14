@@ -3,7 +3,8 @@
 <ul class="propertyList">
 {{#if fileId}}
 	{{! new: sessions by fileId }}
-	<li><span class="label">Calltrace:</span>&nbsp;<span class="value">{{fileId}}</span></li>
+	<li><span class="label">Calltrace:</span></li>
+	<li class="fileitem" title="{{fileId}}">{{fileId}}</li>
 	<li><span class="label">Session:</span>&nbsp;<span class="value">{{sessionId}}</span></li>
 {{else}}
 	{{! the old way: session from id }}

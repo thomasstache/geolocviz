@@ -387,10 +387,6 @@ header {
 .sectoritem > .filterButton { display: none; }
 .sectoritem:hover > .filterButton { display: inline-block; }
 
-.flexboxlegacy .fileitem {
-	max-width: 22em; /* Firefox doesn't enforce container's max-width for some reason :-( */
-}
-
 button.lookup-cell,       button.filterByElement       { background-color: rgba(230, 180, 23, 0.2); }
 button.lookup-cell:hover, button.filterByElement:hover { background-color: rgba(247, 216, 119, 0.4); }
 button.lookup-ref-cell,       button.filterByRefcell       { background-color: rgba(132, 230, 23, 0.2); }
