@@ -887,6 +887,17 @@ define(
 			},
 
 			/**
+			 * Returns an object with the parameters for BaseResult.category()
+			 */
+			getThresholdSettings: function() {
+				var thresholds = {
+					mobility: this.appsettings.get("mobilityThreshold"),
+					indoor: this.appsettings.get("indoorThreshold"),
+				};
+				return thresholds;
+			},
+
+			/**
 			 * Draw markers for results in the given session matching the current filter
 			 * @param  {Session} session The session model.
 			 * @return {void}
@@ -895,10 +906,7 @@ define(
 
 				var view = this;
 
-				var thresholds = {
-					mobility: this.appsettings.get("mobilityThreshold"),
-					indoor: this.appsettings.get("indoorThreshold"),
-				};
+				var thresholds = this.getThresholdSettings();
 
 				var refLinesEnabled = this.appsettings.get("drawReferenceLines");
 
@@ -1004,6 +1012,7 @@ define(
 
 					this.highlightedCandidateSampleCid = sample.cid;
 
+					var visible = this.appsettings.get("drawMarkers_C");
 					// start at "1" to skip best candidate
 					for (var i = 1; i < sample.locationCandidates.length; i++) {
 
@@ -1013,6 +1022,7 @@ define(
 										  latLng,
 										  "#" + sample.get('msgId'),
 										  MarkerColors.CANDIDATE,
+										  visible,
 										  sample,
 										  candidate);
 					}
@@ -1039,7 +1049,7 @@ define(
 			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
 
 				var view = this;
-				var letter = candidate ? candidate.category() : colorDef.smb;
+				var letter = candidate ? candidate.category(this.getThresholdSettings()) : colorDef.smb;
 				var icon;
 
 				if (type === OverlayTypes.AXFMARKER) {
@@ -1257,6 +1267,7 @@ define(
 				this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
 
 				this.highlightedSessionId = -1;
+				this.highlightedCandidateSampleCid = -1;
 			},
 
 			/**
