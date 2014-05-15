@@ -99,7 +99,7 @@ define(
 
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
-			selectedMarkerHighlightBestLoc: null,
+			selectedMarkerHighlightReference: null,
 
 			/** @type {Marker} reference to overlay used to highlight the selected site */
 			selectedSiteHighlight: null,
@@ -467,7 +467,7 @@ define(
 				this.highlightedCandidateSampleCid = -1;
 
 				this.selectedMarkerHighlight = null;
-				this.selectedMarkerHighlightBestLoc = null;
+				this.selectedMarkerHighlightReference = null;
 
 				this.selectedSiteHighlight = null;
 			},
@@ -1034,6 +1034,7 @@ define(
 			 * @param {Boolean}           bVisible  Controls whether the marker is shown or hidden
 			 * @param {BaseResult}        sample    Reference to the result for which the marker is created
 			 * @param {LocationCandidate} candidate (optional) reference to the subresult/locationCandidate for which the marker is created
+			 * @return {Marker}           The created marker
 			 */
 			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
 
@@ -1521,7 +1522,7 @@ define(
 				if (result !== null &&
 					result !== undefined) {
 
-					var latLng = GoogleMapsUtils.makeLatLng(result.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
 					// draw a highlight around the result
 
 					if (!this.selectedMarkerHighlight) {
@@ -1538,28 +1539,28 @@ define(
 					this.setMarkerVisible(this.selectedMarkerHighlight, bShow);
 
 					if (result instanceof AccuracyResult) {
-						// for AccuracyResults draw a second circle for the best candidate
+						// for AccuracyResults draw a second circle for the reference
 
-						if (!this.selectedMarkerHighlightBestLoc) {
-							this.selectedMarkerHighlightBestLoc = this.createHighlightCircle();
+						if (!this.selectedMarkerHighlightReference) {
+							this.selectedMarkerHighlightReference = this.createHighlightCircle();
 						}
 
-						latLng = GoogleMapsUtils.makeLatLng(result.getBestLocationCandidate().get('position'));
-						bShow = isValidLatLng(latLng);
+						var latLngRef = GoogleMapsUtils.makeLatLng(result.getRefPosition());
+						bShow = isValidLatLng(latLngRef);
 						if (bShow) {
-							this.selectedMarkerHighlightBestLoc.setPosition(latLng);
+							this.selectedMarkerHighlightReference.setPosition(latLngRef);
 						}
 
-						this.setMarkerVisible(this.selectedMarkerHighlightBestLoc, bShow);
+						this.setMarkerVisible(this.selectedMarkerHighlightReference, bShow);
 					}
 					else {
-						this.setMarkerVisible(this.selectedMarkerHighlightBestLoc, false);
+						this.setMarkerVisible(this.selectedMarkerHighlightReference, false);
 					}
 				}
 				else {
 					// hide the highlights
 					this.setMarkerVisible(this.selectedMarkerHighlight, false);
-					this.setMarkerVisible(this.selectedMarkerHighlightBestLoc, false);
+					this.setMarkerVisible(this.selectedMarkerHighlightReference, false);
 				}
 			},
 
