@@ -217,6 +217,11 @@ define(
 					PRIM_CELL_ID: 12,
 				});
 
+				if (record.length < LineLengths.ACCURACY_61) {
+					console.warn("Incomplete accuracy record #" + (stats.numResultsAndCandidates + 1) + " - skipped.");
+					return;
+				}
+
 				var fileId = record[IDX.FILEID];
 				var msgId = parseNumber(record[IDX.MSGID]);
 				var sessId = record[IDX.SESSIONID];
@@ -298,6 +303,11 @@ define(
 					if (typeof parsedVal === "number")
 						value = parsedVal / 100.0;
 					return value;
+				}
+
+				if (record.length < LineLengths.AXF_60) {
+					console.warn("Incomplete record #" + (stats.numResults + 1) + " - skipped.");
+					return;
 				}
 
 				var isExtended = record.length == LineLengths.AXF_XT || record.length == LineLengths.AXF_XT2;
