@@ -100,6 +100,7 @@ define(
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
 			selectedReferenceMarkerHighlight: null,
+			selectedReferenceLineHighlight: null,
 
 			/** @type {Marker} reference to overlay used to highlight the selected site */
 			selectedSiteHighlight: null,
@@ -468,6 +469,7 @@ define(
 
 				this.selectedMarkerHighlight = null;
 				this.selectedReferenceMarkerHighlight = null;
+				this.selectedReferenceLineHighlight = null;
 
 				this.selectedSiteHighlight = null;
 			},
@@ -1278,40 +1280,42 @@ define(
 			 * @param {number}       opacity The opacity (0..1.0)
 			 * @param {OverlayTypes} type    The type of the overlay
 			 * @param {Boolean}      visible Controls whether the line is shown or hidden
+			 * @return {PolyLine} reference to the created overlay
 			 */
 			createLine: function(points, color, weight, opacity, type, visible) {
 
-				if (points && points.length > 1) {
+				var options = {
+					path: points,
+					strokeColor: color,
+					strokeOpacity: opacity,
+					strokeWeight: weight,
+					clickable: false,
+					map: visible ? this.map : null
+				};
 
-					var options = {
-						path: points,
-						strokeColor: color,
-						strokeOpacity: opacity,
-						strokeWeight: weight,
-						clickable: false,
-						map: visible ? this.map : null
-					};
-
-					// apply line symbols for session lines
-					if (type === OverlayTypes.SESSIONLINE) {
-						options.icons = [{
-							icon: {
-								path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-								strokeColor: "#000",
-								strokeOpacity: "0.6",
-								strokeWeight: 1,
-								fillOpacity: opacity,
-								scale: 4
-							},
-							offset: '50%',
-							repeat: '100px'
-						}];
-					}
-
-					var line = new google.maps.Polyline(options);
-
-					this.registerOverlay(type, line);
+				// apply line symbols for session lines
+				if (type === OverlayTypes.SESSIONLINE) {
+					options.icons = [{
+						icon: {
+							path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+							strokeColor: "#000",
+							strokeOpacity: "0.6",
+							strokeWeight: 1,
+							fillOpacity: opacity,
+							scale: 4
+						},
+						offset: '50%',
+						repeat: '100px'
+					}];
 				}
+				else if (type === OverlayTypes.SELECTIONVIZ) {
+					options.zIndex = Z_Index.HIGHLIGHT;
+				}
+
+				var line = new google.maps.Polyline(options);
+
+				this.registerOverlay(type, line);
+				return line;
 			},
 
 			/**
@@ -1337,6 +1341,14 @@ define(
 				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
 
 				return marker;
+			},
+
+			/**
+			 * Creates a polyline to highlight the refLine for AccuracyResults.
+			 * @return {PolyLine} the reference to the created overlay
+			 */
+			createHighlightLine: function() {
+				return this.createLine([], "#FFC955", 4, 0.9, OverlayTypes.SELECTIONVIZ, false);
 			},
 
 			/**
@@ -1539,6 +1551,13 @@ define(
 				return this.selectedReferenceMarkerHighlight;
 			},
 
+			getHighlightForReferenceLines: function() {
+				if (!this.selectedReferenceLineHighlight) {
+					this.selectedReferenceLineHighlight = this.createHighlightLine();
+				}
+				return this.selectedReferenceLineHighlight;
+			},
+
 			/**
 			 * Highlight the given result by drawing a overlay around it.
 			 * @param {BaseResult} result
@@ -1548,40 +1567,46 @@ define(
 				if (result !== null &&
 					result !== undefined) {
 
-					var latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
 					// draw a highlight around the result
 					var highlight = this.getHighlightForMarkers();
 
+					var latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition()),
+						validLoc = isValidLatLng(latLng);
 
-					// some AccuracyResults have an invalid reference location
-					var bShow = isValidLatLng(latLng);
-					if (bShow) {
+					if (validLoc) {
 						// update the position
 						highlight.setPosition(latLng);
 					}
-					this.setMarkerVisible(highlight, bShow);
+					this.setMarkerVisible(highlight, validLoc);
 
 					if (result instanceof AccuracyResult) {
 						// for AccuracyResults draw a second circle for the reference
 
 						highlight = this.getHighlightForReferenceMarkers();
 
-						var latLngRef = GoogleMapsUtils.makeLatLng(result.getRefPosition());
-						bShow = isValidLatLng(latLngRef);
-						if (bShow) {
+						var latLngRef = GoogleMapsUtils.makeLatLng(result.getRefPosition()),
+							validRefLoc = isValidLatLng(latLngRef);
+
+						if (validRefLoc) {
 							highlight.setPosition(latLngRef);
 						}
-						this.setMarkerVisible(highlight, bShow);
+						this.setMarkerVisible(highlight, validRefLoc);
 
+						highlight = this.getHighlightForReferenceLines();
+						if (validLoc && validRefLoc)
+							highlight.setPath([latLng, latLngRef]);
+						this.setMarkerVisible(highlight, validLoc && validRefLoc);
 					}
 					else {
 						this.setMarkerVisible(this.selectedReferenceMarkerHighlight, false);
+						this.setMarkerVisible(this.selectedReferenceLineHighlight, false);
 					}
 				}
 				else {
 					// hide the highlights
 					this.setMarkerVisible(this.selectedMarkerHighlight, false);
 					this.setMarkerVisible(this.selectedReferenceMarkerHighlight, false);
+					this.setMarkerVisible(this.selectedReferenceLineHighlight, false);
 				}
 			},
 
