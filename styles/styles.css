@@ -392,6 +392,12 @@ button.lookup-cell:hover, button.filterByElement:hover { background-color: rgba(
 button.lookup-ref-cell,       button.filterByRefcell       { background-color: rgba(132, 230, 23, 0.2); }
 button.lookup-ref-cell:hover, button.filterByRefcell:hover { background-color: rgba(163, 255, 61, 0.4); }
 
+button.unselect-session {
+	color: rgb(204, 131, 103);
+	border-color: rgba(110, 60, 20, 0.2);
+	background-color: rgba(190, 90, 23, 0.1);
+}
+button.unselect-session:hover { background-color: rgba(230, 170, 120, 0.3); }
 
 /* UI should not be selectable */
 

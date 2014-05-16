@@ -89,6 +89,7 @@ define(
 
 				this.infoview.on("session:focussed", this.sessionFocussed, this);
 				this.infoview.on("session:unfocussed", this.sessionUnfocussed, this);
+				this.infoview.on("session:unselected", this.clearSelections, this);
 				this.infoview.on("result:nav-first", this.resultsNavigateToFirst, this);
 				this.infoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
 				this.infoview.on("result:nav-next", this.resultsNavigateToNext, this);
@@ -412,10 +413,7 @@ define(
 							}
 						}
 						else {
-							this.sessionSelected(null);
-							this.sessionUnfocussed();
-							// ensure previous selection (likely from other session) is reset
-							this.resultSelected(null);
+							this.clearSelections();
 						}
 						break;
 
@@ -453,6 +451,15 @@ define(
 				setTimeout(function(){
 					view.highlightResult(result);
 				}, 200);
+			},
+
+			// Handler for "session:unselected" event. Unselect session and results.
+			clearSelections: function() {
+
+				this.sessionSelected(null);
+				this.sessionUnfocussed();
+				// ensure previous selection (likely from other session) is reset
+				this.resultSelected(null);
 			},
 
 			/**

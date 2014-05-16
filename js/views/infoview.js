@@ -27,6 +27,7 @@ define(
 			events: {
 				"click .focus-session": "onFocusSessionClicked",
 				"click .unfocus-session": "onUnfocusSessionClicked",
+				"click .unselect-session": "onUnselectSessionClicked",
 				"click .results-first": "onFirstResultClicked",
 				"click .results-prev": "onPrevResultClicked",
 				"click .results-next": "onNextResultClicked",
@@ -239,6 +240,14 @@ define(
 			onUnfocusSessionClicked: function() {
 
 				this.trigger("session:unfocussed");
+			},
+
+			/**
+			 * Click handler for the "X" button. Unselect session.
+			 */
+			onUnselectSessionClicked: function() {
+
+				this.trigger("session:unselected");
 			},
 
 			updateSessionControls: function() {
