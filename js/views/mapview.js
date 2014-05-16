@@ -99,7 +99,7 @@ define(
 
 			// reference to the overlay used to highlight result markers
 			selectedMarkerHighlight: null,
-			selectedMarkerHighlightReference: null,
+			selectedReferenceMarkerHighlight: null,
 
 			/** @type {Marker} reference to overlay used to highlight the selected site */
 			selectedSiteHighlight: null,
@@ -467,7 +467,7 @@ define(
 				this.highlightedCandidateSampleCid = -1;
 
 				this.selectedMarkerHighlight = null;
-				this.selectedMarkerHighlightReference = null;
+				this.selectedReferenceMarkerHighlight = null;
 
 				this.selectedSiteHighlight = null;
 			},
@@ -1524,6 +1524,21 @@ define(
 					this.map.fitBounds(sessionRect);
 			},
 
+			// create a circle shape for reuse for all result highlighting needs
+			getHighlightForMarkers: function() {
+				if (!this.selectedMarkerHighlight) {
+					this.selectedMarkerHighlight = this.createHighlightCircle();
+				}
+				return this.selectedMarkerHighlight;
+			},
+
+			getHighlightForReferenceMarkers: function() {
+				if (!this.selectedReferenceMarkerHighlight) {
+					this.selectedReferenceMarkerHighlight = this.createHighlightCircle();
+				}
+				return this.selectedReferenceMarkerHighlight;
+			},
+
 			/**
 			 * Highlight the given result by drawing a overlay around it.
 			 * @param {BaseResult} result
@@ -1535,43 +1550,38 @@ define(
 
 					var latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
 					// draw a highlight around the result
+					var highlight = this.getHighlightForMarkers();
 
-					if (!this.selectedMarkerHighlight) {
-						// create a circle shape for reuse for all result highlighting needs
-						this.selectedMarkerHighlight = this.createHighlightCircle();
-					}
 
 					// some AccuracyResults have an invalid reference location
 					var bShow = isValidLatLng(latLng);
 					if (bShow) {
 						// update the position
-						this.selectedMarkerHighlight.setPosition(latLng);
+						highlight.setPosition(latLng);
 					}
-					this.setMarkerVisible(this.selectedMarkerHighlight, bShow);
+					this.setMarkerVisible(highlight, bShow);
 
 					if (result instanceof AccuracyResult) {
 						// for AccuracyResults draw a second circle for the reference
 
-						if (!this.selectedMarkerHighlightReference) {
-							this.selectedMarkerHighlightReference = this.createHighlightCircle();
-						}
+						highlight = this.getHighlightForReferenceMarkers();
 
 						var latLngRef = GoogleMapsUtils.makeLatLng(result.getRefPosition());
 						bShow = isValidLatLng(latLngRef);
 						if (bShow) {
-							this.selectedMarkerHighlightReference.setPosition(latLngRef);
+							highlight.setPosition(latLngRef);
 						}
+						this.setMarkerVisible(highlight, bShow);
 
-						this.setMarkerVisible(this.selectedMarkerHighlightReference, bShow);
 					}
 					else {
-						this.setMarkerVisible(this.selectedMarkerHighlightReference, false);
+						this.setMarkerVisible(this.selectedReferenceMarkerHighlight, false);
 					}
 				}
 				else {
 					// hide the highlights
 					this.setMarkerVisible(this.selectedMarkerHighlight, false);
-					this.setMarkerVisible(this.selectedMarkerHighlightReference, false);
+					this.setMarkerVisible(this.selectedReferenceMarkerHighlight, false);
 				}
 			},
 
