@@ -476,7 +476,6 @@ define(
 
 			/**
 			 * Removes all site/sector overlays from the map.
-			 * @return {void}
 			 */
 			deleteNetworkOverlays: function() {
 
@@ -487,7 +486,6 @@ define(
 
 			/**
 			 * Removes all result + session overlays from the map.
-			 * @return {void}
 			 */
 			deleteResultOverlays: function() {
 
@@ -686,7 +684,6 @@ define(
 			 * Creates a marker for a site and adds it to the map.
 			 * @param  {Site}    site           The model for the site
 			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
-			 * @return {void}
 			 */
 			drawSite: function(site, bZoomToNetwork) {
 
@@ -734,7 +731,6 @@ define(
 			 * Creates markers for all sectors in the site's SectorList.
 			 * The markers are drawn using SVG symbol paths.
 			 * @param  {Site} site
-			 * @return {void}
 			 */
 			drawSectorsForSite: function(site) {
 
@@ -902,7 +898,6 @@ define(
 			/**
 			 * Draw markers for results in the given session matching the current filter
 			 * @param  {Session} session The session model.
-			 * @return {void}
 			 */
 			drawSession: function(session) {
 
@@ -1260,7 +1255,6 @@ define(
 
 			/**
 			 * Removes all session highlight overlays from the map.
-			 * @return {void}
 			 */
 			deleteSessionOverlays: function() {
 
