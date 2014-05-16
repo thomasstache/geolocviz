@@ -511,6 +511,7 @@ define(
 
 			/**
 			 * Removes all overlays with the given type from the map and destroys them.
+			 * @param {OverlayTypes} type
 			 */
 			deleteOverlaysForType: function(type) {
 
