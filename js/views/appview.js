@@ -426,8 +426,9 @@ define(
 						break;
 
 					case SearchQuery.TOPIC_RESULT:
-						var result = this.sessions.findResult(parseInt(query.searchterm));
-						this.resultSelected(result);
+						var searchresult = this.sessions.findResult(parseInt(query.searchterm));
+						this.sessionSelected(searchresult.session);
+						this.resultSelected(searchresult.result);
 						break;
 				}
 			},

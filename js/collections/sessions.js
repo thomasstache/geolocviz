@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
-	"models/session"],
+	"models/session", "types/searchresult"],
 
-	function(_, Backbone, Session) {
+	function(_, Backbone, Session, SearchResult) {
 
 		var SessionList = Backbone.Collection.extend({
 			model: Session,
@@ -43,7 +43,7 @@ define(
 			/**
 			 * Returns the result with the given ID.
 			 * @param  {Number} messageId
-			 * @return {BaseResult}
+			 * @return {SearchResult}
 			 */
 			findResult: function(messageId) {
 
@@ -55,7 +55,7 @@ define(
 				if (session !== undefined)
 					result = session.results.findWhere(resultProps);
 
-				return result;
+				return new SearchResult(session || null, result);
 			}
 		});
 
