@@ -20,6 +20,7 @@ define(
 			$checkDrawNetworkOnTop: null,
 			$selectMarkerColorsAttribute: null,
 			$settingsDialog: null,
+			$moreSettingsButton: null,
 
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
@@ -41,6 +42,7 @@ define(
 				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
 				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");
 				this.$selectMarkerColorsAttribute = this.$("#selectMarkerColorsAttribute");
+				this.$moreSettingsButton = this.$("#btnMore");
 
 				this.model.on("reset", this.render, this);
 
@@ -80,6 +82,7 @@ define(
 				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
 				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
 
+				this.renderSettingsButton();
 				this.updateSettingsDialog();
 
 				return this;
@@ -101,6 +104,10 @@ define(
 				this.$selectMarkerColorsAttribute.val(this.model.get("markerColorAttribute"));
 
 				return this;
+			},
+
+			renderSettingsButton: function() {
+				this.$moreSettingsButton.toggleClass("customized", this.model.hasCustomSettings());
 			},
 
 			/*********************** Popup dialog ***********************/
@@ -150,6 +157,7 @@ define(
 				});
 
 				this.removeSettingsDialog();
+				this.renderSettingsButton();
 			},
 
 			/**

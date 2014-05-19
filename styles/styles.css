@@ -240,6 +240,10 @@ header {
 	margin-left: 10px;
 	min-width: 14em;
 }
+#btnMore.customized::before {
+	content: "\00BB\00a0";
+	color: red;
+}
 
 #settingsdialog ul { display: table; width: 100%; padding: 0; }
 #settingsdialog li { display: table-row; }

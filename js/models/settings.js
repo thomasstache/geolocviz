@@ -44,6 +44,12 @@ define(
 				this.on("change", this.save, this);
 			},
 
+			/** Indicates if "extended" settings deviate from their defaults. */
+			hasCustomSettings: function() {
+				return  this.get("mobilityThreshold") !== this.defaults.mobilityThreshold ||
+						this.get("indoorThreshold") !== this.defaults.indoorThreshold;
+			},
+
 			reset: function() {
 				this.set(this.defaults);
 				this.trigger("reset");
