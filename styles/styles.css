@@ -15,7 +15,7 @@ body {
 }
 
 #playground-app {
-	margin: 3%; margin-top: 0;
+	margin: 1%; margin-top: 0;
 	padding: 10px 20px;
 
 	background: white;
@@ -226,20 +226,28 @@ header {
 
 /* Settings */
 
+#settings { font-size: 85%; }
+
 #settings ul {
 	/* slimmer than default ul */
-	margin: 1ex; padding: 0;
+	margin: 0; padding: 0;
 }
 #settings ul li {
 	/* horizontal layout for checkboxes */
 	display: inline-block;
 	margin: 0 1ex;
+	vertical-align: middle;
+}
+#settings input[type="checkbox"] {
+	/* improve alignment with labels */
+	vertical-align: bottom;
 }
 
 #selectMarkerColorsAttribute {
 	margin-left: 10px;
-	min-width: 14em;
+	min-width: 10em;
 }
+
 #btnMore.customized::before {
 	content: "\00BB\00a0";
 	color: red;
