@@ -151,6 +151,59 @@ define(
 			}
 
 			/**
+			 * Request a file hosted on our server in the /data folder.
+			 * @param  {String} filename     Name of the file
+			 * @param  {String} responseType (optional) XMLHttpRequest response type
+			 */
+			function requestFileFromAppServer(filename, responseType) {
+
+				// supported: "arraybuffer", "text", "blob", "document", "json"
+				responseType = responseType || "text";
+
+				// we only load files from "/data" on our own server!
+				var url = "./data/" + filename;
+
+				var request = new XMLHttpRequest();
+				request.open("GET", url, /*async=*/ true);
+				request.responseType = responseType;
+
+				request.onloadend = onRequestComplete;
+				// stick the file name on the request object, so we can access it later
+				request.filename = filename;
+
+				request.send();
+			}
+
+			/**
+			 * Handler for the load event of the XMLHttpRequest
+			 * @param  {ProgressEvent} evt
+			 */
+			function onRequestComplete(evt) {
+				var request = evt.target,
+					filename = request.filename;
+
+				if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+
+					var content = request.response;
+
+					// Only Cellref files are supported.
+					var filetype = FileTypes.CELLREF;
+					processFileContent(content, filename, filetype);
+				}
+				else {
+					alert("Failed to load file '" + filename + "'.\n(" + request.status + ": " + request.statusText + ")");
+				}
+
+				numFilesQueued--;
+
+				// notify that whole batch is completed
+				if (numFilesQueued === 0 &&
+					loadCompleteCallback !== null) {
+					loadCompleteCallback();
+				}
+			}
+
+			/**
 			 * Parse the array of rows from the file
 			 * @param  {Array} rowData          array of row records
 			 * @param  {String} currentFileType see FileTypes
@@ -437,6 +490,32 @@ define(
 					for (var i = 0; (f = files[i]); i++) {
 						loadFile(f);
 					}
+				},
+
+				/**
+				 * Load the file from the server. Supported types are .axf and .distances
+				 * @param {String}      filename Name of the hosted file
+				 * @param {SessionList} sessions Session collection
+				 * @param {SiteList}    sites    Site collection
+				 * @param {Function}    onFileComplete Callback function to call when a file is done
+				 * @param {Function}    onLoadComplete Callback function to call when all files are done
+				 */
+				loadFileFromRepository: function(filename, sessions, sites, onFileComplete, onLoadComplete) {
+
+					numFilesQueued = numFilesQueued + 1;
+
+					if (sessions)
+						sessionList = sessions;
+
+					if (sites)
+						siteList = sites;
+
+					if (typeof onFileComplete === "function")
+						fileCompleteCallback = onFileComplete;
+					if (typeof onLoadComplete === "function")
+						loadCompleteCallback = onLoadComplete;
+
+					requestFileFromAppServer(filename);
 				},
 
 				FileTypes: FileTypes,
