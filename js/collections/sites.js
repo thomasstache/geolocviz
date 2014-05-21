@@ -20,7 +20,7 @@ define(
 					return matchingSectors &&
 						   matchingSectors.length > 0;
 				});
-				return site;
+				return site || null;
 			}
 		});
 
