@@ -27,12 +27,17 @@
 				<input type="file" id="fileInput" disabled multiple autocomplete="off"/>
 			</form>
 
+			<div id="fileRepositoryView">
+				<button id="loadButton" class="menu-button">Cellrefs</button>
+				<ul id="fileRepositoryList" class="dropdown-menu"><!-- {{template}} --></ul>
+			</div>
+
 			<div class="right">
 				<button id="cmdClearResults">Clear results</button>
 				<button id="cmdClearAllData">Clear data</button>
 				<div id="searchView">
 					<input type="search" id="searchInput" placeholder="Search..." autocomplete="off"/>
-					<div id="searchHelp" class="hidden" >
+					<div id="searchHelp" class="dropdown-menu" >
 						<span>Search for:</span>
 						<ul>
 							<li><b>#</b>&nbsp;Message ID</li>

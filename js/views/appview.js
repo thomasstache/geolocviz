@@ -4,12 +4,13 @@
 define(
 
 	["jquery", "underscore", "backbone",
-	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview", "views/searchview", "views/labelview",
+	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
+	 "views/searchview", "views/labelview", "views/filerepositoryview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
 	 "types/searchquery", "FileLoader"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView,
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView,
 			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader) {
 
 		var AppView = Backbone.View.extend({
@@ -42,6 +43,7 @@ define(
 			filterview: null,
 			searchview: null,
 			labelview: null,
+			filerepositoryview: null,
 
 			initialize: function() {
 
@@ -81,6 +83,9 @@ define(
 				});
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
+
+				this.filerepositoryview = new FileRepositoryView();
+				this.filerepositoryview.on("repository:fileselected", this.repositoryFileSelected, this);
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
@@ -164,6 +169,13 @@ define(
 
 				var files = evt.target.files;
 				this.loadFiles(files);
+			},
+
+			// Handler for the FileRepositoryViews "repository:fileselected" event.
+			repositoryFileSelected: function(filename) {
+
+				this.model.set("busy", true);
+				FileLoader.loadFileFromRepository(filename, this.sessions, this.siteList, this.fileLoaded.bind(this), this.loadComplete.bind(this));
 			},
 
 			/**

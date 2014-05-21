@@ -70,15 +70,12 @@ define(
 			function onFileReadComplete(evt) {
 				// evt: ProgressEvent, target is the FileReader
 				var rdr = evt.target;
-				var rowData = [];
 
 				if (rdr.readyState === FileReader.DONE) {
 
 					// the current file should be tucked on the Reader object
 					var filename = rdr.file ? rdr.file.name : "";
 					var filecontent = rdr.result;
-
-					var bOk = false;
 
 					// check which type of file we're dealing with
 					var currentFileType = null;
@@ -100,40 +97,105 @@ define(
 							currentFileType = null;
 					}
 
-					var fileStatistics = new FileStatistics(filename, currentFileType);
-
-					if (currentFileType === null) {
-						alert("Could not recognize the type of file '" + filename + "'!");
-					}
-					else {
-						// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
-						var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
-
-						// decompose the blob
-						rowData = jQuery.csv(separator)(filecontent);
-
-						try {
-							// parse the data
-							if (currentFileType === FileTypes.CELLREF)
-								bOk = CellrefParser.parse(siteList, rowData);
-							else
-								bOk = processCSV(rowData, currentFileType, fileStatistics);
-						}
-						catch (e) {
-							console.error(e.toString());
-							alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
-						}
-					}
-
-					// notify about completion of this file
-					if (fileCompleteCallback !== null)
-						fileCompleteCallback(bOk, fileStatistics);
+					processFileContent(filecontent, filename, currentFileType);
 				}
 				else {
 					console.log("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
 				}
 
 				numFilesQueued--;
+				// notify that whole batch is completed
+				if (numFilesQueued === 0 &&
+					loadCompleteCallback !== null) {
+					loadCompleteCallback();
+				}
+			}
+
+			/**
+			 * Shared file processing function for local files and XMLHttpRequest from the server.
+			 * @param  {String} filecontent     The text content of the file
+			 * @param  {String} filename        The file name as information
+			 * @param  {FileTypes} currentFileType for selection of the file parser
+			 */
+			function processFileContent(filecontent, filename, currentFileType) {
+
+				var bOk = false,
+					fileStatistics = new FileStatistics(filename, currentFileType);
+
+				if (currentFileType === null) {
+					alert("Could not recognize the type of file '" + filename + "'!");
+				}
+				else {
+					// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
+					var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
+
+					// decompose the blob
+					var rowData = jQuery.csv(separator)(filecontent);
+
+					try {
+						// parse the data
+						if (currentFileType === FileTypes.CELLREF)
+							bOk = CellrefParser.parse(siteList, rowData);
+						else
+							bOk = processCSV(rowData, currentFileType, fileStatistics);
+					}
+					catch (e) {
+						console.error(e.toString());
+						alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
+					}
+				}
+
+				// notify about completion of this file
+				if (fileCompleteCallback !== null)
+					fileCompleteCallback(bOk, fileStatistics);
+			}
+
+			/**
+			 * Request a file hosted on our server in the /data folder.
+			 * @param  {String} filename     Name of the file
+			 * @param  {String} responseType (optional) XMLHttpRequest response type
+			 */
+			function requestFileFromAppServer(filename, responseType) {
+
+				// supported: "arraybuffer", "text", "blob", "document", "json"
+				responseType = responseType || "text";
+
+				// we only load files from "/data" on our own server!
+				var url = "./data/" + filename;
+
+				var request = new XMLHttpRequest();
+				request.open("GET", url, /*async=*/ true);
+				request.responseType = responseType;
+
+				request.onloadend = onRequestComplete;
+				// stick the file name on the request object, so we can access it later
+				request.filename = filename;
+
+				request.send();
+			}
+
+			/**
+			 * Handler for the load event of the XMLHttpRequest
+			 * @param  {ProgressEvent} evt
+			 */
+			function onRequestComplete(evt) {
+				var request = evt.target,
+					filename = request.filename;
+
+				if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+
+					var content = request.response;
+
+					// Only Cellref files are supported.
+					var filetype = FileTypes.CELLREF;
+					processFileContent(content, filename, filetype);
+				}
+				else {
+					alert("Failed to load file '" + filename + "'.\n(" + request.status + ": " + request.statusText + ")");
+				}
+
+				numFilesQueued--;
+
 				// notify that whole batch is completed
 				if (numFilesQueued === 0 &&
 					loadCompleteCallback !== null) {
@@ -428,6 +490,32 @@ define(
 					for (var i = 0; (f = files[i]); i++) {
 						loadFile(f);
 					}
+				},
+
+				/**
+				 * Load the file from the server. Supported types are .axf and .distances
+				 * @param {String}      filename Name of the hosted file
+				 * @param {SessionList} sessions Session collection
+				 * @param {SiteList}    sites    Site collection
+				 * @param {Function}    onFileComplete Callback function to call when a file is done
+				 * @param {Function}    onLoadComplete Callback function to call when all files are done
+				 */
+				loadFileFromRepository: function(filename, sessions, sites, onFileComplete, onLoadComplete) {
+
+					numFilesQueued = numFilesQueued + 1;
+
+					if (sessions)
+						sessionList = sessions;
+
+					if (sites)
+						siteList = sites;
+
+					if (typeof onFileComplete === "function")
+						fileCompleteCallback = onFileComplete;
+					if (typeof onLoadComplete === "function")
+						loadCompleteCallback = onLoadComplete;
+
+					requestFileFromAppServer(filename);
 				},
 
 				FileTypes: FileTypes,
