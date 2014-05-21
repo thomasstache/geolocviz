@@ -5,6 +5,10 @@
 	// output dir
 	dir: "../../geolocviz-build",
 
+	// Don't delete the build output folder to prevent churn
+	// on assets in /images and /data
+	keepBuildDir: true,
+
 	mainConfigFile: "./app-main.js",
 
 	//Comment out the optimize line if you want
@@ -29,9 +33,7 @@
 	modules: [
 		{
 			name: "app-main",
-			// Leave Backbone and dependencies (i.e. underscore) out of concatenation.
-			// This resolves a conflict with the hbs plugin. */
-			exclude: ['backbone']
+			excludeShallow: ['data-index'],
 		}
 	]
 })
