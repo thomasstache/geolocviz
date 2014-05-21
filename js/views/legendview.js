@@ -1,6 +1,6 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/legend", "hbs!../../templates/colorscale"],
+	 "hbs!templates/legend", "hbs!templates/colorscale"],
 
 	function($, _, Backbone, legendTemplate, colorScaleTemplate) {
 

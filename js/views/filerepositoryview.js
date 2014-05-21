@@ -1,6 +1,6 @@
 define(
 	["backbone",
-	 "../../data/data-index", "hbs!../../templates/filerepository"],
+	 "data-index", "hbs!templates/filerepository"],
 
 	function(Backbone, DataIndex, repositoryTemplate) {
 

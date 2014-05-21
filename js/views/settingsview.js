@@ -1,6 +1,6 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!../../templates/settingsdialog", "hbs!../../templates/selectoptions"],
+	 "hbs!templates/settingsdialog", "hbs!templates/selectoptions"],
 
 	function($, _, Backbone, dialogTemplate, optionsTemplate) {
 

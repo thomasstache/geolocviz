@@ -1,6 +1,6 @@
 define(
 	["jquery", "backbone",
-	 "hbs!../../templates/filterbar"],
+	 "hbs!templates/filterbar"],
 
 	function($, Backbone, filterbarTemplate) {
 

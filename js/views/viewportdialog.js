@@ -1,7 +1,7 @@
 define(
 	["jquery", "backbone",
 	 "types/viewport",
-	 "hbs!../../templates/viewportdialog"],
+	 "hbs!templates/viewportdialog"],
 
 	function($, Backbone, Viewport, dialogTemplate) {
 

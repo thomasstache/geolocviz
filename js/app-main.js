@@ -18,6 +18,8 @@ requirejs.config({
 		handlebars: 'lib/handlebars',
 		underscore: 'lib/underscore',
 		backbone: 'lib/backbone',
+		'templates': '../templates/',
+		'data-index': '../data/data-index',
 	},
 	hbs: {
 		disableI18n: true,

@@ -2,8 +2,8 @@ define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult",
 	 "types/resultsfilterquery", "types/googlemapsutils",
-	 "hbs!../../templates/sessioninfo", "hbs!../../templates/resultinfo",
-	 "hbs!../../templates/statisticsinfo", "hbs!../../templates/siteinfo"],
+	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
+	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
 
 	function($, _, Backbone,
 			 AccuracyResult, ResultsFilterQuery, GoogleMapsUtils,
