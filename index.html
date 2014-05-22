@@ -29,7 +29,13 @@
 
 			<div id="fileRepositoryView">
 				<button id="loadButton" class="menu-button">Cellrefs</button>
-				<ul id="fileRepositoryList" class="dropdown-menu"><!-- {{template}} --></ul>
+				<div id="fileRepositoryPanel" class="dropdown-menu">
+					<div class="menu-header">
+						<span class="menu-title">Select a dataset</span>
+						<span class="close-button">&otimes;</span>
+					</div>
+					<ul id="fileRepositoryList"><!-- {{template}} --></ul>
+				</div>
 			</div>
 
 			<div class="right">
@@ -38,11 +44,13 @@
 				<div id="searchView">
 					<input type="search" id="searchInput" placeholder="Search..." autocomplete="off"/>
 					<div id="searchHelp" class="dropdown-menu" >
-						<span>Search for:</span>
+						<div class="menu-header">
+							<span>Prefixes to search:</span>
+						</div>
 						<ul>
 							<li><b>#</b>&nbsp;Message ID</li>
 							<li><b>:</b>&nbsp;Session ID</li>
-							<li><b>@</b>&nbsp;Site/Sector</li>
+							<li><b>@</b>&nbsp;Site/Sector Name</li>
 						</ul>
 					</div>
 				</div>

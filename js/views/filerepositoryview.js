@@ -15,17 +15,20 @@ define(
 			events: {
 				"click #loadButton": "toggleFileList",
 				"click .repositoryEntry": "fileSelected",
+				"click .close-button": "hideFileList",
 			},
 
+			$fileRepositoryPanel: null,
+
 			initialize: function() {
-				this.$fileRepositoryList = this.$("#fileRepositoryList");
+				this.$fileRepositoryPanel = this.$("#fileRepositoryPanel");
 				this.render();
 			},
 
 			render: function() {
 
 				var context = { options: DataIndex };
-				this.$fileRepositoryList.html(repositoryTemplate(context));
+				this.$("#fileRepositoryList").html(repositoryTemplate(context));
 
 				return this;
 			},
@@ -48,10 +51,10 @@ define(
 			},
 
 			toggleFileList: function() {
-				this.$fileRepositoryList.fadeToggle(100);
+				this.$fileRepositoryPanel.fadeToggle(100);
 			},
 			hideFileList: function() {
-				this.$fileRepositoryList.hide();
+				this.$fileRepositoryPanel.hide();
 			}
 		});
 
