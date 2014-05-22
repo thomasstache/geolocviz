@@ -141,6 +141,7 @@ button:not([disabled]):active {
 	border: 1px solid rgba(120, 120, 120, .8);
 	border-radius: 5px;
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+	z-index: 50;
 }
 .dialog h3 { margin-top: 0 }
 .dialog .content { flex: 1; }
@@ -478,6 +479,7 @@ header, footer, #mapView, #mapLegend, #settings, #mainToolbar, #filterBar, .tool
 	font-weight: bold;
 	color: white; text-shadow: 0 2px 3px rgb(70, 70, 70);
 	text-align: center;
+	z-index: 40;
 }
 
 #fileDropVeil .dropText {
