@@ -18,7 +18,7 @@ requirejs.config({
 		handlebars: 'lib/handlebars',
 		underscore: 'lib/underscore',
 		backbone: 'lib/backbone',
-		'templates': '../templates/',
+		'templates': '../templates',
 		'data-index': '../data/data-index',
 	},
 	hbs: {
