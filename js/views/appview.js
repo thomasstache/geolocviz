@@ -74,6 +74,9 @@ define(
 				this.searchview = new SearchView();
 				this.labelview = new LabelView();
 
+				this.filerepositoryview = new FileRepositoryView();
+				this.filerepositoryview.on("repository:fileselected", this.repositoryFileSelected, this);
+
 				// setup map
 				this.mapview = new MapView({
 					collection: this.sessions,
@@ -83,9 +86,6 @@ define(
 				});
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
-
-				this.filerepositoryview = new FileRepositoryView();
-				this.filerepositoryview.on("repository:fileselected", this.repositoryFileSelected, this);
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
