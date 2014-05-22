@@ -66,7 +66,7 @@ body {
 
 /* general styles */
 
-ul { list-style: none; }
+ul { list-style: none; padding: 0; }
 .clearfix {clear: both; margin: 0; }
 html.wait, html.wait * { cursor: wait; }
 
@@ -263,7 +263,7 @@ header {
 
 #settings ul {
 	/* slimmer than default ul */
-	margin: 0; padding: 0;
+	margin: 0;
 }
 #settings ul li {
 	/* horizontal layout for checkboxes */
@@ -286,12 +286,11 @@ header {
 	color: red;
 }
 
-#settingsdialog ul { display: table; width: 100%; padding: 0; }
+#settingsdialog ul { display: table; width: 100%; }
 #settingsdialog li { display: table-row; }
 #settingsdialog li label { display: table-cell; }
 #settingsdialog input[type="number"] { width: 10ex; }
 
-#viewportDialog ul { padding: 0; }
 #viewportDialog li label { padding: 0 4px; }
 #viewportDialog li:first-of-type { margin-bottom: 5px; }
 
