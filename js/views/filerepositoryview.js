@@ -52,9 +52,11 @@ define(
 
 			toggleFileList: function() {
 				this.$fileRepositoryPanel.fadeToggle(100);
+				this.$("#loadButton").toggleClass("active");
 			},
 			hideFileList: function() {
 				this.$fileRepositoryPanel.hide();
+				this.$("#loadButton").removeClass("active");
 			}
 		});
 
