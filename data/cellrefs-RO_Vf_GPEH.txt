@@ -1,0 +1,256 @@
+; #NetworkData - datafile
+
+;ElementTypeName	SiteID	Site_Name	Latitude	Longitude	ElementHandle
+
+
+;ElementTypeName	GSM_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	State	MSA	EIRP	BCCH	BSIC	MCC	MNC	LAC	CI	Height	Tilt	Antenna_key	AntennaName	TCHList	GSMNeighborList	WCDMANeighborList	Max_ServerDist	TMA_Name	BSC_RNC_NODE	Control_Channel	CID_DEC	CID_HEX	Cell_Status	Technology	ElementHandle
+
+
+;ElementTypeName	SiteID	Site_Name	Latitude	Longitude	ElementHandle
+
+WCDMA_Site	2401BR_Brasov	2401BR_Brasov	45.65347778	25.61543611	89949
+WCDMA_Site	2406BR_Roman SA	2406BR_Roman SA	45.62575	25.63731111	89960
+WCDMA_Site	2407BR_Cartier Tractorul - BV	2407BR_Cartier Tractorul - BV	45.66613611	25.60903889	89967
+WCDMA_Site	2408SA_Sacele	2408SA_Sacele	45.60803333	25.66763333	89974
+WCDMA_Site	2415BR_MSC Brasov	2415BR_MSC Brasov	45.69681667	25.58145833	89981
+WCDMA_Site	2416BR_Brasov - Triaj	2416BR_Brasov - Triaj	45.6759	25.64707222	89988
+WCDMA_Site	400BRA_Hotel Aro Palace	400BRA_Hotel Aro Palace	45.64500833	25.59046667	90141
+WCDMA_Site	401BRA_Brasov - Solomon	401BRA_Brasov - Solomon	45.65941944	25.60661389	90148
+WCDMA_Site	402BRA_Brasov - Berzei	402BRA_Brasov - Berzei	45.64001389	25.62729167	90155
+WCDMA_Site	403BRA_Brasov-5	403BRA_Brasov-5	45.66365	25.5695	90162
+WCDMA_Site	404BRA_Brasov-6	404BRA_Brasov-6	45.65039167	25.604425	90169
+WCDMA_Site	408POI_Poiana Brasov	408POI_Poiana Brasov	45.59683056	25.55041389	90183
+WCDMA_Site	409BRA_Brasov-8	409BRA_Brasov-8	45.63509722	25.60781944	90190
+WCDMA_Site	4213BR_Brasov Zizin	4213BR_Brasov Zizin	45.64928889	25.64899722	90244
+WCDMA_Site	4216BR_Brasov Stupini	4216BR_Brasov Stupini	45.69890833	25.558825	90251
+WCDMA_Site	422BRA_Brasov-9	422BRA_Brasov-9	45.64902222	25.62812222	90258
+WCDMA_Site	423BRA_Brasov 10	423BRA_Brasov 10	45.63757778	25.58491944	90265
+WCDMA_Site	424BRA_Brasov	424BRA_Brasov	45.65675556	25.58671944	90272
+WCDMA_Site	4401BR_Craiter - Brasov	4401BR_Craiter - Brasov	45.66106389	25.6272	90295
+WCDMA_Site	4408BR_Brasov Pasaj	4408BR_Brasov Pasaj	45.66323889	25.59355278	90302
+WCDMA_Site	4409BR_Brasov Grivitei	4409BR_Brasov Grivitei	45.65534722	25.60028333	90309
+WCDMA_Site	4410BR_Brasov Racadau	4410BR_Brasov Racadau	45.64186944	25.616275	90320
+WCDMA_Site	4413GV_Ghimbav	4413GV_Ghimbav	45.66475	25.50591667	90328
+WCDMA_Site	4428BR_Brasov Noua	4428BR_Brasov Noua	45.61661944	25.63936667	90357
+WCDMA_Site	4429BR_Brasov Saturn	4429BR_Brasov Saturn	45.64136667	25.63656111	90364
+WCDMA_Site	4855BR_Brasov Stadion	4855BR_Brasov Stadion	45.66338333	25.58206111	90461
+WCDMA_Site	4856BR_Carrefour Brasov	4856BR_Carrefour Brasov	45.63241667	25.64119167	90464
+WCDMA_Site	4862BR_Brasov - Star	4862BR_Brasov - Star	45.64341389	25.59765556	90471
+WCDMA_Site	4863BR_Brasov  - Centrul Civic	4863BR_Brasov  - Centrul Civic	45.65075278	25.61696667	90478
+WCDMA_Site	4864BR_Brasov - Harmanului	4864BR_Brasov - Harmanului	45.65840556	25.62080833	90485
+WCDMA_Site	4866BR_Brasov - Roman2	4866BR_Brasov - Roman2	45.62843611	25.62421389	90492
+WCDMA_Site	4867BR_Brasov - Tractorul2	4867BR_Brasov - Tractorul2	45.67456111	25.61411944	90499
+WCDMA_Site	4868IN_Ina	4868IN_Ina	45.641075	25.50894167	90503
+WCDMA_Site	4869BR_Brasov Brintex	4869BR_Brasov Brintex	45.65536944	25.56013611	90510
+WCDMA_Site	4992SA_Sacele 3	4992SA_Sacele 3	45.619875	25.69550833	90518
+WCDMA_Site	4998BR_Brasov Schei	4998BR_Brasov Schei	45.63760833	25.57585833	90529
+WCDMA_Site	5451BR_Brasov Centrul Vechi	5451BR_Brasov Centrul Vechi	45.64216389	25.59041111	90603
+WCDMA_Site	5452BR_Magazin Real Brasov	5452BR_Magazin Real Brasov	45.65730556	25.56330556	90605
+
+;ElementTypeName	WCDMA_SiteIDForCell	Sector_ID	Azimuth	Beamwidth	State	MSA	EIRP	SC	MCC	MNC	LAC	WCDMA_CI	RNCID	WCDMANeighborList	GSMNeighborList	UARFCN	Max_ServerDist	Height	Tilt	Antenna_key	AntennaName	BSC_RNC_NODE	Cell_Status	Technology	PrimaryCPICHPower	TX_ID	TMA_Name	MaximumTransmissionPower	Power_Max_Atoll	Pilot_Power_Atoll	PrimarySCHPower	SCH_Power_Atoll	Total_Power	LayerSize	LayerType	ElementHandle
+
+WCDMA_Cell	2401BR_Brasov	2401BRJ	65	65				73				24017	3117			10811		30																		89943
+WCDMA_Cell	2401BR_Brasov	2401BRK	220	65				81				24018	3117			10811		30																		89944
+WCDMA_Cell	2401BR_Brasov	2401BRL	340	65				89				24019	3117			10811		30																		89945
+WCDMA_Cell	2401BR_Brasov	2401BRX	65	65				72				24011	3117			10836		30																		89946
+WCDMA_Cell	2401BR_Brasov	2401BRY	220	65				80				24012	3117			10836		30																		89947
+WCDMA_Cell	2401BR_Brasov	2401BRZ	340	65				88				24013	3117			10836		30																		89948
+WCDMA_Cell	2406BR_Roman SA	2406BRJ	330	65				409				24067	3117			10811		45																		89954
+WCDMA_Cell	2406BR_Roman SA	2406BRK	95	65				417				24068	3117			10811		45																		89955
+WCDMA_Cell	2406BR_Roman SA	2406BRL	230	65				425				24069	3117			10811		45																		89956
+WCDMA_Cell	2406BR_Roman SA	2406BRX	330	65				408				24061	3117			10836		45																		89957
+WCDMA_Cell	2406BR_Roman SA	2406BRY	95	65				416				24062	3117			10836		45																		89958
+WCDMA_Cell	2406BR_Roman SA	2406BRZ	230	65				424				24063	3117			10836		45																		89959
+WCDMA_Cell	2407BR_Cartier Tractorul - BV	2407BRJ	35	65				241				24077	3117			10811		35																		89961
+WCDMA_Cell	2407BR_Cartier Tractorul - BV	2407BRK	150	65				249				24078	3117			10811		35																		89962
+WCDMA_Cell	2407BR_Cartier Tractorul - BV	2407BRL	300	65				257				24079	3117			10811		35																		89963
+WCDMA_Cell	2407BR_Cartier Tractorul - BV	2407BRX	35	65				240				24071	3117			10836		35																		89964
+WCDMA_Cell	2407BR_Cartier Tractorul - BV	2407BRY	150	65				248				24072	3117			10836		35																		89965
+WCDMA_Cell	2407BR_Cartier Tractorul - BV	2407BRZ	300	65				256				24073	3117			10836		35																		89966
+WCDMA_Cell	2408SA_Sacele	2408SAJ	60	65				501				24087	3117			10811		26																		89968
+WCDMA_Cell	2408SA_Sacele	2408SAK	250	65				505				24088	3117			10811		26																		89969
+WCDMA_Cell	2408SA_Sacele	2408SAL	325	65				509				24089	3117			10811		26																		89970
+WCDMA_Cell	2408SA_Sacele	2408SAX	60	65				500				24081	3117			10836		26																		89971
+WCDMA_Cell	2408SA_Sacele	2408SAY	250	65				504				24082	3117			10836		26																		89972
+WCDMA_Cell	2408SA_Sacele	2408SAZ	325	65				508				24083	3117			10836		26																		89973
+WCDMA_Cell	2415BR_MSC Brasov	2415BRJ	10	65				289				24157	3117			10811		23																		89975
+WCDMA_Cell	2415BR_MSC Brasov	2415BRK	150	65				297				24158	3117			10811		23																		89976
+WCDMA_Cell	2415BR_MSC Brasov	2415BRL	100	65				305				24159	3117			10811		15																		89977
+WCDMA_Cell	2415BR_MSC Brasov	2415BRX	10	65				288				24151	3117			10836		23																		89978
+WCDMA_Cell	2415BR_MSC Brasov	2415BRY	150	65				296				24152	3117			10836		23																		89979
+WCDMA_Cell	2415BR_MSC Brasov	2415BRZ	100	65				304				24153	3117			10836		15																		89980
+WCDMA_Cell	2416BR_Brasov - Triaj	2416BRJ	40	65				265				24167	3117			10811		31																		89982
+WCDMA_Cell	2416BR_Brasov - Triaj	2416BRK	180	65				273				24168	3117			10811		31																		89983
+WCDMA_Cell	2416BR_Brasov - Triaj	2416BRL	280	65				281				24169	3117			10811		31																		89984
+WCDMA_Cell	2416BR_Brasov - Triaj	2416BRX	40	65				264				24161	3117			10836		31																		89985
+WCDMA_Cell	2416BR_Brasov - Triaj	2416BRY	180	65				272				24162	3117			10836		31																		89986
+WCDMA_Cell	2416BR_Brasov - Triaj	2416BRZ	280	65				280				24163	3117			10836		31																		89987
+WCDMA_Cell	400BRA_Hotel Aro Palace	400BRAJ	60	65				25				14007	3117			10811		31																		90135
+WCDMA_Cell	400BRA_Hotel Aro Palace	400BRAK	200	65				33				14008	3117			10811		31																		90136
+WCDMA_Cell	400BRA_Hotel Aro Palace	400BRAL	325	65				41				14009	3117			10811		31																		90137
+WCDMA_Cell	400BRA_Hotel Aro Palace	400BRAX	60	65				24				14001	3117			10836		31																		90138
+WCDMA_Cell	400BRA_Hotel Aro Palace	400BRAY	200	65				32				14002	3117			10836		31																		90139
+WCDMA_Cell	400BRA_Hotel Aro Palace	400BRAZ	325	65				40				14003	3117			10836		31																		90140
+WCDMA_Cell	401BRA_Brasov - Solomon	401BRAJ	100	65				145				14017	3117			10811		35																		90142
+WCDMA_Cell	401BRA_Brasov - Solomon	401BRAK	180	65				153				14018	3117			10811		35																		90143
+WCDMA_Cell	401BRA_Brasov - Solomon	401BRAL	315	65				161				14019	3117			10811		35																		90144
+WCDMA_Cell	401BRA_Brasov - Solomon	401BRAX	100	65				144				14011	3117			10836		35																		90145
+WCDMA_Cell	401BRA_Brasov - Solomon	401BRAY	180	65				152				14012	3117			10836		35																		90146
+WCDMA_Cell	401BRA_Brasov - Solomon	401BRAZ	315	65				160				14013	3117			10836		35																		90147
+WCDMA_Cell	402BRA_Brasov - Berzei	402BRAJ	80	65				385				14027	3117			10811		35																		90149
+WCDMA_Cell	402BRA_Brasov - Berzei	402BRAK	185	65				393				14028	3117			10811		35																		90150
+WCDMA_Cell	402BRA_Brasov - Berzei	402BRAL	290	65				401				14029	3117			10811		35																		90151
+WCDMA_Cell	402BRA_Brasov - Berzei	402BRAX	80	65				384				14021	3117			10836		35																		90152
+WCDMA_Cell	402BRA_Brasov - Berzei	402BRAY	185	65				392				14022	3117			10836		35																		90153
+WCDMA_Cell	402BRA_Brasov - Berzei	402BRAZ	290	65				400				14023	3117			10836		35																		90154
+WCDMA_Cell	403BRA_Brasov-5	403BRAJ	30	65				217				14037	3117			10811		28																		90156
+WCDMA_Cell	403BRA_Brasov-5	403BRAK	150	65				225				14038	3117			10811		28																		90157
+WCDMA_Cell	403BRA_Brasov-5	403BRAL	260	65				233				14039	3117			10811		28																		90158
+WCDMA_Cell	403BRA_Brasov-5	403BRAX	30	65				216				14031	3117			10836		28																		90159
+WCDMA_Cell	403BRA_Brasov-5	403BRAY	150	65				224				14032	3117			10836		28																		90160
+WCDMA_Cell	403BRA_Brasov-5	403BRAZ	260	65				232				14033	3117			10836		28																		90161
+WCDMA_Cell	404BRA_Brasov-6	404BRAJ	40	65				49				14047	3117			10811		37																		90163
+WCDMA_Cell	404BRA_Brasov-6	404BRAK	155	65				57				14048	3117			10811		37																		90164
+WCDMA_Cell	404BRA_Brasov-6	404BRAL	265	65				65				14049	3117			10811		37																		90165
+WCDMA_Cell	404BRA_Brasov-6	404BRAX	40	65				48				14041	3117			10836		37																		90166
+WCDMA_Cell	404BRA_Brasov-6	404BRAY	155	65				56				14042	3117			10836		37																		90167
+WCDMA_Cell	404BRA_Brasov-6	404BRAZ	265	65				64				14043	3117			10836		37																		90168
+WCDMA_Cell	408POI_Poiana Brasov	408POIJ	75	65				1				14087	3117			10811		30																		90177
+WCDMA_Cell	408POI_Poiana Brasov	408POIK	160	65				157				14088	3117			10811		30																		90178
+WCDMA_Cell	408POI_Poiana Brasov	408POIL	355	65				149				14089	3117			10811		30																		90179
+WCDMA_Cell	408POI_Poiana Brasov	408POIX	75	65				0				14081	3117			10836		30																		90180
+WCDMA_Cell	408POI_Poiana Brasov	408POIY	160	65				156				14082	3117			10836		30																		90181
+WCDMA_Cell	408POI_Poiana Brasov	408POIZ	355	65				148				14083	3117			10836		30																		90182
+WCDMA_Cell	409BRA_Brasov-8	409BRAJ	30	65				217				14097	3117			10811		35																		90184
+WCDMA_Cell	409BRA_Brasov-8	409BRAK	220	65				225				14098	3117			10811		35																		90185
+WCDMA_Cell	409BRA_Brasov-8	409BRAL	350	65				233				14099	3117			10811		35																		90186
+WCDMA_Cell	409BRA_Brasov-8	409BRAX	30	65				312				14091	3117			10836		35																		90187
+WCDMA_Cell	409BRA_Brasov-8	409BRAY	220	65				320				14092	3117			10836		35																		90188
+WCDMA_Cell	409BRA_Brasov-8	409BRAZ	350	65				328				14093	3117			10836		35																		90189
+WCDMA_Cell	4213BR_Brasov Zizin	4213BRJ	0	65				237				42137	3117			10811		27																		90238
+WCDMA_Cell	4213BR_Brasov Zizin	4213BRK	120	65				245				42138	3117			10811		27																		90239
+WCDMA_Cell	4213BR_Brasov Zizin	4213BRL	250	65				253				42139	3117			10811		27																		90240
+WCDMA_Cell	4213BR_Brasov Zizin	4213BRX	0	65				236				42131	3117			10836		27																		90241
+WCDMA_Cell	4213BR_Brasov Zizin	4213BRY	120	65				244				42132	3117			10836		27																		90242
+WCDMA_Cell	4213BR_Brasov Zizin	4213BRZ	250	65				252				42133	3117			10836		27																		90243
+WCDMA_Cell	4216BR_Brasov Stupini	4216BRJ	50	65				213				42167	3117			10811		28																		90245
+WCDMA_Cell	4216BR_Brasov Stupini	4216BRK	150	65				221				42168	3117			10811		28																		90246
+WCDMA_Cell	4216BR_Brasov Stupini	4216BRL	230	65				229				42169	3117			10811		28																		90247
+WCDMA_Cell	4216BR_Brasov Stupini	4216BRX	50	65				212				42161	3117			10836		28																		90248
+WCDMA_Cell	4216BR_Brasov Stupini	4216BRY	150	65				220				42162	3117			10836		28																		90249
+WCDMA_Cell	4216BR_Brasov Stupini	4216BRZ	230	65				228				42163	3117			10836		28																		90250
+WCDMA_Cell	422BRA_Brasov-9	422BRAJ	80	65				361				14227	3117			10811		40																		90252
+WCDMA_Cell	422BRA_Brasov-9	422BRAK	160	65				369				14228	3117			10811		40																		90253
+WCDMA_Cell	422BRA_Brasov-9	422BRAL	340	65				377				14229	3117			10811		40																		90254
+WCDMA_Cell	422BRA_Brasov-9	422BRAX	80	65				360				14221	3117			10836		40																		90255
+WCDMA_Cell	422BRA_Brasov-9	422BRAY	160	65				368				14222	3117			10836		40																		90256
+WCDMA_Cell	422BRA_Brasov-9	422BRAZ	340	65				376				14223	3117			10836		40																		90257
+WCDMA_Cell	423BRA_Brasov 10	423BRAJ	55	65				1				14237	3117			10811		25																		90259
+WCDMA_Cell	423BRA_Brasov 10	423BRAK	310	65				9				14238	3117			10811		25																		90260
+WCDMA_Cell	423BRA_Brasov 10	423BRAL	310	65				17				14239	3117			10811		25																		90261
+WCDMA_Cell	423BRA_Brasov 10	423BRAX	55	65				0				14231	3117			10836		25																		90262
+WCDMA_Cell	423BRA_Brasov 10	423BRAY	230	65				8				14232	3117			10836		25																		90263
+WCDMA_Cell	423BRA_Brasov 10	423BRAZ	310	65				16				14233	3117			10836		25																		90264
+WCDMA_Cell	424BRA_Brasov	424BRAJ	60	65				121				14247	3117			10811		30																		90266
+WCDMA_Cell	424BRA_Brasov	424BRAK	140	65				129				14248	3117			10811		30																		90267
+WCDMA_Cell	424BRA_Brasov	424BRAL	260	65				137				14249	3117			10811		30																		90268
+WCDMA_Cell	424BRA_Brasov	424BRAX	60	65				120				14241	3117			10836		30																		90269
+WCDMA_Cell	424BRA_Brasov	424BRAY	140	65				128				14242	3117			10836		30																		90270
+WCDMA_Cell	424BRA_Brasov	424BRAZ	260	65				136				14243	3117			10836		30																		90271
+WCDMA_Cell	4401BR_Craiter - Brasov	4401BRJ	60	65				169				44017	3117			10811		29																		90289
+WCDMA_Cell	4401BR_Craiter - Brasov	4401BRK	150	65				177				44018	3117			10811		29																		90290
+WCDMA_Cell	4401BR_Craiter - Brasov	4401BRL	300	65				185				44019	3117			10811		31																		90291
+WCDMA_Cell	4401BR_Craiter - Brasov	4401BRX	60	65				168				44011	3117			10836		29																		90292
+WCDMA_Cell	4401BR_Craiter - Brasov	4401BRY	150	65				176				44012	3117			10836		29																		90293
+WCDMA_Cell	4401BR_Craiter - Brasov	4401BRZ	300	65				184				44013	3117			10836		31																		90294
+WCDMA_Cell	4408BR_Brasov Pasaj	4408BRJ	35	65				193				44087	3117			10811		43																		90296
+WCDMA_Cell	4408BR_Brasov Pasaj	4408BRK	170	65				201				44088	3117			10811		43																		90297
+WCDMA_Cell	4408BR_Brasov Pasaj	4408BRL	310	65				209				44089	3117			10811		43																		90298
+WCDMA_Cell	4408BR_Brasov Pasaj	4408BRX	35	65				192				44081	3117			10836		43																		90299
+WCDMA_Cell	4408BR_Brasov Pasaj	4408BRY	170	65				200				44082	3117			10836		43																		90300
+WCDMA_Cell	4408BR_Brasov Pasaj	4408BRZ	310	65				208				44083	3117			10836		43																		90301
+WCDMA_Cell	4409BR_Brasov Grivitei	4409BRJ	0	65				97				44097	3117			10811		26																		90303
+WCDMA_Cell	4409BR_Brasov Grivitei	4409BRK	155	65				105				44098	3117			10811		26																		90304
+WCDMA_Cell	4409BR_Brasov Grivitei	4409BRL	285	65				113				44099	3117			10811		26																		90305
+WCDMA_Cell	4409BR_Brasov Grivitei	4409BRX	0	65				96				44091	3117			10836		26																		90306
+WCDMA_Cell	4409BR_Brasov Grivitei	4409BRY	155	65				104				44092	3117			10836		26																		90307
+WCDMA_Cell	4409BR_Brasov Grivitei	4409BRZ	285	65				112				44093	3117			10836		26																		90308
+WCDMA_Cell	4410BR_Brasov Racadau	4410BRJ	30	65				337				44107	3117			10811		32																		90314
+WCDMA_Cell	4410BR_Brasov Racadau	4410BRK	150	65				345				44108	3117			10811		32																		90315
+WCDMA_Cell	4410BR_Brasov Racadau	4410BRL	220	65				353				44109	3117			10811		32																		90316
+WCDMA_Cell	4410BR_Brasov Racadau	4410BRX	30	65				336				44101	3117			10836		32																		90317
+WCDMA_Cell	4410BR_Brasov Racadau	4410BRY	150	65				344				44102	3117			10836		32																		90318
+WCDMA_Cell	4410BR_Brasov Racadau	4410BRZ	220	65				352				44103	3117			10836		32																		90319
+WCDMA_Cell	4413GV_Ghimbav	4413GVX	10	65				388				44131	3117			10836		27																		90325
+WCDMA_Cell	4413GV_Ghimbav	4413GVY	115	65				396				44132	3117			10836		27																		90326
+WCDMA_Cell	4413GV_Ghimbav	4413GVZ	190	65				404				44133	3117			10836		27																		90327
+WCDMA_Cell	4428BR_Brasov Noua	4428BRJ	340	65				457				44287	3117			10811		35																		90351
+WCDMA_Cell	4428BR_Brasov Noua	4428BRK	80	65				465				44288	3117			10811		35																		90352
+WCDMA_Cell	4428BR_Brasov Noua	4428BRL	260	65				473				44289	3117			10811		35																		90353
+WCDMA_Cell	4428BR_Brasov Noua	4428BRX	340	65				456				44281	3117			10836		35																		90354
+WCDMA_Cell	4428BR_Brasov Noua	4428BRY	80	65				464				44282	3117			10836		35																		90355
+WCDMA_Cell	4428BR_Brasov Noua	4428BRZ	260	65				472				44283	3117			10836		35																		90356
+WCDMA_Cell	4429BR_Brasov Saturn	4429BRJ	30	65				433				44297	3117			10811		44																		90358
+WCDMA_Cell	4429BR_Brasov Saturn	4429BRK	160	65				441				44298	3117			10811		44																		90359
+WCDMA_Cell	4429BR_Brasov Saturn	4429BRL	300	65				449				44299	3117			10811		44																		90360
+WCDMA_Cell	4429BR_Brasov Saturn	4429BRX	30	65				432				44291	3117			10836		44																		90361
+WCDMA_Cell	4429BR_Brasov Saturn	4429BRY	160	65				440				44292	3117			10836		44																		90362
+WCDMA_Cell	4429BR_Brasov Saturn	4429BRZ	300	65				448				44293	3117			10836		44																		90363
+WCDMA_Cell	4855BR_Brasov Stadion	4855BRJ	50	65				481				48557	3117			10811		30																		90455
+WCDMA_Cell	4855BR_Brasov Stadion	4855BRK	170	65				489				48558	3117			10811		30																		90456
+WCDMA_Cell	4855BR_Brasov Stadion	4855BRL	330	65				497				48559	3117			10811		30																		90457
+WCDMA_Cell	4855BR_Brasov Stadion	4855BRX	50	65				480				48551	3117			10836		30																		90458
+WCDMA_Cell	4855BR_Brasov Stadion	4855BRY	170	65				488				48552	3117			10836		30																		90459
+WCDMA_Cell	4855BR_Brasov Stadion	4855BRZ	330	65				496				48553	3117			10836		30																		90460
+WCDMA_Cell	4856BR_Carrefour Brasov	4856BRJ	0	360				149				48567	3117			10811																				90462
+WCDMA_Cell	4856BR_Carrefour Brasov	4856BRX	0	360				148				48561	3117			10836																				90463
+WCDMA_Cell	4862BR_Brasov - Star	4862BRJ	80	65				29				48627	3117			10811		26																		90465
+WCDMA_Cell	4862BR_Brasov - Star	4862BRK	240	65				37				48628	3117			10811		26																		90466
+WCDMA_Cell	4862BR_Brasov - Star	4862BRL	350	65				45				48629	3117			10811		26																		90467
+WCDMA_Cell	4862BR_Brasov - Star	4862BRX	80	65				28				48621	3117			10836		26																		90468
+WCDMA_Cell	4862BR_Brasov - Star	4862BRY	240	65				36				48622	3117			10836		26																		90469
+WCDMA_Cell	4862BR_Brasov - Star	4862BRZ	350	65				44				48623	3117			10836		26																		90470
+WCDMA_Cell	4863BR_Brasov  - Centrul Civic	4863BRJ	75	65				5				48637	3117			10811		43																		90472
+WCDMA_Cell	4863BR_Brasov  - Centrul Civic	4863BRK	130	65				13				48638	3117			10811		43																		90473
+WCDMA_Cell	4863BR_Brasov  - Centrul Civic	4863BRL	270	65				21				48639	3117			10811		43																		90474
+WCDMA_Cell	4863BR_Brasov  - Centrul Civic	4863BRX	75	65				4				48631	3117			10836		43																		90475
+WCDMA_Cell	4863BR_Brasov  - Centrul Civic	4863BRY	130	65				12				48632	3117			10836		43																		90476
+WCDMA_Cell	4863BR_Brasov  - Centrul Civic	4863BRZ	270	65				20				48633	3117			10836		43																		90477
+WCDMA_Cell	4864BR_Brasov - Harmanului	4864BRJ	60	65				77				48647	3117			10811		47																		90479
+WCDMA_Cell	4864BR_Brasov - Harmanului	4864BRK	155	65				85				48648	3117			10811		47																		90480
+WCDMA_Cell	4864BR_Brasov - Harmanului	4864BRL	280	65				93				48649	3117			10811		47																		90481
+WCDMA_Cell	4864BR_Brasov - Harmanului	4864BRX	60	65				76				48641	3117			10836		47																		90482
+WCDMA_Cell	4864BR_Brasov - Harmanului	4864BRY	155	65				84				48642	3117			10836		47																		90483
+WCDMA_Cell	4864BR_Brasov - Harmanului	4864BRZ	280	65				92				48643	3117			10836		47																		90484
+WCDMA_Cell	4866BR_Brasov - Roman2	4866BRJ	350	65				53				48667	3117			10811		30																		90486
+WCDMA_Cell	4866BR_Brasov - Roman2	4866BRK	130	65				61				48668	3117			10811		30																		90487
+WCDMA_Cell	4866BR_Brasov - Roman2	4866BRL	220	65				69				48669	3117			10811		30																		90488
+WCDMA_Cell	4866BR_Brasov - Roman2	4866BRX	350	65				52				48661	3117			10836		30																		90489
+WCDMA_Cell	4866BR_Brasov - Roman2	4866BRY	130	65				60				48662	3117			10836		30																		90490
+WCDMA_Cell	4866BR_Brasov - Roman2	4866BRZ	220	65				68				48663	3117			10836		30																		90491
+WCDMA_Cell	4867BR_Brasov - Tractorul2	4867BRJ	25	65				125				48677	3117			10811		28																		90493
+WCDMA_Cell	4867BR_Brasov - Tractorul2	4867BRK	140	65				133				48678	3117			10811		28																		90494
+WCDMA_Cell	4867BR_Brasov - Tractorul2	4867BRL	235	65				141				48679	3117			10811		28																		90495
+WCDMA_Cell	4867BR_Brasov - Tractorul2	4867BRX	25	65				124				48671	3117			10836		28																		90496
+WCDMA_Cell	4867BR_Brasov - Tractorul2	4867BRY	140	65				132				48672	3117			10836		28																		90497
+WCDMA_Cell	4867BR_Brasov - Tractorul2	4867BRZ	235	65				140				48673	3117			10836		28																		90498
+WCDMA_Cell	4868IN_Ina	4868INX	60	65				188				48681	3117			10836		40																		90500
+WCDMA_Cell	4868IN_Ina	4868INY	140	65				196				48682	3117			10836		40																		90501
+WCDMA_Cell	4868IN_Ina	4868INZ	355	65				204				48683	3117			10836		40																		90502
+WCDMA_Cell	4869BR_Brasov Brintex	4869BRJ	350	65				101				48697	3117			10811		30																		90504
+WCDMA_Cell	4869BR_Brasov Brintex	4869BRK	115	65				109				48698	3117			10811		30																		90505
+WCDMA_Cell	4869BR_Brasov Brintex	4869BRL	270	65				117				48699	3117			10811		30																		90506
+WCDMA_Cell	4869BR_Brasov Brintex	4869BRX	350	65				100				48691	3117			10836		30																		90507
+WCDMA_Cell	4869BR_Brasov Brintex	4869BRY	115	65				108				48692	3117			10836		30																		90508
+WCDMA_Cell	4869BR_Brasov Brintex	4869BRZ	270	65				116				48693	3117			10836		30																		90509
+WCDMA_Cell	4992SA_Sacele 3	4992SAX	100	65				268				49921	3117			10836		29																		90515
+WCDMA_Cell	4992SA_Sacele 3	4992SAY	180	65				276				49922	3117			10836		29																		90516
+WCDMA_Cell	4992SA_Sacele 3	4992SAZ	240	65				284				49923	3117			10836		29																		90517
+WCDMA_Cell	4998BR_Brasov Schei	4998BRJ	60	65				165				49987	3117			10811		8																		90523
+WCDMA_Cell	4998BR_Brasov Schei	4998BRK	130	65				173				49988	3117			10811		8																		90524
+WCDMA_Cell	4998BR_Brasov Schei	4998BRL	210	65				181				49989	3117			10811		9																		90525
+WCDMA_Cell	4998BR_Brasov Schei	4998BRX	60	65				164				49981	3117			10836		8																		90526
+WCDMA_Cell	4998BR_Brasov Schei	4998BRY	130	65				172				49982	3117			10836		8																		90527
+WCDMA_Cell	4998BR_Brasov Schei	4998BRZ	210	65				180				49983	3117			10836		9																		90528
+WCDMA_Cell	5451BR_Brasov Centrul Vechi	5451BRX	50	90				260				54511	3117			10836		4																		90602
+WCDMA_Cell	5452BR_Magazin Real Brasov	5452BRX	0	90				156				54521	3117			10836		4																		90604
