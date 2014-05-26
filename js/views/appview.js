@@ -426,6 +426,7 @@ define(
 						}
 						else {
 							this.clearSelections();
+							this.showNotification("No session with this ID...");
 						}
 						break;
 
@@ -435,12 +436,16 @@ define(
 								   this.siteList.findSiteWithSector({ id: query.searchterm });
 
 						this.siteSelected(site);
+						if (site === null)
+							this.showNotification("No network element with this name...");
 						break;
 
 					case SearchQuery.TOPIC_RESULT:
 						var searchresult = this.sessions.findResult(parseInt(query.searchterm));
 						this.sessionSelected(searchresult.session);
 						this.resultSelected(searchresult.result);
+						if (searchresult.result === null)
+							this.showNotification("No message with this ID...");
 						break;
 				}
 			},
