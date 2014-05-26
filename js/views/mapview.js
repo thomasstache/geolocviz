@@ -942,6 +942,7 @@ define(
 								visible = view.appsettings.get("drawMarkers_S");
 								break;
 							case "I":
+							case "IM":
 								color = MarkerColors.INDOOR;
 								visible = view.appsettings.get("drawMarkers_I");
 								break;
@@ -973,6 +974,7 @@ define(
 								visible = view.appsettings.get("drawMarkers_S");
 								break;
 							case "I":
+							case "IM":
 								color = MarkerColors.INDOOR;
 								visible = view.appsettings.get("drawMarkers_I");
 								break;
@@ -1060,7 +1062,8 @@ define(
 						icon.fillColor = this.colorMapper.getColor(value);
 					}
 					else {
-						icon = this.getMarkerIcon(IconTypes.DOT, letter);
+						var cat = sample.category(this.getThresholdSettings());
+						icon = this.getMarkerIcon(IconTypes.DOT, cat);
 					}
 				}
 				else {
@@ -1145,6 +1148,10 @@ define(
 					case IconTypes.DOT:
 						if (option == "M") {
 							imagePath = 'images/circle_red.png';
+						}
+						else if (option == "IM") {
+							imagePath = 'images/circle_red_yellow.png';
+							// imagePath = 'images/circle_half_red.png';
 						}
 						else if (option == "I") {
 							imagePath = 'images/circle_yellow.png';

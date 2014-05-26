@@ -15,11 +15,23 @@ define(
 			},
 
 			category: function(thresholds) {
-				var cat = "M";
-				if (this.get('probMobility') <= thresholds.mobility) // stationary
-					cat = "S";
-				if (this.get('probIndoor') > thresholds.indoor) // indoor
-					cat = "I";
+
+				var cat, probMobility = this.get('probMobility');
+
+				if (this.get('probIndoor') > thresholds.indoor) {
+					// indoor
+					if (probMobility <= thresholds.mobility) // stationary
+						cat = "I";
+					else
+						cat = "IM";
+				}
+				else {
+					// outdoor
+					if (probMobility <= thresholds.mobility) // stationary
+						cat = "S";
+					else
+						cat = "M";
+				}
 				return cat;
 			},
 
