@@ -132,12 +132,15 @@ define(
 
 						var firstResult = session.results.first();
 
-						// the mobility probability is constant for the whole session
-						context.probMobility = firstResult.get("probMobility");
-
-						// for AccuracyResults we can compute the distance between all reference locations
+						// the mobility probability is constant for the whole session, take it from the first result
 						if (firstResult instanceof AccuracyResult) {
+							// for AccuracyResults we can compute the distance between all reference locations
 							context.refDistance = Math.round(computeDistance(session.results, true));
+
+							context.probMobility = firstResult.getBestLocationCandidate().get("probMobility");
+						}
+						else {
+							context.probMobility = firstResult.get("probMobility");
 						}
 
 						// some files have no timestamp
