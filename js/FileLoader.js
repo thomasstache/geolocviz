@@ -395,6 +395,7 @@ define(
 					timestamp: parseNumber(record[IDX.TIMEOFFSET]),
 					position: new Position(parseNumber(record[IDX.GEO_LAT]),
 										   parseNumber(record[IDX.GEO_LON])),
+					isMeasReport: (parseNumber(record[IDX.MEAS_REPORT]) == 1),
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
 					probIndoor: percent2Decimal(probIndoor),

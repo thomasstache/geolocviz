@@ -24,6 +24,9 @@ define(
 				// time offset
 				timestamp: 0,
 
+				// @type {Boolean} if the CT message was a "measurement report", i.e. had power values
+				isMeasReport: null,
+
 				// (optional) only available in extended .axf files:
 				// serving cell controller (WCDMA RNC)
 				controllerId: null,
