@@ -7,6 +7,8 @@ define(
 		var LocationCandidate = BaseResult.extend({
 
 			defaults: {
+				// id of the original CT message
+				msgId: -1,
 				// @type {Position} geolocated position
 				position: null,
 				// distance between geolocated and reference position
@@ -18,6 +20,12 @@ define(
 				probMobility: 0.0,
 				// indoor probability as decimal
 				probIndoor: 0.0,
+
+				// (optional) only available in extended .axf files:
+				// serving cell controller (WCDMA RNC)
+				controllerId: null,
+				// id of the serving cell (corresponds to "CI" or "WCDMA_CI")
+				primaryCellId: null,
 			},
 
 			getInfo: function() {
