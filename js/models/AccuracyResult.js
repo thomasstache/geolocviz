@@ -55,6 +55,7 @@ define(
 					probIndoor: bestCand.get('probIndoor'),
 					controllerId: bestCand.get('controllerId'),
 					primaryCellId: bestCand.get('primaryCellId'),
+					position: bestCand.get('position'),
 					candidateCount: this.locationCandidates.length,
 				};
 			},

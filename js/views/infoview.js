@@ -163,6 +163,9 @@ define(
 
 				var result = this.model.get("selectedResult");
 				var context = result !== null ? result.getInfo() : {};
+				if (result instanceof AccuracyResult) {
+					context.isAccuracyResult = true;
+				}
 
 				$("#resultInfo").html(resultTemplate(context));
 				return this;
