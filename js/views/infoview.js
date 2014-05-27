@@ -133,6 +133,9 @@ define(
 
 						var firstResult = session.results.first();
 
+						// the mobility probability is constant for the whole session
+						context.probMobility = firstResult.get("probMobility");
+
 						// for AccuracyResults we can compute the distance between all reference locations
 						if (firstResult instanceof AccuracyResult) {
 							context.refDistance = Math.round(computeDistance(session.results, true));
