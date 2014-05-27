@@ -14,7 +14,9 @@
 	<li><span class="label">Time:</span>&nbsp;<span class="value">{{formattime timestamp "ms"}}</span></li>
 	{{/if}}
 {{#unless isAccuracyResult}}
+{{#unless isCandidate}}
 	<li><span class="label">Meas. Report:</span>&nbsp;<span class="value">{{yesno isMeasReport}}</span></li>
+{{/unless}}
 {{/unless}}
 	{{#if primaryCellId}}
 	<li><span class="label">Primary CI:</span>&nbsp;<span class="value">{{primaryCellId}}</span>
