@@ -1,12 +1,12 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "models/AccuracyResult",
+	 "models/AccuracyResult", "models/LocationCandidate",
 	 "types/resultsfilterquery", "types/googlemapsutils",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, ResultsFilterQuery, GoogleMapsUtils,
+			 AccuracyResult, LocationCandidate, ResultsFilterQuery, GoogleMapsUtils,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
@@ -71,7 +71,6 @@ define(
 
 				this.updateSessionControls();
 				this.renderSessionInfo();
-				this.renderResultInfo();
 			},
 
 			onResultChanged: function() {
@@ -133,9 +132,15 @@ define(
 
 						var firstResult = session.results.first();
 
-						// for AccuracyResults we can compute the distance between all reference locations
+						// the mobility probability is constant for the whole session, take it from the first result
 						if (firstResult instanceof AccuracyResult) {
+							// for AccuracyResults we can compute the distance between all reference locations
 							context.refDistance = Math.round(computeDistance(session.results, true));
+
+							context.probMobility = firstResult.getBestLocationCandidate().get("probMobility");
+						}
+						else {
+							context.probMobility = firstResult.get("probMobility");
 						}
 
 						// some files have no timestamp
@@ -163,6 +168,12 @@ define(
 
 				var result = this.model.get("selectedResult");
 				var context = result !== null ? result.getInfo() : {};
+				if (result instanceof AccuracyResult) {
+					context.isAccuracyResult = true;
+				}
+				if (result instanceof LocationCandidate) {
+					context.isCandidate = true;
+				}
 
 				$("#resultInfo").html(resultTemplate(context));
 				return this;

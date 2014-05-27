@@ -4,9 +4,20 @@
 	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span>&nbsp;<span class="value">{{num}}/{{resultCount}}</span>
 		{{#if msgId}}&nbsp;<span class="label">Msg:</span>&nbsp;<span class="value">#{{msgId}}</span>{{/if}}
 	</li>
+{{#if position}}
+	<li>
+		<span class="label">Lat:</span>&nbsp;<span class="value">{{roundNumber position.lat digits=5}}</span>
+		<span class="label">Lon:</span>&nbsp;<span class="value">{{roundNumber position.lon digits=5}}</span>
+	</li>
+{{/if}}
 	{{#if timestamp}}
 	<li><span class="label">Time:</span>&nbsp;<span class="value">{{formattime timestamp "ms"}}</span></li>
 	{{/if}}
+{{#unless isAccuracyResult}}
+{{#unless isCandidate}}
+	<li><span class="label">Meas. Report:</span>&nbsp;<span class="value">{{yesno isMeasReport}}</span></li>
+{{/unless}}
+{{/unless}}
 	{{#if primaryCellId}}
 	<li><span class="label">Primary CI:</span>&nbsp;<span class="value">{{primaryCellId}}</span>
 		<span class="label">RNC:</span>&nbsp;<span class="value">{{controllerId}}</span>

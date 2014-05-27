@@ -44,19 +44,20 @@ define(
 			},
 
 			getInfo: function() {
-				var bestCand = this.getBestLocationCandidate();
-				return {
+				var info = {
 					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
 					msgId: this.get('msgId'),
-					distance: bestCand.get('distance'),
-					confidence: bestCand.get('confidence'),
-					probMobility: bestCand.get('probMobility'),
-					probIndoor: bestCand.get('probIndoor'),
-					controllerId: bestCand.get('controllerId'),
-					primaryCellId: bestCand.get('primaryCellId'),
+					refPosition: this.getRefPosition(),
 					candidateCount: this.locationCandidates.length,
 				};
+
+				// mix in the properties of the best candidate
+				var bestCandInfo = this.getBestLocationCandidate().getInfo();
+
+				info = _.defaults(info, bestCandInfo);
+
+				return info;
 			},
 
 			/**
