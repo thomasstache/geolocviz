@@ -1,12 +1,12 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "models/AccuracyResult",
+	 "models/AccuracyResult", "models/LocationCandidate",
 	 "types/resultsfilterquery", "types/googlemapsutils",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, ResultsFilterQuery, GoogleMapsUtils,
+			 AccuracyResult, LocationCandidate, ResultsFilterQuery, GoogleMapsUtils,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
@@ -167,6 +167,9 @@ define(
 				var context = result !== null ? result.getInfo() : {};
 				if (result instanceof AccuracyResult) {
 					context.isAccuracyResult = true;
+				}
+				if (result instanceof LocationCandidate) {
+					context.isCandidate = true;
 				}
 
 				$("#resultInfo").html(resultTemplate(context));

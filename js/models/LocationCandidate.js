@@ -33,7 +33,6 @@ define(
 				var rv = this.toJSON();
 				rv.num = this.getIndex() + 1;
 				rv.resultCount = this.collection.length;
-				rv.isCandidate = true;
 				return rv;
 			}
 		});
