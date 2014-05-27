@@ -71,7 +71,6 @@ define(
 
 				this.updateSessionControls();
 				this.renderSessionInfo();
-				this.renderResultInfo();
 			},
 
 			onResultChanged: function() {
