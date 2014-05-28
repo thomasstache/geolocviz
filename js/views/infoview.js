@@ -265,8 +265,7 @@ define(
 
 				var session = this.model.get("selectedSession");
 				var focussedSessionId = this.model.get("focussedSessionId");
-				var canFocus = (session &&
-								focussedSessionId !== session.id);
+				var canFocus = session !== null;
 
 				this.$focusBtn.prop("disabled", !canFocus);
 				this.$unfocusBtn.prop("disabled", focussedSessionId < 0);
