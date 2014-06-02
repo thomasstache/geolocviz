@@ -32,9 +32,10 @@ define(
 			// Handler for "change" event from the search field.
 			searchInputChanged: function(evt) {
 
-				var searchText = evt.target.value;
-				if (searchText === undefined || searchText === "")
+				if (evt.target.value === undefined || evt.target.value.trim() === "")
 					return;
+
+				var searchText = evt.target.value.trim();
 
 				var prefix = searchText[0],
 					suffix = searchText.slice(1);
@@ -53,6 +54,9 @@ define(
 					default:
 						topic = SearchQuery.TOPIC_RESULT; what = searchText;
 				}
+
+				if (what.length === 0)
+					return;
 
 				this.trigger("search", new SearchQuery(topic, what));
 				this.$searchInput.focusout();
