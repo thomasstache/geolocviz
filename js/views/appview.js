@@ -371,7 +371,9 @@ define(
 
 				// close notification automatically
 				notification.onshow = function() {
-					setTimeout(notification.close, NOTIFICATION_TIMEOUT);
+					setTimeout(function() {
+						notification.close();
+					}, NOTIFICATION_TIMEOUT);
 				};
 			},
 
