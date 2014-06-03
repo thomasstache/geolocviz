@@ -7,11 +7,11 @@ define(
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
 	 "views/searchview", "views/labelview", "views/filerepositoryview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
-	 "types/searchquery", "FileLoader"],
+	 "types/searchquery", "FileLoader", "types/logger"],
 
 	function($, _, Backbone,
 			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView,
-			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader) {
+			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, Logger) {
 
 		var AppView = Backbone.View.extend({
 			el: $("#playground-app"),
@@ -209,6 +209,15 @@ define(
 						radioNetworkAvailable: this.siteList.length > 0,
 					});
 				}
+
+				var log = Logger.getLogger(),
+					messages = log.getMessages();
+				if (messages.length > 0) {
+					this.showNotification(messages.join('\n'));
+				}
+
+				log.clearMessages();
+
 				this.model.set("busy", false);
 			},
 
