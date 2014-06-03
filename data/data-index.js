@@ -4,6 +4,7 @@ define(
 			{ name: "cellrefs-DE_VfGE_FFM2012.txt", title: "Frankfurt/Main 2012" },
 			{ name: "cellrefs-DE_VfGE_FFM2013.txt", title: "Frankfurt/Main 2013" },
 			{ name: "cellrefs-DE_VfGE_NRW.txt", title: "Vf Bochum 2013" },
+			{ name: "cellrefs-DE_O2_LTE.txt", title: "o2 LTE 2014" },
 			{ name: "cellrefs-NL_Vf_Amsterdam.txt", title: "Vf Amsterdam 2012" },
 			{ name: "cellrefs-UK_Vf_GPEH.txt", title: "Vf London 2010" },
 			{ name: "cellrefs-TW_CHT_ICSU_Taipeh.txt", title: "CHT Taipeh UMTS 2013" },
