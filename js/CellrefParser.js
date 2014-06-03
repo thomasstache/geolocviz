@@ -197,7 +197,6 @@ define(
 						//   if (key in set)...
 						var requiredFields = {};
 
-						// just for logging purposes
 						var mode = "";
 
 						// site or sector? which technology? Check field name in 2nd column:
@@ -251,13 +250,7 @@ define(
 								attributeColumnIndex[field] = i;
 							}
 						}
-
-/*						if (_.keys(attributeColumnIndex).length > 1) {
-							//console.log("%c Identified columns (" + mode + "):", "background-color: #BFE3E2;"); // with color for new Chrome Devtools
-							console.log("Identified columns (" + mode + "):");
-							console.log(attributeColumnIndex);
-						}
-*/					}
+					}
 				}
 				return bOk;
 			}
