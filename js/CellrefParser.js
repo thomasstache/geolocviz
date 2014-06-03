@@ -49,7 +49,7 @@ define(
 				LTE_PCI: "PCI",
 				LTE_EARFCN: "DL_EARFCN",
 				LTE_TRKAREA: "TrackingArea",
-				LTE_TAC: "TAC",
+				LTE_TAC: "TrackingAreaCode",
 			});
 
 			var SITE_FIELDS = Object.freeze({
@@ -99,7 +99,7 @@ define(
 				"PCI": true,
 				"ECI": true,
 				"TrackingArea": true,
-				"TAC": true,
+				"TrackingAreaCode": true,
 				"DL_EARFCN": true,
 			});
 
@@ -353,7 +353,7 @@ define(
 
 								props.cellIdentity = getAttr(record, SectorAttributes.LTE_ECI, DataTypes.INTEGER);
 
-								// pick between "TAC" and "TrackingArea", prefer the former
+								// pick between "TrackingAreaCode" and "TrackingArea", prefer the former
 								var tac = 0;
 								var colTAC = attributeColumnIndex[SectorAttributes.LTE_TAC];
 								if (colTAC !== undefined && colTAC > 0)
