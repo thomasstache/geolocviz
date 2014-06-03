@@ -322,6 +322,11 @@ define(
 					var siteId = getAttr(record, SectorAttributes.SITE_ID);
 					var sectorId = getAttr(record, SectorAttributes.SECTOR_ID);
 
+					if (siteId === undefined || siteId.length === 0) {
+						logger.log("Sector '" + sectorId + "' has no site data, skipping.");
+						return bOk;
+					}
+
 					var site = siteList.get(siteId);
 					if (site) {
 
