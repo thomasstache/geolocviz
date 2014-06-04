@@ -1,9 +1,9 @@
 define(
 	["underscore",
 	 "collections/sites",
-	 "models/site", "types/position"],
+	 "models/site", "types/position", "types/logger"],
 
-	function(_, SiteList, Site, Position) {
+	function(_, SiteList, Site, Position, Logger) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -117,12 +117,17 @@ define(
 			/** @type {SiteList} reference to the Sites collection */
 			var siteList = null;
 
+			/** @type {Logger} */
+			var logger = null;
+
 			/**
 			 * Parse the rows of a cellrefs file
 			 * @param {Array} rows Array of row records
 			 * @return {Boolean}   True if successful, false on error (i.e. unknown file format)
 			 */
 			function processCellrefs(rows) {
+
+				logger = Logger.getLogger();
 
 				var bOk = true;
 
@@ -153,7 +158,7 @@ define(
 									break;
 
 								default:
-									console.log("Unsupported line in file: " + lineTypeId);
+									logger.error("Unsupported line in file: " + lineTypeId);
 									bOk = false;
 							}
 						}
@@ -298,7 +303,7 @@ define(
 						siteList.add(props, OPT_SILENT);
 					}
 					else {
-						console.log("Missing data for site, skipping: " + strId);
+						logger.log("Missing data for site '" + strId + "', skipping.");
 					}
 				}
 				return bOk;
@@ -316,6 +321,11 @@ define(
 
 					var siteId = getAttr(record, SectorAttributes.SITE_ID);
 					var sectorId = getAttr(record, SectorAttributes.SECTOR_ID);
+
+					if (siteId === undefined || siteId.length === 0) {
+						logger.log("Sector '" + sectorId + "' has no site data, skipping.");
+						return bOk;
+					}
 
 					var site = siteList.get(siteId);
 					if (site) {
@@ -371,7 +381,7 @@ define(
 						site.addSector(props, OPT_SILENT);
 					}
 					else {
-						console.log("Sector '" + sectorId + "' references unknown site: " + siteId);
+						logger.warn("Sector '" + sectorId + "' references unknown site: " + siteId);
 						bOk = false;
 					}
 				}
@@ -402,7 +412,7 @@ define(
 						val = parseInt(val, 10);
 				}
 				else {
-					console.log("Attribute '" + attribute + "' not found in record.");
+					logger.debug("Attribute '" + attribute + "' not found in record.");
 				}
 				return val;
 			}
