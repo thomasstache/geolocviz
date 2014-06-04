@@ -9,13 +9,13 @@ define(
 			{ name: "cellrefs-UK_Vf_GPEH.txt", title: "Vf London 2010" },
 			{ name: "cellrefs-TW_CHT_ICSU_Taipeh.txt", title: "CHT Taipeh UMTS 2013" },
 			{ name: "cellrefs-BR_Claro_CHR.txt", title: "Brasilia GSM 2010" },
-			// { name: "cellrefs-CHL_Entel_RPMO.txt", title: "Chile RPMO 2013" },
-			// { name: "cellrefs-MY_Maxis_CHR_KL.txt", title: "Malaysia CHR" },
+			{ name: "cellrefs-CHL_Entel_RPMO.txt", title: "Chile RPMO 2013" },
+			{ name: "cellrefs-MY_Maxis_CHR_KL.txt", title: "Malaysia CHR 2011" },
 			{ name: "cellrefs-MY_Maxis_GSM.txt", title: "Malaysia GSM 2010" },
 			{ name: "cellrefs-RO_Vf_GPEH.txt", title: "RO Vf Brasov 2010" },
 			{ name: "cellrefs-US_ATT-LTE-Houston.txt", title: "ATT Houston LTE 2013" },
 			{ name: "cellrefs-US_TMO_GPEH_SF2009.txt", title: "TMO San Francisco 2009" },
-			// { name: "cellrefs-US_TMO_GPEH_SF2011.txt", title: "TMO San Francisco 2011" },
+			{ name: "cellrefs-US_TMO_GPEH_SF2011.txt", title: "TMO San Francisco 2011" },
 		];
 
 		return DataIndex;
