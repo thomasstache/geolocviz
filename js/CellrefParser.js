@@ -411,9 +411,11 @@ define(
 					else if (type === DataTypes.INTEGER)
 						val = parseInt(val, 10);
 				}
+//>>excludeStart("debugExclude", pragmas.debugExclude);
 				else {
 					logger.debug("Attribute '" + attribute + "' not found in record.");
 				}
+//>>excludeEnd("debugExclude");
 				return val;
 			}
 
