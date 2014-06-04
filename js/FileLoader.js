@@ -2,9 +2,9 @@ define(
 	["underscore",
 	 "collections/sessions", "collections/results",
 	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "types/position", "types/filestatistics",
-	 "CellrefParser", "jquery.csv"],
+	 "CellrefParser", "types/logger", "jquery.csv"],
 
-	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, FileStatistics, CellrefParser) {
+	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, FileStatistics, CellrefParser, Logger) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -49,11 +49,16 @@ define(
 			// the counter tracking file loads
 			var numFilesQueued = 0;
 
+			/** @type {Logger} */
+			var logger = null;
+
 			/**
 			 * Parse and load a file. Supported types are *.axf, *.distances and *.txt
 			 * @param {File} file The file to load
 			 */
 			function loadFile(file) {
+
+				logger = Logger.getLogger();
 
 				var reader = new FileReader();
 				// If we use onloadend, we need to check the readyState.
@@ -100,7 +105,7 @@ define(
 					processFileContent(filecontent, filename, currentFileType);
 				}
 				else {
-					console.log("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
+					logger.error("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
 				}
 
 				numFilesQueued--;
@@ -157,6 +162,8 @@ define(
 			 */
 			function requestFileFromAppServer(filename, responseType) {
 
+				logger = Logger.getLogger();
+
 				// supported: "arraybuffer", "text", "blob", "document", "json"
 				responseType = responseType || "text";
 
@@ -191,7 +198,7 @@ define(
 					processFileContent(content, filename, filetype);
 				}
 				else {
-					alert("Failed to load file '" + filename + "'.\n(" + request.status + ": " + request.statusText + ")");
+					logger.error("Failed to load file '" + filename + "'.\n(" + request.status + ": " + request.statusText + ")");
 				}
 
 				numFilesQueued--;
@@ -228,7 +235,7 @@ define(
 				}
 				else if (currentFileType == FileTypes.ACCURACY &&
 				         header.length == LineLengths.ACCURACY_60) {
-					alert("'Geotagging 1' accuracy results are currently not supported!");
+					alert("'Geotagging 1' accuracy results are not supported!");
 					return false;
 				}
 				else if (currentFileType == FileTypes.AXF &&
@@ -280,7 +287,7 @@ define(
 				});
 
 				if (record.length < LineLengths.ACCURACY_61) {
-					console.warn("Incomplete accuracy record #" + (stats.numResultsAndCandidates + 1) + " - skipped.");
+					logger.warn("Incomplete accuracy record #" + (stats.numResultsAndCandidates + 1) + " - skipped.");
 					return;
 				}
 
@@ -368,7 +375,7 @@ define(
 				}
 
 				if (record.length < LineLengths.AXF_60) {
-					console.warn("Incomplete record #" + (stats.numResults + 1) + " - skipped.");
+					logger.warn("Incomplete record #" + (stats.numResults + 1) + " - skipped.");
 					return;
 				}
 
