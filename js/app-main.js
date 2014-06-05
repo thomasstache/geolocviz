@@ -1,3 +1,4 @@
+/* global requirejs: false, require: false */
 requirejs.config({
 	shim: {
 		'jquery.csv': {
@@ -11,7 +12,7 @@ requirejs.config({
 	},
 	paths: {
 		'jquery.csv': 'lib/jquery.csv',
-		'jquery': 'empty:',
+		'jquery': 'lib/jquery-1.11.1',
 		json2: 'lib/hbs/json2',
 		i18nprecompile: 'lib/hbs/i18nprecompile',
 		hbs: 'lib/hbs/hbs',
