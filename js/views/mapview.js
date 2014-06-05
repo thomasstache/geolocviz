@@ -120,9 +120,9 @@ define(
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
 
-			initialize: function() {
+			initialize: function(options) {
 
-				this.appsettings = this.options.settings;
+				this.appsettings = options.settings;
 
 				try {
 					var mapCenter = new google.maps.LatLng(51.049035, 13.73744); // Actix Dresden Location
@@ -182,7 +182,7 @@ define(
 				// a collection to keep our overlays in sight
 				this.overlays = new OverlayList();
 
-				this.siteList = this.options.siteList;
+				this.siteList = options.siteList;
 				this.siteList.on("reset", this.deleteNetworkOverlays, this);
 
 				this.collection.on("reset", this.onSessionsReset, this);
@@ -191,7 +191,7 @@ define(
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
-				this.appstate = this.options.appstate;
+				this.appstate = options.appstate;
 
 				this.setNetworkOnTop(this.appsettings.get("drawNetworkOnTop"));
 

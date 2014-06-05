@@ -19,10 +19,10 @@ define(
 			/** @type {Object} properties hash for the template */
 			colorData: null,
 
-			initialize: function() {
+			initialize: function(options) {
 
-				this.settings = this.options.settings;
-				this.appstate = this.options.appstate;
+				this.settings = options.settings;
+				this.appstate = options.appstate;
 
 				// listen to some state changes
 				if (this.appstate) {
@@ -38,7 +38,7 @@ define(
 				}
 
 				// translate the colors dictionary into an array for our templating
-				var colorDict = this.options.colors;
+				var colorDict = options.colors;
 				this.colorData = {
 					swatches: []
 				};

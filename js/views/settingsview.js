@@ -32,9 +32,9 @@ define(
 				"click #btnMore": "moreSettingsButtonClicked",
 			},
 
-			initialize: function() {
+			initialize: function(options) {
 
-				this.appstate = this.options.appstate;
+				this.appstate = options.appstate;
 
 				this.$checkConnectMarkers = $("#checkConnectMarkers");
 				this.$checkConnectSessions = $("#checkConnectSessions");

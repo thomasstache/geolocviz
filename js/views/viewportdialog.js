@@ -20,9 +20,9 @@ define(
 				"keyup #boundsInput": "boundsInputKeyUp",
 			},
 
-			initialize: function() {
+			initialize: function(options) {
 
-				this.viewport = this.options.viewport || new Viewport();
+				this.viewport = options.viewport || new Viewport();
 
 				this.render();
 				this.updateControls();
