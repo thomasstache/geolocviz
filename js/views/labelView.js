@@ -24,7 +24,7 @@ define(
 
 				this.checkHistoryAPI();
 
-				this.$labelInput = $("#labelInput");
+				this.$labelInput = this.$("#labelInput");
 
 				this.initLabelFromHistory();
 

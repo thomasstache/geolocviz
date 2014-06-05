@@ -62,7 +62,7 @@ define(
 
 			applyClicked: function() {
 
-				var input = $("#boundsInput").val();
+				var input = this.$("#boundsInput").val();
 				this.viewport.parse(input);
 
 				this.trigger("viewport:set", this.viewport);

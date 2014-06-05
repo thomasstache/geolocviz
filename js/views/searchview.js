@@ -71,7 +71,7 @@ define(
 			},
 
 			clearSearchField: function() {
-				$("#searchInput").val("");
+				this.$searchInput.val("");
 			},
 
 			searchFocussed: function() {

@@ -36,8 +36,8 @@ define(
 
 				this.appstate = options.appstate;
 
-				this.$checkConnectMarkers = $("#checkConnectMarkers");
-				this.$checkConnectSessions = $("#checkConnectSessions");
+				this.$checkConnectMarkers = this.$("#checkConnectMarkers");
+				this.$checkConnectSessions = this.$("#checkConnectSessions");
 				this.$checkDynamicMarkerColors = this.$("#checkDynamicMarkerColors");
 				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
 				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");

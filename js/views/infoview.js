@@ -53,18 +53,18 @@ define(
 				// indicates new Statistics model
 				this.model.on("change:statistics", this.onStatisticsRefChanged, this);
 
-				this.$tbSessionToolbar = $(".toolbar.sessionControls");
-				this.$tbResultsToolbar = $(".toolbar.resultControls");
+				this.$tbSessionToolbar = this.$(".toolbar.sessionControls");
+				this.$tbResultsToolbar = this.$(".toolbar.resultControls");
 
-				this.$focusBtn = $("button.focus-session");
-				this.$unfocusBtn = $("button.unfocus-session");
-				this.$navFirstBtn = $("button.results-first");
-				this.$navPrevBtn = $("button.results-prev");
-				this.$navNextBtn = $("button.results-next");
-				this.$navLastBtn = $("button.results-last");
+				this.$focusBtn = this.$("button.focus-session");
+				this.$unfocusBtn = this.$("button.unfocus-session");
+				this.$navFirstBtn = this.$("button.results-first");
+				this.$navPrevBtn = this.$("button.results-prev");
+				this.$navNextBtn = this.$("button.results-next");
+				this.$navLastBtn = this.$("button.results-last");
 
-				this.$lookupCellBtn = $("button.lookup-cell");
-				this.$lookupRefCellBtn = $("button.lookup-ref-cell");
+				this.$lookupCellBtn = this.$("button.lookup-cell");
+				this.$lookupRefCellBtn = this.$("button.lookup-ref-cell");
 			},
 
 			onSessionChanged: function() {
@@ -159,7 +159,7 @@ define(
 					}
 				}
 
-				$("#sessionInfo").html(sessionTemplate(context));
+				this.$("#sessionInfo").html(sessionTemplate(context));
 				return this;
 			},
 
@@ -175,7 +175,7 @@ define(
 					context.isCandidate = true;
 				}
 
-				$("#resultInfo").html(resultTemplate(context));
+				this.$("#resultInfo").html(resultTemplate(context));
 				return this;
 			},
 
@@ -215,7 +215,7 @@ define(
 					context.enableFilterRefCells = true;
 				}
 
-				$("#siteInfo").html(siteTemplate(context));
+				this.$("#siteInfo").html(siteTemplate(context));
 				return this;
 			},
 
@@ -233,7 +233,7 @@ define(
 				if (context.numSites && context.numSites > 0)
 					context.hasNetwork = true;
 
-				$("#statistics").html(statisticsTemplate(context));
+				this.$("#statistics").html(statisticsTemplate(context));
 				return this;
 			},
 

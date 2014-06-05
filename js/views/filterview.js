@@ -25,7 +25,7 @@ define(
 			render: function() {
 
 				var context = this.model.get("resultsFilterQuery");
-				$("#clearFilters").html(filterbarTemplate(context !== null ? context : {}));
+				this.$("#clearFilters").html(filterbarTemplate(context !== null ? context : {}));
 				return this;
 			},
 

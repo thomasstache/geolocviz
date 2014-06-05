@@ -19,6 +19,9 @@ define(
 			/** @type {Object} properties hash for the template */
 			colorData: null,
 
+			$swatchList: null,
+			$colorScale: null,
+
 			initialize: function(options) {
 
 				this.settings = options.settings;

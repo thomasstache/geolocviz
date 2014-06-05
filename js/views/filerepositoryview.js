@@ -19,9 +19,11 @@ define(
 			},
 
 			$fileRepositoryPanel: null,
+			$loadButton: null,
 
 			initialize: function() {
 				this.$fileRepositoryPanel = this.$("#fileRepositoryPanel");
+				this.$loadButton = this.$("#loadButton");
 				this.render();
 			},
 
@@ -52,11 +54,11 @@ define(
 
 			toggleFileList: function() {
 				this.$fileRepositoryPanel.fadeToggle(100);
-				this.$("#loadButton").toggleClass("active");
+				this.$loadButton.toggleClass("active");
 			},
 			hideFileList: function() {
 				this.$fileRepositoryPanel.hide();
-				this.$("#loadButton").removeClass("active");
+				this.$loadButton.removeClass("active");
 			}
 		});
 
