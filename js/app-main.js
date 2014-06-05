@@ -4,11 +4,6 @@ requirejs.config({
 		'jquery.csv': {
 			deps: ['jquery']
 		},
-
-		'backbone': {
-			deps: ['underscore', 'jquery'],
-			exports: 'Backbone'
-		},
 	},
 	paths: {
 		'jquery.csv': 'lib/jquery.csv',
