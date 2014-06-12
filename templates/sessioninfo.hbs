@@ -12,10 +12,10 @@
 {{/if}}
 	<li><span class="label">Records:</span>&nbsp;<span class="value">{{resultCount}}</span></li>
 	<li>
-		<span class="label">Distance:</span>&nbsp;<span class="value">{{withUnit distance "m"}}</span>
 	{{#if refDistance}}
 		<span class="label">GPS&nbsp;Dist:</span>&nbsp;<span class="value">{{withUnit refDistance "m"}}</span>
 	{{/if}}
+		<span class="label">Distance:</span>&nbsp;<span class="value">{{withUnit distance "m"}}</span>
 	</li>
 {{#if duration}}
 	<li>
