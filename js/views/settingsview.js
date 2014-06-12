@@ -133,6 +133,7 @@ define(
 				if (this.$settingsDialog !== null) {
 					$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
 					$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+					$("#checkUseDotIcons").prop("checked", this.model.get("useDotAccuracyMarkers"));
 				}
 			},
 
@@ -149,11 +150,13 @@ define(
 			commitSettingsDialog: function() {
 
 				var probMobility = $("#probMobilityInput") ? $("#probMobilityInput").val() : 0.5,
-					probIndoor = $("#probIndoorInput") ? $("#probIndoorInput").val() : 0.5;
+					probIndoor = $("#probIndoorInput") ? $("#probIndoorInput").val() : 0.5,
+					useDotIcons = $("#checkUseDotIcons").prop("checked");
 
 				this.model.set({
 					mobilityThreshold: parseFloat(probMobility),
-					indoorThreshold: parseFloat(probIndoor)
+					indoorThreshold: parseFloat(probIndoor),
+					useDotAccuracyMarkers: useDotIcons,
 				});
 
 				this.removeSettingsDialog();
