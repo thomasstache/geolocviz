@@ -188,7 +188,7 @@ define(
 				this.collection.on("reset", this.onSessionsReset, this);
 
 				// listen for settings changes
-				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold", this.updateMarkerColors, this);
+				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
 				this.appstate = options.appstate;
@@ -1067,9 +1067,15 @@ define(
 					}
 				}
 				else {
-					var color = colorDef.bgcolor + "|" + colorDef.color;
+					if (this.appsettings.get("useDotAccuracyMarkers")) {
 
-					icon = this.getMarkerIcon(IconTypes.PIN, letter + "|" + color);
+						icon = this.getMarkerIcon(IconTypes.DOT, letter);
+					}
+					else {
+						var color = colorDef.bgcolor + "|" + colorDef.color;
+
+						icon = this.getMarkerIcon(IconTypes.PIN, letter + "|" + color);
+					}
 				}
 
 				var marker = new google.maps.Marker(
@@ -1158,6 +1164,9 @@ define(
 						}
 						else if (option == "S") {
 							imagePath = 'images/circle_orange.png';
+						}
+						else if (option == "R") {
+							imagePath = 'images/circle_blue.png';
 						}
 						break;
 

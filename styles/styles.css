@@ -290,7 +290,7 @@ header {
 	margin: 0 1ex;
 	vertical-align: middle;
 }
-#settings input[type="checkbox"] {
+input[type="checkbox"] {
 	/* improve alignment with labels */
 	vertical-align: bottom;
 }
@@ -307,7 +307,7 @@ header {
 
 #settingsdialog ul { display: table; width: 100%; }
 #settingsdialog li { display: table-row; }
-#settingsdialog li label { display: table-cell; }
+#settingsdialog li label { display: table-cell; line-height: 1.5; }
 #settingsdialog input[type="number"] { width: 10ex; }
 
 #viewportDialog li label { padding: 0 4px; }
