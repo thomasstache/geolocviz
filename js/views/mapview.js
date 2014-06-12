@@ -1222,7 +1222,7 @@ define(
 			 */
 			drawReferenceLine: function(startLatLng, endLatLng, visible) {
 
-				this.createLine([startLatLng, endLatLng], "#FF0000", 2, 0.3, OverlayTypes.REFERENCELINE, visible);
+				this.createLine([startLatLng, endLatLng], "#FF5050", 2, 0.3, OverlayTypes.REFERENCELINE, visible);
 			},
 
 			/**
