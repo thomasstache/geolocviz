@@ -13,6 +13,9 @@ define(
 				sessionId: -1,
 				// @type {Position} reference position
 				position: null,
+
+				// time offset
+				timestamp: 0,
 			},
 
 			/** @type {LocationCandidateList} collection of LocationCandidates */
@@ -48,6 +51,7 @@ define(
 					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
 					msgId: this.get('msgId'),
+					timestamp: this.get('timestamp'),
 					refPosition: this.getRefPosition(),
 					candidateCount: this.locationCandidates.length,
 				};

@@ -12,6 +12,9 @@ define(
 				sessionId: -1,
 				// @type {Position} geolocated position
 				position: null,
+
+				// time offset
+				timestamp: 0,
 			},
 
 			category: function(thresholds) {

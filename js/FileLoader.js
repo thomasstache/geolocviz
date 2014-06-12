@@ -22,6 +22,7 @@ define(
 				ACCURACY_60: 9,
 				ACCURACY_61: 11,
 				ACCURACY_612: 13,
+				ACCURACY_64: 14, /* with timestamp */
 				AXF_60: 10,
 				AXF_61: 11,
 				AXF_XT: 14, /* with primary cells */
@@ -229,8 +230,8 @@ define(
 				var header = rowData[0];
 
 				if (currentFileType == FileTypes.ACCURACY &&
-					(header.length == LineLengths.ACCURACY_61 ||
-					 header.length == LineLengths.ACCURACY_612)) {
+					header.length >= LineLengths.ACCURACY_61) {
+
 					parsingFct = parseAccuracyRecordV3;
 				}
 				else if (currentFileType == FileTypes.ACCURACY &&
@@ -284,6 +285,7 @@ define(
 					SESSIONID: 10,
 					CONTROLLER: 11, // 6.1.2+
 					PRIM_CELL_ID: 12,
+					TIME: 13, // 6.4+
 				});
 
 				if (record.length < LineLengths.ACCURACY_61) {
@@ -302,6 +304,8 @@ define(
 					sessionId: sessId
 				};
 
+				var timestamp = (record.length == LineLengths.ACCURACY_64) ? parseNumber(record[IDX.TIME]) : NaN;
+
 				// when the CT message ID changes, create a new AccuracyResult
 				if (currentAccuracyResult === null ||
 					currentAccuracyResult.get('msgId') != msgId) {
@@ -311,6 +315,7 @@ define(
 
 					currentAccuracyResult = new AccuracyResult({
 						msgId: msgId,
+						timestamp: timestamp,
 						sessionId: sessionUId,
 						position: new Position(parseNumber(record[IDX.REF_LAT]),
 											   parseNumber(record[IDX.REF_LON]))
