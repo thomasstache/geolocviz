@@ -5,12 +5,12 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
-	 "views/searchview", "views/labelview", "views/filerepositoryview",
+	 "views/searchview", "views/labelview", "views/filerepositoryview", "views/sessiontableview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
 	 "types/searchquery", "FileLoader", "types/logger"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView,
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView, SessionTableView,
 			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, Logger) {
 
 		var AppView = Backbone.View.extend({
@@ -86,6 +86,8 @@ define(
 				});
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
+
+				new SessionTableView({sessions: this.sessions });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);

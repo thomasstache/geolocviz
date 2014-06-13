@@ -1,0 +1,26 @@
+<div class="veilBackground" />
+
+<!-- the size is necessary to prevent blurry rendering in Chrome due to CSS centering -->
+<section class="dialog centered" style="width: 80%; height: 80%;" >
+	<div class="content">
+		<h3>{{title}}</h3>
+
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Results</th>
+				</tr>
+			</thead>
+			<tbody>
+			{{#each sessions}}
+				<tr><td>{{id}}</td></tr>
+			{{/each}}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="toolbar" style="position: relative;">
+		<button id="btnClose">Close</button>
+	</div>
+</section>
