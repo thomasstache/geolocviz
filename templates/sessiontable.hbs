@@ -2,25 +2,32 @@
 
 <!-- the size is necessary to prevent blurry rendering in Chrome due to CSS centering -->
 <section class="dialog centered" style="width: 80%; height: 80%;" >
-	<div class="content">
+	<div class="content flexColumn">
 		<h3>{{title}}</h3>
 
-		<table>
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Results</th>
-				</tr>
-			</thead>
-			<tbody>
-			{{#each sessions}}
-				<tr><td>{{id}}</td></tr>
-			{{/each}}
-			</tbody>
-		</table>
+		<div class="scrollbox stretching">
+
+			<table class="striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Results</th>
+					</tr>
+				</thead>
+				<tbody>
+				{{#each sessions}}
+					<tr>
+						<td>{{sessionId}}</td>
+						<td>{{resultCount}}</td>
+					</tr>
+				{{/each}}
+				</tbody>
+			</table>
+
+		</div>
 	</div>
 
-	<div class="toolbar" style="position: relative;">
+	<div class="toolbar">
 		<button id="btnClose">Close</button>
 	</div>
 </section>
