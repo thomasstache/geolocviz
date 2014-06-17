@@ -1,12 +1,12 @@
 define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult", "models/LocationCandidate",
-	 "types/resultsfilterquery", "types/googlemapsutils",
+	 "types/resultsfilterquery",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, LocationCandidate, ResultsFilterQuery, GoogleMapsUtils,
+			 AccuracyResult, LocationCandidate, ResultsFilterQuery,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
@@ -117,48 +117,6 @@ define(
 
 				var session = this.model.get("selectedSession");
 				var context = session !== null ? session.getInfo() : {};
-				if (session &&
-					session.results) {
-
-					if (context.resultCount > 0) {
-						// calculate mean indoor probability
-						var probIndoorSum = session.results.reduce(sumIndoorProbabilities, 0);
-						context.probIndoor = probIndoorSum / context.resultCount;
-						var confidenceSum = session.results.reduce(sumConfidence, 0);
-						context.confidence = confidenceSum / context.resultCount;
-
-						// calculate distance, duration and speed
-						var distance_m = computeDistance(session.results, false);
-						context.distance = Math.round(distance_m);
-
-						var firstResult = session.results.first();
-
-						// the mobility probability is constant for the whole session, take it from the first result
-						if (firstResult instanceof AccuracyResult) {
-							// for AccuracyResults we can compute the distance between all reference locations
-							context.refDistance = Math.round(computeDistance(session.results, true));
-
-							context.probMobility = firstResult.getBestLocationCandidate().get("probMobility");
-						}
-						else {
-							context.probMobility = firstResult.get("probMobility");
-						}
-
-						// some files have no timestamp
-						if (firstResult.has("timestamp")) {
-
-							var lastResult = session.results.last(),
-								duration_ms = lastResult.get("timestamp") - firstResult.get("timestamp");
-
-							context.duration = duration_ms;
-
-							if (duration_ms > 0.0) {
-								var meanSpeed_m_s = distance_m / (duration_ms / 1000.0);
-								context.meanSpeed = Math.round(meanSpeed_m_s * 3.6 * 10.0) / 10.0;
-							}
-						}
-					}
-				}
 
 				this.$("#sessionInfo").html(sessionTemplate(context));
 				return this;
@@ -414,45 +372,6 @@ define(
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}
 		});
-
-		/**
-		 * Aggregator function for _.reduce() collecting the indoor probabilities of all results.
-		 * @param  {Number} sum        The map/reduce memo value
-		 * @param  {BaseResult} result The result model
-		 * @return {Number}            New aggregation result
-		 */
-		function sumIndoorProbabilities(sum, result) {
-			var data = result.getInfo(),
-				prob = data.probIndoor || 0.0;
-			return sum + prob;
-		}
-
-		/**
-		 * Aggregator function for _.reduce() collecting the confidence of all results.
-		 * @param  {Number} sum        The map/reduce memo value
-		 * @param  {BaseResult} result The result model
-		 * @return {Number}            New aggregation result
-		 */
-		function sumConfidence(sum, result) {
-			var data = result.getInfo(),
-				conf = data.confidence || 0.0;
-			return sum + conf;
-		}
-
-		/**
-		 * Calculate the length of the path between all geolocated positions.
-		 * @param  {ResultList} results
-		 * @return {Number}
-		 */
-		function computeDistance(results, useRefLocation) {
-			var locations = [];
-			results.each(function(result) {
-				var pos = useRefLocation ? result.getRefPosition()
-										 : result.getGeoPosition();
-				GoogleMapsUtils.pushIfNew(locations, GoogleMapsUtils.makeLatLng(pos));
-			});
-			return GoogleMapsUtils.computeSphericDistance(locations);
-		}
 
 		return InfoView;
 	}
