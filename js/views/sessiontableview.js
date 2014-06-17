@@ -23,9 +23,9 @@ define(
 
 				this.collection = options.sessions || null;
 
-				if (this.collection) {
-					this.listenTo(this.collection, "sort", "this.updateTable");
-				}
+				// if (this.collection) {
+				// 	this.listenTo(this.collection, "sort", "this.updateTable");
+				// }
 
 				this.render();
 			},
