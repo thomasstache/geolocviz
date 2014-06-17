@@ -14,6 +14,7 @@ define(
 		 * Emits the following events:
 		 *   session:focussed
 		 *   session:unfocussed
+		 *   session:unselected
 		 *   session:listAll
 		 *   result:nav-first
 		 *   result:nav-prev
@@ -42,6 +43,17 @@ define(
 
 			/** @type {AppState} the shared app state */
 			model: null,
+
+			$tbSessionToolbar: null,
+			$tbResultsToolbar: null,
+			$focusBtn: null,
+			$unfocusBtn: null,
+			$navFirstBtn: null,
+			$navPrevBtn: null,
+			$navNextBtn: null,
+			$navLastBtn: null,
+			$lookupCellBtn: null,
+			$lookupRefCellBtn: null,
 
 			initialize: function() {
 
