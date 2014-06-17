@@ -1,7 +1,10 @@
 {{#if files}}
 <h3 class="etched">Data Statistics</h3>
 <ul class="propertyList">
-	<li><span class="label">Sessions:</span>&nbsp;<span class="value">{{numSessions}}</span></li>
+	<li><span class="label">Sessions:</span>&nbsp;<span class="value">{{numSessions}}</span>
+		<button class="listAllSessions translucent tiny symbolic"
+				title="List all sessions">&equiv;</button>
+	</li>
 	<li><span class="label">Geol. Results:</span>&nbsp;<span class="value">{{numResults}}</span></li>
 	{{#if hasCandidates}}
 	<li title="Including location candidates"><span class="label">Total Results:</span>&nbsp;<span class="value">{{numResultsAndCandidates}}</span></li>

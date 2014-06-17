@@ -14,6 +14,7 @@ define(
 		 * Emits the following events:
 		 *   session:focussed
 		 *   session:unfocussed
+		 *   session:listAll
 		 *   result:nav-first
 		 *   result:nav-prev
 		 *   result:nav-next
@@ -36,6 +37,7 @@ define(
 				"click .lookup-ref-cell": "onLookupRefCellClicked",
 				"click .filterByElement" : "onFilterByElementClicked",
 				"click .filterByRefcell" : "onFilterByElementClicked",
+				"click .listAllSessions" : "onListAllSessionsClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -259,6 +261,14 @@ define(
 			onUnselectSessionClicked: function() {
 
 				this.trigger("session:unselected");
+			},
+
+			/**
+			 * Handler for clicks on "List All Sessions" button. Triggers a "session:listAll" event.
+			 */
+			onListAllSessionsClicked: function() {
+
+				this.trigger("session:listAll");
 			},
 
 			updateSessionControls: function() {

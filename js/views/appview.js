@@ -87,8 +87,6 @@ define(
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
 
-				new SessionTableView({sessions: this.sessions });
-
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
 				this.mapview.on("results:filtered", this.resultsFiltered, this);
@@ -97,6 +95,7 @@ define(
 				this.infoview.on("session:focussed", this.sessionFocussed, this);
 				this.infoview.on("session:unfocussed", this.sessionUnfocussed, this);
 				this.infoview.on("session:unselected", this.clearSelections, this);
+				this.listenTo(this.infoview, "session:listAll", this.showSessionTable);
 				this.infoview.on("result:nav-first", this.resultsNavigateToFirst, this);
 				this.infoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
 				this.infoview.on("result:nav-next", this.resultsNavigateToNext, this);
@@ -579,6 +578,14 @@ define(
 
 					this.mapview.filterResultsBySector(query);
 				}
+			},
+
+			/**
+			 * Handler for the "session:listAll" event from the InfoView.
+			 */
+			showSessionTable: function() {
+
+				new SessionTableView({ sessions: this.sessions });
 			},
 
 			/*********************** Result Navigation ***********************/
