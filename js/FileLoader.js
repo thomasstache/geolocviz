@@ -234,15 +234,15 @@ define(
 
 					parsingFct = parseAccuracyRecordV3;
 				}
-				else if (currentFileType == FileTypes.ACCURACY &&
-				         header.length == LineLengths.ACCURACY_60) {
-					alert("'Geotagging 1' accuracy results are not supported!");
-					return false;
-				}
 				else if (currentFileType == FileTypes.AXF &&
 						 header.length >= LineLengths.AXF_60) {
 
 					parsingFct = parseAxfRecord;
+				}
+				else if (currentFileType == FileTypes.ACCURACY &&
+						 header.length == LineLengths.ACCURACY_60) {
+					alert("'Geotagging 1' accuracy results are not supported!");
+					return false;
 				}
 
 				if (!parsingFct) {
