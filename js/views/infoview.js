@@ -116,10 +116,9 @@ define(
 			renderSessionInfo: function() {
 
 				var session = this.model.get("selectedSession");
-				var context = session !== null ? session.toJSON() : {};
+				var context = session !== null ? session.getInfo() : {};
 				if (session &&
 					session.results) {
-					context.resultCount = session.results.length;
 
 					if (context.resultCount > 0) {
 						// calculate mean indoor probability
