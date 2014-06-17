@@ -33,9 +33,12 @@ define(
 			// create the dialog and insert into page DOM
 			render: function() {
 
+				var sessionInfo = this.collection.map(function(session) {
+					return session.getInfo();
+				});
 				var context = {
 					title: "Sessions",
-					sessions: []
+					sessions: sessionInfo
 				};
 
 				this.$el.html(tableTemplate(context));

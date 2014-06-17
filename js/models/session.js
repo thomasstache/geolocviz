@@ -20,6 +20,12 @@ define(
 				// the list of geolocation results
 				this.results = new ResultList();
 			},
+
+			getInfo: function() {
+				var rv = this.toJSON();
+				rv.resultCount = this.results.length;
+				return rv;
+			}
 		});
 
 		return Session;
