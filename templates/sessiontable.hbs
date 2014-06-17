@@ -12,6 +12,12 @@
 					<tr>
 						<th>ID</th>
 						<th>Results</th>
+						<th>Confidence</th>
+						<th>Mobility Prob.</th>
+						<th>Indoor Prob.</th>
+						<th>Distance<span class="unit">[m]</span></th>
+						<th>Duration<span class="unit">[s]</span></th>
+						<th>Speed<span class="unit">[km/h]</span></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -19,6 +25,12 @@
 					<tr>
 						<td>{{sessionId}}</td>
 						<td>{{resultCount}}</td>
+						<td>{{percent confidence}}</td>
+						<td>{{percent probMobility}}</td>
+						<td>{{percent probIndoor}}</td>
+						<td>{{distance}}</td>
+						<td>{{#if duration}}{{formattime duration "ms"}}{{else}}&mdash;{{/if}}</td>
+						<td>{{#if duration}}{{meanSpeed}}{{else}}&mdash;{{/if}}</td>
 					</tr>
 				{{/each}}
 				</tbody>
