@@ -240,10 +240,8 @@ define(
 					return false;
 				}
 				else if (currentFileType == FileTypes.AXF &&
-						 (header.length == LineLengths.AXF_60 ||
-						  header.length == LineLengths.AXF_61 ||
-						  header.length == LineLengths.AXF_XT ||
-						  header.length == LineLengths.AXF_XT2)) {
+						 header.length >= LineLengths.AXF_60) {
+
 					parsingFct = parseAxfRecord;
 				}
 
