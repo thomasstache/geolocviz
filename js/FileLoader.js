@@ -382,8 +382,9 @@ define(
 					return;
 				}
 
-				var isExtended = record.length == LineLengths.AXF_XT || record.length == LineLengths.AXF_XT2;
-				var isExtended2 = record.length == LineLengths.AXF_XT2;
+				// TODO: replace with dynamic column index like for Cellref data
+				var isExtended = record.length >= LineLengths.AXF_XT;
+				var isExtended2 = record.length >= LineLengths.AXF_XT2;
 
 				// indoor probability only in 6.1+
 				var probIndoor    = (record.length >= LineLengths.AXF_61) ? record[IDX.PROB_INDOOR] : NaN;
