@@ -503,7 +503,7 @@ table.striped tr:nth-child(even) { background: hsl(210, 100%, 94%); }
 }
 
 #sessionTableDialog table {
-	table-layout: fixed; /* fixed columns */
+	table-layout: fixed; /* evenly spaced columns */
 }
 #sessionTableDialog .scrollbox {
 	overflow: auto;
@@ -513,11 +513,18 @@ table.striped tr:nth-child(even) { background: hsl(210, 100%, 94%); }
 
 /* UI should not be selectable */
 
-header, footer, #mapView, #mapLegend, #settings, #mainToolbar, #filterBar, .toolbar {
+header, footer, button, #playground-app, .toolbar, .dialog {
 	-webkit-user-select: none;
-	-moz-user-select: -moz-none;
+	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+.user-selectable {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 }
 
 .veilBackground {
