@@ -1,12 +1,12 @@
 define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult", "models/LocationCandidate",
-	 "types/resultsfilterquery", "types/googlemapsutils",
+	 "types/resultsfilterquery",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, LocationCandidate, ResultsFilterQuery, GoogleMapsUtils,
+			 AccuracyResult, LocationCandidate, ResultsFilterQuery,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
@@ -14,6 +14,8 @@ define(
 		 * Emits the following events:
 		 *   session:focussed
 		 *   session:unfocussed
+		 *   session:unselected
+		 *   session:listAll
 		 *   result:nav-first
 		 *   result:nav-prev
 		 *   result:nav-next
@@ -36,10 +38,22 @@ define(
 				"click .lookup-ref-cell": "onLookupRefCellClicked",
 				"click .filterByElement" : "onFilterByElementClicked",
 				"click .filterByRefcell" : "onFilterByElementClicked",
+				"click .listAllSessions" : "onListAllSessionsClicked",
 			},
 
 			/** @type {AppState} the shared app state */
 			model: null,
+
+			$tbSessionToolbar: null,
+			$tbResultsToolbar: null,
+			$focusBtn: null,
+			$unfocusBtn: null,
+			$navFirstBtn: null,
+			$navPrevBtn: null,
+			$navNextBtn: null,
+			$navLastBtn: null,
+			$lookupCellBtn: null,
+			$lookupRefCellBtn: null,
 
 			initialize: function() {
 
@@ -114,50 +128,7 @@ define(
 			renderSessionInfo: function() {
 
 				var session = this.model.get("selectedSession");
-				var context = session !== null ? session.toJSON() : {};
-				if (session &&
-					session.results) {
-					context.resultCount = session.results.length;
-
-					if (context.resultCount > 0) {
-						// calculate mean indoor probability
-						var probIndoorSum = session.results.reduce(sumIndoorProbabilities, 0);
-						context.probIndoor = probIndoorSum / context.resultCount;
-						var confidenceSum = session.results.reduce(sumConfidence, 0);
-						context.confidence = confidenceSum / context.resultCount;
-
-						// calculate distance, duration and speed
-						var distance_m = computeDistance(session.results, false);
-						context.distance = Math.round(distance_m);
-
-						var firstResult = session.results.first();
-
-						// the mobility probability is constant for the whole session, take it from the first result
-						if (firstResult instanceof AccuracyResult) {
-							// for AccuracyResults we can compute the distance between all reference locations
-							context.refDistance = Math.round(computeDistance(session.results, true));
-
-							context.probMobility = firstResult.getBestLocationCandidate().get("probMobility");
-						}
-						else {
-							context.probMobility = firstResult.get("probMobility");
-						}
-
-						// some files have no timestamp
-						if (firstResult.has("timestamp")) {
-
-							var lastResult = session.results.last(),
-								duration_ms = lastResult.get("timestamp") - firstResult.get("timestamp");
-
-							context.duration = duration_ms;
-
-							if (duration_ms > 0.0) {
-								var meanSpeed_m_s = distance_m / (duration_ms / 1000.0);
-								context.meanSpeed = Math.round(meanSpeed_m_s * 3.6 * 10.0) / 10.0;
-							}
-						}
-					}
-				}
+				var context = session !== null ? session.getInfo() : {};
 
 				this.$("#sessionInfo").html(sessionTemplate(context));
 				return this;
@@ -259,6 +230,14 @@ define(
 			onUnselectSessionClicked: function() {
 
 				this.trigger("session:unselected");
+			},
+
+			/**
+			 * Handler for clicks on "List All Sessions" button. Triggers a "session:listAll" event.
+			 */
+			onListAllSessionsClicked: function() {
+
+				this.trigger("session:listAll");
 			},
 
 			updateSessionControls: function() {
@@ -405,45 +384,6 @@ define(
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}
 		});
-
-		/**
-		 * Aggregator function for _.reduce() collecting the indoor probabilities of all results.
-		 * @param  {Number} sum        The map/reduce memo value
-		 * @param  {BaseResult} result The result model
-		 * @return {Number}            New aggregation result
-		 */
-		function sumIndoorProbabilities(sum, result) {
-			var data = result.getInfo(),
-				prob = data.probIndoor || 0.0;
-			return sum + prob;
-		}
-
-		/**
-		 * Aggregator function for _.reduce() collecting the confidence of all results.
-		 * @param  {Number} sum        The map/reduce memo value
-		 * @param  {BaseResult} result The result model
-		 * @return {Number}            New aggregation result
-		 */
-		function sumConfidence(sum, result) {
-			var data = result.getInfo(),
-				conf = data.confidence || 0.0;
-			return sum + conf;
-		}
-
-		/**
-		 * Calculate the length of the path between all geolocated positions.
-		 * @param  {ResultList} results
-		 * @return {Number}
-		 */
-		function computeDistance(results, useRefLocation) {
-			var locations = [];
-			results.each(function(result) {
-				var pos = useRefLocation ? result.getRefPosition()
-										 : result.getGeoPosition();
-				GoogleMapsUtils.pushIfNew(locations, GoogleMapsUtils.makeLatLng(pos));
-			});
-			return GoogleMapsUtils.computeSphericDistance(locations);
-		}
 
 		return InfoView;
 	}
