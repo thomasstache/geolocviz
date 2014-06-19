@@ -1,0 +1,14 @@
+				<tbody>
+				{{#each sessions}}
+					<tr>
+						<td>{{sessionId}}</td>
+						<td class="numeric">{{resultCount}}</td>
+						<td class="numeric">{{percent confidence}}</td>
+						<td class="numeric">{{percent probMobility}}</td>
+						<td class="numeric">{{percent probIndoor}}</td>
+						<td class="numeric">{{distance}}</td>
+						<td class="numeric">{{#if duration}}{{formattime duration "ms"}}{{else}}&mdash;{{/if}}</td>
+						<td class="numeric">{{#if duration}}{{meanSpeed}}{{else}}&mdash;{{/if}}</td>
+					</tr>
+				{{/each}}
+				</tbody>
