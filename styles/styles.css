@@ -164,7 +164,7 @@ button:not([disabled]):active, button:not([disabled]).active {
 	margin: 0;
 	padding: 0;
 	z-index: 20;
-	background-color: rgba(250, 250, 255, 0.9);
+	background-color: rgba(250, 250, 255, 0.95);
 	border: 1px solid rgb(200, 200, 200);
 	border-radius: 4px;
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0,
