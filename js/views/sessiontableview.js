@@ -38,8 +38,8 @@ define(
 
 					this.collection = new SortableCollection(sessionInfo);
 					// sort for testing fun
-					this.collection.setSortAttribute("distance")
-								   .setSortDirection(SortableCollection.SORT_DESCENDING)
+					this.collection.setSortAttribute("sessionId")
+								   .setSortDirection(SortableCollection.SORT_ASCENDING)
 								   .sort();
 
 					this.render();
