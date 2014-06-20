@@ -56,16 +56,34 @@ define(
 
 			comparator: function(lhs, rhs) {
 
+				if (this.sortAttribute === null || this.sortAttribute.length === 0)
+					return 0;
+
 				var a = lhs.get(this.sortAttribute),
 					b = rhs.get(this.sortAttribute);
 
 				if (a === b) return 0;
 
+				var rv;
 				if (this.sortDirection === SortableCollection.SORT_ASCENDING) {
-					return a > b ? 1 : -1;
+					if (a === undefined && b !== undefined)
+						rv = -1;
+					else if (a !== undefined && b === undefined)
+						rv = 1;
+					else
+						rv = a > b ? 1 : -1;
+
+					return rv;
 				}
 
-				return a < b ? 1 : -1;
+				if (a === undefined && b !== undefined)
+					rv = 1;
+				else if (a !== undefined && b === undefined)
+					rv = -1;
+				else
+					rv = a < b ? 1 : -1;
+
+				return rv;
 			},
 		},
 		{
