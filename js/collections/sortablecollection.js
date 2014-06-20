@@ -13,11 +13,45 @@ define(
 
 			sortAttribute: "",
 
-			sortDirection: 1,
+			sortDirection: null,
 
-			sortByAttribute: function(attribute) {
+			initialize: function() {
+				this.sortDirection = SortableCollection.SORT_ASCENDING;
+			},
+
+			/**
+			 * Sets the sort attribute.
+			 * Does not update the collection order. Call sort() to apply the changes.
+			 * @param  {String} attribute   The attribute name
+			 * @return {SortableCollection} The collection
+			 */
+			setSortAttribute: function(attribute) {
 				this.sortAttribute = attribute;
-				this.sort();
+				return this;
+			},
+
+			/**
+			 * Sets the sort direction.
+			 * Does not update the collection order. Call sort() to apply the changes.
+			 * @param  {number} direction   One of SORT_ASCENDING, SORT_DESCENDING
+			 * @return {SortableCollection} The collection
+			 */
+			setSortDirection: function(direction) {
+
+				if (direction === SortableCollection.SORT_ASCENDING || direction === SortableCollection.SORT_DESCENDING)
+					this.sortDirection = direction;
+
+				return this;
+			},
+
+			/**
+			 * Flips the sort direction.
+			 * Does not update the collection order. Call sort() to apply the changes.
+			 * @return {SortableCollection} The collection
+			 */
+			invertDirection: function() {
+				this.sortDirection *= -1;
+				return this;
 			},
 
 			comparator: function(lhs, rhs) {
@@ -27,15 +61,17 @@ define(
 
 				if (a === b) return 0;
 
-				if (this.sortDirection === SORTDIR.ASC) {
+				if (this.sortDirection === SortableCollection.SORT_ASCENDING) {
 					return a > b ? 1 : -1;
 				}
 
 				return a < b ? 1 : -1;
 			},
+		},
+		{
+			SORT_ASCENDING: 1,
+			SORT_DESCENDING: -1
 		});
-
-		var SORTDIR = Object.freeze({ ASC: 1, DESC: -1, });
 
 		return SortableCollection;
 	}

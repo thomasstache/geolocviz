@@ -37,8 +37,9 @@ define(
 
 					this.collection = new SortableCollection(sessionInfo);
 					// sort for testing fun
-					this.collection.sortDirection *= -1;
-					this.collection.sortByAttribute("distance");
+					this.collection.setSortAttribute("distance")
+								   .setSortDirection(SortableCollection.SORT_DESCENDING)
+								   .sort();
 
 					this.render();
 
