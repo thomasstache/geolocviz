@@ -29,11 +29,11 @@ define(
 					if (sourceUnit == "ms")
 						num = num / 1000;
 
-					// format as seconds
+					// apply locale number format
 					if (Number.prototype.toLocaleString !== undefined)
-						result = num.toLocaleString() + "s";
+						result = num.toLocaleString();
 					else
-						result = num.toString(10) + "s";
+						result = num.toString(10);
 				}
 			}
 			else {
