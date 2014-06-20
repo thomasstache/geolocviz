@@ -7,17 +7,12 @@
 
 		<div><!-- this div helps flexbox layout to position the scrollbox div -->
 
-			<table class="striped user-selectable">
+			<table id="sessionTableHead" class="striped user-selectable sortable">
 				<thead>
 					<tr>
-						<th>ID</th>
-						<th>Results</th>
-						<th>Confidence</th>
-						<th>Mobility Prob.</th>
-						<th>Indoor Prob.</th>
-						<th>Distance<span class="unit"> [m]</span></th>
-						<th>Duration<span class="unit"> [s]</span></th>
-						<th>Speed<span class="unit"> [km/h]</span></th>
+					{{#each columns}}
+						<th data-modelattr="{{attribute}}"><span class="caption">{{caption}}</span>{{#if unit}}<span class="unit"> [{{unit}}]</span>{{/if}}</th>
+					{{/each}}
 					</tr>
 				</thead>
 			</table>
@@ -25,21 +20,8 @@
 		</div>
 		<div class="scrollbox stretching">
 
-			<table class="striped user-selectable">
-				<tbody>
-				{{#each sessions}}
-					<tr>
-						<td>{{sessionId}}</td>
-						<td class="numeric">{{resultCount}}</td>
-						<td class="numeric">{{percent confidence}}</td>
-						<td class="numeric">{{percent probMobility}}</td>
-						<td class="numeric">{{percent probIndoor}}</td>
-						<td class="numeric">{{distance}}</td>
-						<td class="numeric">{{#if duration}}{{formattime duration "ms"}}{{else}}&mdash;{{/if}}</td>
-						<td class="numeric">{{#if duration}}{{meanSpeed}}{{else}}&mdash;{{/if}}</td>
-					</tr>
-				{{/each}}
-				</tbody>
+			<table id="sessionTableBody" class="striped user-selectable">
+				{{! body with rows will be inserted here}}
 			</table>
 
 		</div>
