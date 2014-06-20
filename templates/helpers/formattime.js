@@ -9,9 +9,10 @@ define(
 		 * Handlebars helper to format values as readable time stamps.
 		 * @param  {Object} context    The value passed into the template, interpreted as milliseconds
 		 * @param  {Object} sourceUnit (optional) Unit of the value in context, e.g. "ms".
+		 * @param  {Object} options    Specify the number of fractional digits like "digits=5"
 		 * @return {SafeString}
 		 */
-		function formatTime(context, sourceUnit) {
+		function formatTime(context, sourceUnit, options) {
 
 			var result,
 				num = typeof context === "number" ? context : parseFloat(context);
@@ -29,11 +30,13 @@ define(
 					if (sourceUnit == "ms")
 						num = num / 1000;
 
-					// apply locale number format
-					if (Number.prototype.toLocaleString !== undefined)
-						result = num.toLocaleString();
-					else
-						result = num.toString(10);
+					// round the seconds
+					if (options.hash && options.hash.digits) {
+						var factor = Math.pow(10, options.hash.digits);
+						num = Math.round(num * factor) / factor;
+					}
+
+					result = num.toString();
 				}
 			}
 			else {
