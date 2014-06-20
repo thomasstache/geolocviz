@@ -22,6 +22,7 @@ define(
 
 			events: {
 				"click #btnClose": "close",
+				"click th": "headerClick",
 			},
 
 			initialize: function(options) {
@@ -43,15 +44,26 @@ define(
 
 					this.render();
 
-					// 	this.listenTo(this.collection, "sort", "this.updateTable");
+					this.listenTo(this.collection, "sort", this.updateTable);
 				}
 			},
 
 			// create the dialog and insert into page DOM
 			render: function() {
 
+				var columns = [
+					{ attribute: "sessionId",    caption: "ID" },
+					{ attribute: "resultCount",  caption: "Results" },
+					{ attribute: "confidence",   caption: "Confidence" },
+					{ attribute: "probMobility", caption: "Mobility Prob." },
+					{ attribute: "probIndoor",   caption: "Indoor Prob." },
+					{ attribute: "distance",     caption: "Distance", unit: "m" },
+					{ attribute: "duration",     caption: "Duration", unit: "s" },
+					{ attribute: "meanSpeed",    caption: "Speed",    unit: "km/h" },
+				];
 				var context = {
 					title: "Sessions",
+					columns: columns
 				};
 
 				this.$el.html(tableDialogTemplate(context));
@@ -82,6 +94,33 @@ define(
 				}
 
 				return this;
+			},
+
+			/**
+			 * Handler for clicks on the table column headers. Sort data accordingly.
+			 * @param  {Event} evt jQuery click event
+			 */
+			headerClick: function(evt) {
+
+				if (!evt.currentTarget)
+					return;
+
+				var el = evt.currentTarget;
+				if (el.dataset &&
+					el.dataset.modelattr !== undefined) {
+
+					var sortAttr = el.dataset.modelattr;
+
+					// flip sort direction, if same column
+					if (this.collection.sortAttribute === sortAttr) {
+						this.collection.invertDirection().sort();
+					}
+					else {
+						this.collection.setSortAttribute(sortAttr)
+									   .setSortDirection(SortableCollection.SORT_ASCENDING)
+									   .sort();
+					}
+				}
 			},
 
 			close: function() {

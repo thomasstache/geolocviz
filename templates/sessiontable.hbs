@@ -7,17 +7,12 @@
 
 		<div><!-- this div helps flexbox layout to position the scrollbox div -->
 
-			<table id="sessionTableHead" class="striped user-selectable">
+			<table id="sessionTableHead" class="striped user-selectable sortable">
 				<thead>
 					<tr>
-						<th>ID</th>
-						<th>Results</th>
-						<th>Confidence</th>
-						<th>Mobility Prob.</th>
-						<th>Indoor Prob.</th>
-						<th>Distance<span class="unit"> [m]</span></th>
-						<th>Duration<span class="unit"> [s]</span></th>
-						<th>Speed<span class="unit"> [km/h]</span></th>
+					{{#each columns}}
+						<th data-modelattr="{{attribute}}"><span class="caption">{{caption}}</span>{{#if unit}}<span class="unit"> [{{unit}}]</span>{{/if}}</th>
+					{{/each}}
 					</tr>
 				</thead>
 			</table>

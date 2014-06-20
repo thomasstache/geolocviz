@@ -483,7 +483,10 @@ th {
 	padding: 6px;
 	text-transform: uppercase;
 }
+table.sortable th { cursor: pointer; }
+table.sortable th:hover { background-color: hsl(210, 100%, 90%); }
 th .unit { text-transform: none; }
+
 td {
 	padding: 4px 10px;
 	overflow: hidden;
