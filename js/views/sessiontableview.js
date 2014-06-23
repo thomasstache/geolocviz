@@ -15,6 +15,9 @@ define(
 			tagName: "div",
 			id: "sessionTableDialog",
 
+			// array of the table column headers
+			$tableHeaders: null,
+			// the (scrolling) table with the data
 			$tableBody: null,
 
 			/** @type {SortableCollection} */
@@ -52,7 +55,7 @@ define(
 			render: function() {
 
 				var columns = [
-					{ attribute: "sessionId",    caption: "ID" },
+					{ attribute: "sessionId",    caption: "ID", isSorted: true, dirDesc: false },
 					{ attribute: "resultCount",  caption: "Results" },
 					{ attribute: "confidence",   caption: "Confidence" },
 					{ attribute: "probMobility", caption: "Mobility Prob." },
@@ -69,6 +72,7 @@ define(
 				this.$el.html(tableDialogTemplate(context));
 				$(document.body).append(this.$el);
 
+				this.$tableHeaders = this.$("#sessionTableHead th");
 				this.$tableBody = this.$("#sessionTableBody");
 
 				this.updateTable();
@@ -97,6 +101,14 @@ define(
 			},
 
 			/**
+			 * Remove all sort indication decoration classes from the column headers.
+			 */
+			resetHeaderClasses: function() {
+
+				this.$tableHeaders.removeClass("sorted descending");
+			},
+
+			/**
 			 * Handler for clicks on the table column headers. Sort data accordingly.
 			 * @param  {Event} evt jQuery click event
 			 */
@@ -114,11 +126,16 @@ define(
 					// flip sort direction, if same column
 					if (this.collection.sortAttribute === sortAttr) {
 						this.collection.invertDirection().sort();
+
+						$(el).toggleClass("descending");
 					}
 					else {
 						this.collection.setSortAttribute(sortAttr)
 									   .setSortDirection(SortableCollection.SORT_ASCENDING)
 									   .sort();
+
+						this.resetHeaderClasses();
+						el.classList.add("sorted");
 					}
 				}
 			},

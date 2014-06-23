@@ -467,7 +467,6 @@ button.unselect-session:hover { background-color: rgba(230, 170, 120, 0.3); }
 
 table {
 	width: 100%;
-	height: 100%;
 	border: 1px solid hsl(215, 25%, 83%);
 	border-collapse: collapse;
 	border-spacing: 0;
@@ -486,6 +485,22 @@ th {
 table.sortable th { cursor: pointer; }
 table.sortable th:hover { background-color: hsl(210, 100%, 90%); }
 th .unit { text-transform: none; }
+
+th.sorted { position: relative; }
+th.sorted::after { /* draw a triangle using borders */
+	content: "";
+	border: 6px solid;
+	border-top: none;
+	border-left-color: transparent;
+	border-right-color: transparent;
+	position: absolute;
+	bottom: 6px;
+	right: 4px;
+}
+th.sorted.descending::after {
+	-webkit-transform: scaleY(-1);
+	transform: scaleY(-1);
+}
 
 td {
 	padding: 4px 10px;

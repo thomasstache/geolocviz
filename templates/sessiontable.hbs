@@ -11,7 +11,9 @@
 				<thead>
 					<tr>
 					{{#each columns}}
-						<th data-modelattr="{{attribute}}"><span class="caption">{{caption}}</span>{{#if unit}}<span class="unit"> [{{unit}}]</span>{{/if}}</th>
+						<th data-modelattr="{{attribute}}" class="{{#if isSorted}}sorted{{#if dirDesc}} descending{{/if}}{{/if}}">
+							<span class="caption">{{caption}}</span>{{#if unit}}<span class="unit"> [{{unit}}]</span>{{/if}}
+						</th>
 					{{/each}}
 					</tr>
 				</thead>
