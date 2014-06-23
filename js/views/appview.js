@@ -585,7 +585,12 @@ define(
 			 */
 			showSessionTable: function() {
 
-				new SessionTableView({ sessions: this.sessions });
+				var view = this;
+				var dialog = new SessionTableView({ sessions: this.sessions });
+				this.listenTo(dialog, "search", this.searchHandler);
+				this.listenToOnce(dialog, "dialog:cancel", function() {
+					view.stopListening(dialog);
+				});
 			},
 
 			/*********************** Result Navigation ***********************/

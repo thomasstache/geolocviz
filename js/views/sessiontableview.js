@@ -2,11 +2,11 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "collections/sortablecollection",
-	 "models/session",
+	 "models/session", "types/searchquery",
 	 "hbs!templates/sessiontable", "hbs!templates/sessiontablerows"],
 
 	function($, _, Backbone,
-			 SortableCollection, Session,
+			 SortableCollection, Session, SearchQuery,
 			 tableDialogTemplate, bodyTemplate) {
 
 		var SessionTableView = Backbone.View.extend({
@@ -26,6 +26,7 @@ define(
 			events: {
 				"click #btnClose": "close",
 				"click th": "headerClick",
+				"click .selectSession": "selectSessionClick",
 			},
 
 			initialize: function(options) {
@@ -138,6 +139,17 @@ define(
 						el.classList.add("sorted");
 					}
 				}
+			},
+
+			/**
+			 * Handler for clicks on linkified session Ids.
+			 * @param  {Event} evt The jQuery click event
+			 */
+			selectSessionClick: function(evt) {
+				evt.preventDefault();
+
+				var strSessionId = evt.currentTarget.textContent;
+				this.trigger("search", new SearchQuery(SearchQuery.TOPIC_SESSION, strSessionId));
 			},
 
 			close: function() {

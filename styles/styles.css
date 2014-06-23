@@ -528,6 +528,8 @@ table.striped tr:nth-child(even) { background: hsl(210, 100%, 94%); }
 	box-shadow: hsl(0, 0%, 85%) 0 3px 5px 0;
 	margin-bottom: 15px;
 }
+#sessionTableDialog .selectSession { text-decoration: none; color: hsl(210, 50%, 40%); }
+#sessionTableDialog .selectSession:hover { text-decoration: underline; }
 
 /* UI should not be selectable */
 
