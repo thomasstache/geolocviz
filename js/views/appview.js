@@ -20,6 +20,7 @@ define(
 				"change #fileInput"      : "fileInputChanged",
 				"click #cmdClearAllData" : "clearData",
 				"click #cmdClearResults" : "clearResults",
+				"click #dropCancel"      : "hideDropZone",
 				"drop #fileDropZone"     : "dropHandler"
 			},
 

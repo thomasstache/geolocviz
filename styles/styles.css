@@ -552,14 +552,15 @@ header, footer, button, #playground-app, .toolbar, .dialog {
 	top: 0; right: 0; bottom: 0; left: 0;
 	background: rgba(30, 30, 30, 0.2);
 	background-image: radial-gradient(circle, rgba(180, 180, 180, 0.23), rgba(0, 0, 0, 0.3));
-	font-weight: bold;
-	color: white; text-shadow: 0 2px 3px rgb(70, 70, 70);
-	text-align: center;
+	color: white;
 	z-index: 40;
 }
 
 #fileDropVeil .dropText {
 	font-size: 150%;
+	font-weight: bold;
+	text-shadow: 0 2px 3px rgb(70, 70, 70);
+	text-align: center;
 	position: fixed;
 	left: 50%;
 	top: 50%;
@@ -577,6 +578,15 @@ header, footer, button, #playground-app, .toolbar, .dialog {
 	position: absolute;
 	top: 0; right: 0; bottom: 0; left: 0;
 	z-index: 100;
+}
+#dropCancel {
+	position: absolute;
+	top: 30px; right: 30px;
+	width: 20px; height: 20px;
+	border: 1px solid white;
+	border-radius: 100%;
+	text-align: center;
+	box-sizing: content-box;
 }
 
 /* Expand layout for widescreen displays */
