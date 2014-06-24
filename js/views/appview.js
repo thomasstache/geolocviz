@@ -311,10 +311,13 @@ define(
 
 				this.hideDropZone();
 
-				// reset the form to clear old file names
-				this.clearFileForm();
+				if (dt.files && dt.files.length > 0) {
 
-				this.loadFiles(dt.files);
+					// reset the form to clear old file names
+					this.clearFileForm();
+
+					this.loadFiles(dt.files);
+				}
 			},
 
 			/**
