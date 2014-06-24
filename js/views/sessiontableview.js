@@ -20,11 +20,14 @@ define(
 			// the (scrolling) table with the data
 			$tableBody: null,
 
+			/** @type {SessionList} */
+			sessions: null,
 			/** @type {SortableCollection} */
 			collection: null,
 
 			events: {
 				"click #btnClose": "close",
+				"click #btnHide": "hide",
 				"click th": "headerClick",
 				"click .selectSession": "selectSessionClick",
 			},
@@ -35,13 +38,11 @@ define(
 
 				if (sessions) {
 
-					// create a sortable collection with the session "info"
-					var sessionInfo = sessions.map(function(session) {
-						return session.getInfo();
-					});
+					this.sessions = sessions;
+					this.collection = new SortableCollection();
 
-					this.collection = new SortableCollection(sessionInfo);
-					// sort for testing fun
+					this.fillCollectionWithSessions();
+
 					this.collection.setSortAttribute("sessionId")
 								   .setSortDirection(SortableCollection.SORT_ASCENDING)
 								   .sort();
@@ -50,6 +51,18 @@ define(
 
 					this.listenTo(this.collection, "sort", this.updateTable);
 				}
+			},
+
+			/**
+			 * Create a sortable collection with the extracted session "info"
+			 */
+			fillCollectionWithSessions: function() {
+
+				var sessionInfo = this.sessions.map(function(session) {
+					return session.getInfo();
+				});
+
+				this.collection.reset(sessionInfo);
 			},
 
 			// create the dialog and insert into page DOM
@@ -152,6 +165,27 @@ define(
 				this.trigger("search", new SearchQuery(SearchQuery.TOPIC_SESSION, strSessionId));
 			},
 
+			/**
+			 * Redisplays the popup dialog. The collection is updated to include all sessions.
+			 */
+			reshow: function() {
+
+				this.fillCollectionWithSessions();
+				this.updateTable();
+				this.$el.show();
+			},
+
+			/**
+			 * Temporarily hides the popup view, retaining state.
+			 */
+			hide: function() {
+
+				this.$el.hide();
+			},
+
+			/**
+			 * Closes the popup view, and destroys it.
+			 */
 			close: function() {
 
 				this.trigger("dialog:cancel");

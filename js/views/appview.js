@@ -45,6 +45,7 @@ define(
 			searchview: null,
 			labelview: null,
 			filerepositoryview: null,
+			sessiontableview: null,
 
 			initialize: function() {
 
@@ -590,11 +591,22 @@ define(
 			showSessionTable: function() {
 
 				var view = this;
-				var dialog = new SessionTableView({ sessions: this.sessions });
-				this.listenTo(dialog, "search", this.searchHandler);
-				this.listenToOnce(dialog, "dialog:cancel", function() {
-					view.stopListening(dialog);
-				});
+
+				if (this.sessiontableview === null) {
+
+					var dialog = new SessionTableView({ sessions: this.sessions });
+					this.listenTo(dialog, "search", this.searchHandler);
+					this.listenToOnce(dialog, "dialog:cancel", function() {
+						view.stopListening(dialog);
+						view.sessiontableview = null;
+					});
+
+					this.sessiontableview = dialog;
+				}
+				else {
+					// dialog is just hidden
+					this.sessiontableview.reshow();
+				}
 			},
 
 			/*********************** Result Navigation ***********************/
