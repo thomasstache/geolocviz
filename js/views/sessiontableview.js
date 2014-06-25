@@ -145,11 +145,12 @@ define(
 					}
 					else {
 						this.collection.setSortAttribute(sortAttr)
-									   .setSortDirection(SortableCollection.SORT_ASCENDING)
+									   .setSortDirection(SortableCollection.SORT_DESCENDING)
 									   .sort();
 
 						this.resetHeaderClasses();
 						el.classList.add("sorted");
+						el.classList.add("descending");
 					}
 				}
 			},
