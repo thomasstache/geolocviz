@@ -251,7 +251,7 @@ define(
 
 					this.model.set({
 						referenceLocationsAvailable: true,
-						candidateLocationsAvailable: true,
+						candidateLocationsAvailable: filestats.numResultsAndCandidates > filestats.numResults,
 					});
 				}
 				else if (filestats.type === FileLoader.FileTypes.AXF) {
