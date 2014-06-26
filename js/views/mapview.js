@@ -1492,6 +1492,7 @@ define(
 				// remove markers to change
 				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
 				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
+				this.deleteOverlaysForType(OverlayTypes.CANDIDATEMARKER);
 				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
 
 				// redraw all the markers
