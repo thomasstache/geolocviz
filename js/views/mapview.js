@@ -648,7 +648,8 @@ define(
 
 				this.configureColorMapperForAttribute(attributeName);
 				// redraw markers
-				this.updateMarkerColors();
+				if (this.appsettings.get("useDynamicMarkerColors"))
+					this.updateMarkerColors();
 			},
 
 

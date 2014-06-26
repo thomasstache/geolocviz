@@ -68,7 +68,7 @@ define(
 				// dynamic marker colors not for .distance files...
 				var bDynamicColorsDisabled = bResultsAvailable === false || bReferenceData;
 				this.$checkDynamicMarkerColors.prop("disabled", bDynamicColorsDisabled);
-				this.$selectMarkerColorsAttribute.prop("disabled", bDynamicColorsDisabled || !bUseDynamicColors);
+				this.$selectMarkerColorsAttribute.prop("disabled", bDynamicColorsDisabled);
 			},
 
 			render: function() {
@@ -194,7 +194,6 @@ define(
 
 			toggleDynamicMarkerColors: function() {
 				var bUseDynamicColors = this.$checkDynamicMarkerColors.prop("checked");
-				this.$selectMarkerColorsAttribute.prop("disabled", !bUseDynamicColors);
 
 				_.defer(function() {
 					this.model.set("useDynamicMarkerColors", bUseDynamicColors);
