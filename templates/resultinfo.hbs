@@ -2,6 +2,8 @@
 <h3 class="etched">Selected Result</h3>
 <ul class="propertyList">
 	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span>&nbsp;<span class="value">{{num}}/{{resultCount}}</span>
+		<button class="listAllResults translucent tiny symbolic"
+				title="List all results">&equiv;</button>
 		{{#if msgId}}&nbsp;<span class="label">Msg:</span>&nbsp;<span class="value">#{{msgId}}</span>{{/if}}
 	</li>
 {{#if position}}

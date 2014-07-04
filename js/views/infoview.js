@@ -22,6 +22,7 @@ define(
 		 *   result:nav-last
 		 *   result:lookupElement
 		 *   result:filterByElement
+		 *   result:listAll
 		 */
 		var InfoView = Backbone.View.extend({
 			el: $("#infoView"),
@@ -39,6 +40,7 @@ define(
 				"click .filterByElement" : "onFilterByElementClicked",
 				"click .filterByRefcell" : "onFilterByElementClicked",
 				"click .listAllSessions" : "onListAllSessionsClicked",
+				"click .listAllResults" : "onListAllResultsClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -238,6 +240,14 @@ define(
 			onListAllSessionsClicked: function() {
 
 				this.trigger("session:listAll");
+			},
+
+			/**
+			 * Handler for clicks on "List All Sessions" button. Triggers a "session:listAll" event.
+			 */
+			onListAllResultsClicked: function() {
+
+				this.trigger("result:listAll");
 			},
 
 			updateSessionControls: function() {
