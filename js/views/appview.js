@@ -5,12 +5,12 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
-	 "views/searchview", "views/labelview", "views/filerepositoryview", "views/sessiontableview",
+	 "views/searchview", "views/labelview", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
 	 "types/searchquery", "FileLoader", "types/logger"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView, SessionTableView,
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView, SessionTableView, ResultTableView,
 			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, Logger) {
 
 		var AppView = Backbone.View.extend({
@@ -46,6 +46,7 @@ define(
 			labelview: null,
 			filerepositoryview: null,
 			sessiontableview: null,
+			resulttableview: null,
 
 			initialize: function() {
 
@@ -98,6 +99,7 @@ define(
 				this.infoview.on("session:unfocussed", this.sessionUnfocussed, this);
 				this.infoview.on("session:unselected", this.clearSelections, this);
 				this.listenTo(this.infoview, "session:listAll", this.showSessionTable);
+				this.listenTo(this.infoview, "result:listAll", this.showResultTable);
 				this.infoview.on("result:nav-first", this.resultsNavigateToFirst, this);
 				this.infoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
 				this.infoview.on("result:nav-next", this.resultsNavigateToNext, this);
@@ -606,6 +608,31 @@ define(
 				else {
 					// dialog is just hidden
 					this.sessiontableview.reshow();
+				}
+			},
+
+			/**
+			 * Handler for the "result:listAll" event from the InfoView.
+			 */
+			showResultTable: function() {
+
+				var view = this;
+
+				if (this.resulttableview === null) {
+
+					var dialog = new ResultTableView({ session: this.model.get("selectedSession") });
+					this.listenTo(dialog, "search", this.searchHandler);
+					this.listenToOnce(dialog, "dialog:cancel", function() {
+						view.stopListening(dialog);
+						view.resulttableview = null;
+					});
+
+					this.resulttableview = dialog;
+				}
+				else {
+					// dialog is just hidden
+					this.resulttableview.session = this.model.get("selectedSession");
+					this.resulttableview.reshow();
 				}
 			},
 
