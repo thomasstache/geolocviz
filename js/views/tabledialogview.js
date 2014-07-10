@@ -2,7 +2,7 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "collections/sortablecollection",
-	 "hbs!templates/sessiontable"],
+	 "hbs!templates/tabledialog"],
 
 	function($, _, Backbone,
 			 SortableCollection,
