@@ -18,8 +18,9 @@ define(
 			caption: "",
 
 			columns: [
-				{ attribute: "num",   caption: "#" },
-				{ attribute: "msgId",    caption: "ID", isSorted: true, dirDesc: false },
+				{ attribute: "num",          caption: "#" },
+				{ attribute: "msgId",        caption: "ID", isSorted: true, dirDesc: false },
+				{ attribute: "timestamp",    caption: "Time", unit: "s" },
 				{ attribute: "confidence",   caption: "Confidence" },
 				{ attribute: "probMobility", caption: "Mobility Prob." },
 				{ attribute: "probIndoor",   caption: "Indoor Prob." },
