@@ -522,6 +522,9 @@ tr+tr { border-top: 1px solid hsl(210, 20%, 87%); }
 
 table.striped tr:nth-child(even) { background: hsl(210, 100%, 94%); }
 
+table.striped a { text-decoration: none; color: hsl(210, 50%, 40%); }
+table.striped a:hover { text-decoration: underline; }
+
 /* All Sessions Table View */
 
 .tableView .dialog {
@@ -537,8 +540,6 @@ table.striped tr:nth-child(even) { background: hsl(210, 100%, 94%); }
 	box-shadow: hsl(0, 0%, 85%) 0 3px 5px 0;
 	margin-bottom: 15px;
 }
-#sessionTableDialog .selectSession { text-decoration: none; color: hsl(210, 50%, 40%); }
-#sessionTableDialog .selectSession:hover { text-decoration: underline; }
 
 /* UI should not be selectable */
 
