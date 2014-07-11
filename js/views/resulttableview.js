@@ -30,6 +30,9 @@ define(
 			sortAttribute: "msgId",
 			sortDirection: SortableCollection.SORT_ASCENDING,
 
+			width: "700px",
+			height: "80%",
+
 			bodyTemplate: bodyTemplate,
 
 			/** @type {Session} */

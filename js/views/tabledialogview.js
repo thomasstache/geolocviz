@@ -29,6 +29,9 @@ define(
 			sortAttribute: null,
 			sortDirection: 0,
 
+			width: "80%",
+			height: "80%",
+
 			/**
 			 * The Handlebars template function for the "body" table.
 			 * @param  {Object} context The template input data
@@ -77,7 +80,9 @@ define(
 
 				var context = {
 					title: this.caption,
-					columns: this.columns
+					columns: this.columns,
+					width: this.width,
+					height: this.height,
 				};
 
 				this.$el.html(tableDialogTemplate(context));
