@@ -515,8 +515,16 @@ td {
 	padding: 4px 10px;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	text-align: center;
 }
-td.numeric { text-align: right; padding-right: 2ex; }
+/* numbers should be right-aligned, centered in the column */
+span.decimalAlign {
+	display: inline-block;
+	width: 100px;
+	max-width: 50%;
+	margin: 0 auto;
+	text-align: right;
+}
 
 tr+tr { border-top: 1px solid hsl(210, 20%, 87%); }
 
@@ -537,6 +545,7 @@ table.striped a:hover { text-decoration: underline; }
 }
 .tableView .scrollbox {
 	overflow: auto;
+	overflow: overlay; /* Chrome specific */
 	box-shadow: hsl(0, 0%, 85%) 0 3px 5px 0;
 	margin-bottom: 15px;
 }

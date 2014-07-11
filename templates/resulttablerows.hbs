@@ -1,12 +1,12 @@
 				<tbody>
 				{{#each tablerows}}
 					<tr>
-						<td class="numeric">{{num}}</td>
+						<td>{{num}}</td>
 						<td><a class="selectItem" href="">{{msgId}}</a></td>
-						<td class="numeric">{{percent confidence}}</td>
-						<td class="numeric">{{percent probMobility}}</td>
-						<td class="numeric">{{percent probIndoor}}</td>
-						<!-- <td class="numeric">{{meanSpeed}}</td> -->
+						<td><span class="decimalAlign">{{percent confidence}}</span></td>
+						<td><span class="decimalAlign">{{percent probMobility}}</span></td>
+						<td><span class="decimalAlign">{{percent probIndoor}}</span></td>
+						<!-- <td><span class="decimalAlign">{{meanSpeed}}</span></td> -->
 					</tr>
 				{{/each}}
 				</tbody>

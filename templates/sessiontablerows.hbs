@@ -2,13 +2,13 @@
 				{{#each tablerows}}
 					<tr>
 						<td><a class="selectSession" href="">{{sessionId}}</a></td>
-						<td class="numeric">{{resultCount}}</td>
-						<td class="numeric">{{percent confidence}}</td>
-						<td class="numeric">{{percent probMobility}}</td>
-						<td class="numeric">{{percent probIndoor}}</td>
-						<td class="numeric">{{distance}}</td>
-						<td class="numeric">{{#if duration}}{{formattime duration "ms" digits=1}}{{else}}&mdash;{{/if}}</td>
-						<td class="numeric">{{#if duration}}{{meanSpeed}}{{else}}&mdash;{{/if}}</td>
+						<td><span class="decimalAlign">{{resultCount}}</span></td>
+						<td><span class="decimalAlign">{{percent confidence}}</span></td>
+						<td><span class="decimalAlign">{{percent probMobility}}</span></td>
+						<td><span class="decimalAlign">{{percent probIndoor}}</span></td>
+						<td><span class="decimalAlign">{{distance}}</span></td>
+						<td><span class="decimalAlign">{{#if duration}}{{formattime duration "ms" digits=1}}{{else}}&mdash;{{/if}}</span></td>
+						<td><span class="decimalAlign">{{#if duration}}{{meanSpeed}}{{else}}&mdash;{{/if}}</span></td>
 					</tr>
 				{{/each}}
 				</tbody>
