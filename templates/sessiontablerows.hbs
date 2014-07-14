@@ -8,7 +8,7 @@
 						<td><span class="decimalAlign">{{percent probIndoor}}</span></td>
 						<td><span class="decimalAlign">{{distance}}</span></td>
 						<td><span class="decimalAlign">{{#if duration}}{{formattime duration "ms" digits=1}}{{else}}&mdash;{{/if}}</span></td>
-						<td><span class="decimalAlign">{{#if duration}}{{meanSpeed}}{{else}}&mdash;{{/if}}</span></td>
+						<td><span class="decimalAlign">{{#if duration}}{{roundNumber meanSpeed digits=1}}{{else}}&mdash;{{/if}}</span></td>
 					</tr>
 				{{/each}}
 				</tbody>
