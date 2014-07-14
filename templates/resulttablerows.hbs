@@ -3,7 +3,7 @@
 					<tr>
 						<td>{{num}}</td>
 						<td><a class="selectItem" href="">{{msgId}}</a></td>
-						<td><span class="decimalAlign">{{formattime timestamp "ms" digits=2}}</span></td>
+						<td><span class="decimalAlign">{{#if timestamp}}{{formattime timeDelta "ms" digits=2}}{{else}}&mdash;{{/if}}</span></td>
 						<td><span class="decimalAlign">{{percent confidence}}</span></td>
 						<td><span class="decimalAlign">{{percent probMobility}}</span></td>
 						<td><span class="decimalAlign">{{percent probIndoor}}</span></td>
