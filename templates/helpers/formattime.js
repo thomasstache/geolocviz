@@ -32,11 +32,11 @@ define(
 
 					// round the seconds
 					if (options.hash && options.hash.digits) {
-						var factor = Math.pow(10, options.hash.digits);
-						num = Math.round(num * factor) / factor;
+						result = num.toFixed(options.hash.digits);
 					}
-
-					result = num.toString();
+					else {
+						result = num.toString();
+					}
 				}
 			}
 			else {

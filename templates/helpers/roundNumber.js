@@ -18,8 +18,7 @@ define(
 			var digits = options.hash.digits || 2;
 
 			if (!isNaN(num)) {
-				var factor = Math.pow(10, digits);
-				result = Math.round(num * factor) / factor;
+				result = num.toFixed(digits);
 			}
 			else {
 				result = num;
