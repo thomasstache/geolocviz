@@ -20,7 +20,7 @@ define(
 			columns: [
 				{ attribute: "num",          caption: "#" },
 				{ attribute: "msgId",        caption: "ID", isSorted: true, dirDesc: false },
-				{ attribute: "timestamp",    caption: "Time", unit: "s" },
+				{ attribute: "timeDelta",    caption: "ΔTime", unit: "s" },
 				{ attribute: "confidence",   caption: "Confidence" },
 				{ attribute: "probMobility", caption: "Mobility Prob." },
 				{ attribute: "probIndoor",   caption: "Indoor Prob." },
@@ -62,8 +62,13 @@ define(
 			 */
 			fillCollection: function() {
 
+				var previousTime = this.session.results.length > 0 ? this.session.results.first().get('timestamp') : 0;
+
 				var infos = this.session.results.map(function(result) {
-					return result.getInfo();
+					var rv = result.getInfo();
+					rv.timeDelta = rv.timestamp - previousTime;
+					previousTime = rv.timestamp;
+					return rv;
 				});
 
 				this.collection.reset(infos);
