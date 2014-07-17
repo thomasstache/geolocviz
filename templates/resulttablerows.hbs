@@ -1,7 +1,7 @@
 				{{#each tablerows}}
 					<tr>
+						<th scope="row"><a class="selectItem" href="">{{msgId}}</a></th>
 						<td>{{num}}</td>
-						<td><a class="selectItem" href="">{{msgId}}</a></td>
 						<td><span class="decimalAlign">{{#if timestamp}}{{formattime timeDelta "ms" digits=2}}{{else}}&mdash;{{/if}}</span></td>
 						<td><span class="decimalAlign">{{percent confidence}}</span></td>
 						<td><span class="decimalAlign">{{percent probMobility}}</span></td>

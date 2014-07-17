@@ -502,6 +502,11 @@ th {
 	padding: 6px;
 	text-transform: uppercase;
 }
+th[scope="row"] {
+	padding: 4px;
+	font-weight: normal;
+}
+
 table.sortable th { cursor: pointer; }
 table.sortable th:hover { background-color: hsl(210, 100%, 90%); }
 th .unit { text-transform: none; }
