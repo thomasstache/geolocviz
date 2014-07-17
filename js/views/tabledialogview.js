@@ -90,7 +90,7 @@ define(
 				$(document.body).append(this.$el);
 
 				this.$tableHeaders = this.$("#tableHead th");
-				this.$tableBody = this.$("#tableBody");
+				this.$tableBody = this.$("#tableBody tbody");
 
 				this.updateTable();
 
