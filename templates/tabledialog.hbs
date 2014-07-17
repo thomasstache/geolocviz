@@ -2,6 +2,10 @@
 
 <!-- the size is necessary to prevent blurry rendering in Chrome due to CSS centering -->
 <section class="dialog centered" style="width: {{width}}; height: {{height}};" >
+	<div class="windowcontrols">
+		<button id="btnHide" title="Hide">_</button><button id="btnSnap" title="Snap to Side">&gt;</button>
+	</div>
+
 	<div class="content flexColumn">
 		<h3>{{title}}</h3>
 
@@ -30,7 +34,6 @@
 	</div>
 
 	<div class="toolbar">
-		<button id="btnHide">Hide</button>
 		<button id="btnClose">Close</button>
 	</div>
 </section>
