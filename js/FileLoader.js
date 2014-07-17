@@ -302,7 +302,7 @@ define(
 					sessionId: sessId
 				};
 
-				var timestamp = (record.length == LineLengths.ACCURACY_64) ? parseNumber(record[IDX.TIME]) : NaN;
+				var timestamp = (record.length >= LineLengths.ACCURACY_64) ? parseNumber(record[IDX.TIME]) : NaN;
 
 				// when the CT message ID changes, create a new AccuracyResult
 				if (currentAccuracyResult === null ||
@@ -322,8 +322,8 @@ define(
 					stats.numResults++;
 				}
 
-				var controllerId  = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
-				var primaryCellId = (record.length == LineLengths.ACCURACY_612) ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
+				var controllerId  = (record.length >= LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
+				var primaryCellId = (record.length >= LineLengths.ACCURACY_612) ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
 
 				var props = {
 					msgId: msgId,
