@@ -571,6 +571,7 @@ header, footer, button, #playground-app, .toolbar, .dialog {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	cursor: default;
 }
 
 .user-selectable {
@@ -578,6 +579,7 @@ header, footer, button, #playground-app, .toolbar, .dialog {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+	cursor: text;
 }
 
 .veilBackground {
