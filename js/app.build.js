@@ -40,7 +40,7 @@
 	removeCombined: true,
 
 	// Don't copy .git folders and files into build output
-	fileExclusionRegExp: /^\./,
+	fileExclusionRegExp: /^\.|app.build.js/,
 
 	modules: [
 		{
