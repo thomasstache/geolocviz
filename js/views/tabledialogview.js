@@ -50,6 +50,7 @@ define(
 			events: {
 				"click #btnClose": "close",
 				"click #btnHide": "hide",
+				"click #btnSnap": "toggleSnapToSide",
 				"click th": "headerClick",
 			},
 
@@ -173,6 +174,14 @@ define(
 			hide: function() {
 
 				this.$el.hide();
+			},
+
+			/**
+			 * Temporarily hides the popup view, retaining state.
+			 */
+			toggleSnapToSide: function() {
+
+				this.$(".dialog").toggleClass("snapRight");
 			},
 
 			/**

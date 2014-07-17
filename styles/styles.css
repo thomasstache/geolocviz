@@ -155,6 +155,17 @@ button:not([disabled]):active, button:not([disabled]).active {
 .dialog h3 { margin-top: 0 }
 .dialog .content { flex: 1; }
 .dialog .toolbar { position: relative; flex-shrink: 0; }
+.dialog .windowcontrols {
+	position: absolute;
+	top: 3px; right: 3px;
+}
+.dialog .windowcontrols button {
+	width: 18px; height: 18px;
+	padding: 0;
+	font-size: 10px;
+	color: hsl(0, 0%, 60%);
+	background: transparent;
+}
 
 /* a gray info text in a dialog */
 .dialogTip {
@@ -538,6 +549,9 @@ table.striped a:hover { text-decoration: underline; }
 .tableView .dialog {
 	max-width: 1200px;
 	max-height: 80%;
+}
+.tableView .snapRight th {
+	font-size: 80%;
 }
 
 .tableView table {
