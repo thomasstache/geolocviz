@@ -12,6 +12,13 @@
 		<div><!-- this div helps flexbox layout to position the scrollbox div -->
 
 			<table id="tableHead" class="striped user-selectable sortable">
+				<colgroup>
+				{{#each columns}}
+					{{#if properties}}
+						<col {{#if properties.class}}class="{{properties.class}}"{{/if}} {{#if properties.width}}width="{{properties.width}}"{{/if}}></col>
+					{{/if}}
+				{{/each}}
+				</colgroup>
 				<thead>
 					<tr>
 					{{#each columns}}
@@ -27,6 +34,13 @@
 		<div class="scrollbox stretching">
 
 			<table id="tableBody" class="striped user-selectable">
+				<colgroup>
+				{{#each columns}}
+					{{#if properties}}
+						<col {{#if properties.class}}class="{{properties.class}}"{{/if}} {{#if properties.width}}width="{{properties.width}}"{{/if}}></col>
+					{{/if}}
+				{{/each}}
+				</colgroup>
 				<tbody>
 				{{! body with rows will be inserted here}}
 				</tbody>

@@ -539,6 +539,8 @@ span.decimalAlign {
 
 tr+tr { border-top: 1px solid hsl(210, 20%, 87%); }
 
+table .firstCol { width: 15%; background-color: hsl(210, 25%, 96%); }
+
 table.striped tr:nth-child(even) { background: hsl(210, 100%, 94%); }
 
 table.striped a { text-decoration: none; color: hsl(210, 50%, 40%); }

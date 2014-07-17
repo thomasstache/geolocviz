@@ -18,7 +18,7 @@ define(
 			caption: "All Sessions",
 
 			columns: [
-				{ attribute: "sessionId",    caption: "ID", isSorted: true, dirDesc: false },
+				{ attribute: "sessionId",    caption: "ID", isSorted: true, dirDesc: false, properties: { class: "firstCol" } },
 				{ attribute: "resultCount",  caption: "Results" },
 				{ attribute: "confidence",   caption: "Confidence" },
 				{ attribute: "probMobility", caption: "Mobility Prob." },

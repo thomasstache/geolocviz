@@ -18,8 +18,8 @@ define(
 			caption: "",
 
 			columns: [
-				{ attribute: "num",          caption: "#" },
-				{ attribute: "msgId",        caption: "ID", isSorted: true, dirDesc: false },
+				{ attribute: "num",          caption: "#",  properties: { width: "5%" } },
+				{ attribute: "msgId",        caption: "ID", isSorted: true, dirDesc: false, properties: { class: "firstCol" } },
 				{ attribute: "timeDelta",    caption: "ΔTime", unit: "s" },
 				{ attribute: "confidence",   caption: "Confidence" },
 				{ attribute: "probMobility", caption: "Mobility Prob." },
