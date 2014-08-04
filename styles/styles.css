@@ -165,6 +165,10 @@ button:not([disabled]):active, button:not([disabled]).active {
 	font-size: 10px;
 	color: hsl(0, 0%, 60%);
 	background: transparent;
+	text-shadow: none;
+}
+.dialog .windowcontrols button.active {
+	background: radial-gradient(circle, hsl(210, 100%, 99%), hsl(190, 100%, 75%));
 }
 
 /* a gray info text in a dialog */
@@ -568,6 +572,10 @@ table.striped a:hover { text-decoration: underline; }
 	overflow: overlay; /* Chrome specific */
 	box-shadow: hsl(0, 0%, 85%) 0 3px 5px 0;
 	margin-bottom: 15px;
+}
+
+#sessionTableDialog .dialog {
+	min-width: 480px;
 }
 
 /* UI should not be selectable */

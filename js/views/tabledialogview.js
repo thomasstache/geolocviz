@@ -182,6 +182,7 @@ define(
 			toggleSnapToSide: function() {
 
 				this.$(".dialog").toggleClass("snapRight");
+				this.$("#btnSnap").toggleClass("active");
 			},
 
 			/**
