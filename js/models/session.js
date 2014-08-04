@@ -66,6 +66,44 @@ define(
 
 				return rv;
 			},
+
+			/**
+			 * Returns the positions of the session's results for heatmap visualizations.
+			 * @param {LatLngBounds} bounds
+			 * @param {Object} thresholds Indoor/mobility probability thresholds
+			 * @return {Array}
+			 */
+			getPositionsForHeatmap: function(bounds, thresholds) {
+
+				var rv = [],
+					latLng = null,
+					firstResult = this.results.first();
+
+				// check if we had extended Axf files, i.e. this is not the default session
+				var validSessions = this.get("sessionId") > 0;
+
+				// for stationary sessions we can return one WeightedLocation
+				if (validSessions &&
+					firstResult.category(thresholds) === 'S') {
+
+					latLng = GoogleMapsUtils.makeLatLng(firstResult.getGeoPosition());
+					bounds.extend(latLng);
+					rv.push({
+						location: latLng,
+						weight: this.results.length
+					});
+				}
+				else {
+
+					rv = this.results.map(function(result) {
+						latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
+						bounds.extend(latLng);
+						return latLng;
+					});
+				}
+
+				return rv;
+			}
 		});
 
 		/**

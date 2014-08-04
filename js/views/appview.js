@@ -201,14 +201,20 @@ define(
 			loadComplete: function() {
 
 				if (this.model.get("sessionsDirty") === true) {
-					this.mapview.drawResultMarkers();
+
+					// this.mapview.drawResultMarkers();
+					this.mapview.drawHeatmap();
+
 					this.model.set({
 						sessionsDirty: false,
 						resultsAvailable: this.sessions.length > 0
 					});
 				}
+
 				if (this.model.get("radioNetworkDirty") === true) {
+
 					this.mapview.drawNetwork();
+
 					this.model.set({
 						radioNetworkDirty: false,
 						radioNetworkAvailable: this.siteList.length > 0,

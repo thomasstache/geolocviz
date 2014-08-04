@@ -71,7 +71,12 @@ define(
 
 			el: $("#mapView"),
 
+			/** @type {google.maps.Map} the Google Maps control */
 			map: null,
+
+			/** @type {google.maps.visualization.HeatmapLayer} heatmap visualization layer */
+			heatmapLayer: null,
+
 			// zoom-to-bounds map control
 			$zoomBoundsBtn: null,
 			// viewport settings map control
@@ -206,6 +211,25 @@ define(
 			hasGoogleMaps: function() {
 				return (window.google !== undefined &&
 						google.maps !== undefined);
+			},
+
+			/**
+			 * Initialize and configure the heatmap visualization layer.
+			 */
+			initHeatmap: function() {
+
+				if (this.initialized && this.heatmapLayer === null) {
+
+					this.heatmapLayer = new google.maps.visualization.HeatmapLayer({
+						map: this.map,
+						dissipating: true,
+						maxIntensity: 10,
+						radius: 10,
+						opacity: 0.8,
+					});
+					// for playing with the settings
+					window.heatmap = this.heatmapLayer;
+				}
 			},
 
 			/**
@@ -468,6 +492,7 @@ define(
 
 				this.overlays.removeAll();
 				this.resetBounds();
+				this.deleteHeatmapData();
 
 				this.highlightedSessionId = -1;
 				this.highlightedCandidateSampleCid = -1;
@@ -532,6 +557,11 @@ define(
 
 				_.each(list, function(overlay) { overlay.removeFromMap(); });
 				this.overlays.remove(list);
+			},
+
+			deleteHeatmapData: function() {
+				if (this.heatmapLayer)
+					this.heatmapLayer.setData([]);
 			},
 
 			/**
@@ -601,6 +631,7 @@ define(
 
 				this.deleteResultOverlays();
 				this.clearAllResultFilters();
+				this.deleteHeatmapData();
 			},
 
 			/**
@@ -844,6 +875,35 @@ define(
 
 				this.appstate.set("markerColorMapper", colorMapper);
 				this.colorMapper = colorMapper;
+			},
+
+			/**
+			 * Draw results into Heatmap layer.
+			 */
+			drawHeatmap: function() {
+
+				if (!this.hasGoogleMaps())
+					return;
+
+				this.deleteResultOverlays();
+				this.resetBounds();
+
+				this.initHeatmap();
+
+				var view = this,
+					thresholds = this.getThresholdSettings();
+
+				// collect all positions
+				var heatmapData = [];
+				this.collection.each(function(session) {
+					heatmapData.push(session.getPositionsForHeatmap(view.bounds, thresholds));
+				});
+				// convert 2D array of arrays to 1D
+				heatmapData = _.flatten(heatmapData);
+
+				this.heatmapLayer.setData(heatmapData);
+
+				this.zoomToBounds();
 			},
 
 			/**
