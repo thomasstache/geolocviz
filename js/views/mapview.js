@@ -259,6 +259,11 @@ define(
 					this.map.fitBounds(this.bounds);
 			},
 
+			/** debug code to visualize the current bounds as a rectangle */
+			debugBounds: function() {
+				this.drawRectangle(this.bounds, "#00FF00");
+			},
+
 			/**
 			 * Open the Viewport Settings dialog to allow to manage the map's viewport.
 			 */
@@ -863,8 +868,6 @@ define(
 					this.zoomToBounds();
 
 				this.enableZoomControls();
-				// debug code
-				//this.drawRectangle(this.bounds, "#00FF00");
 			},
 
 			/**
