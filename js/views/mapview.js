@@ -278,6 +278,8 @@ define(
 					if (isValidLatLng(latLng))
 						view.bounds.extend(latLng);
 				});
+
+				this.enableZoomControls();
 			},
 
 			/**
@@ -951,7 +953,11 @@ define(
 				// clear all result markers
 				this.deleteResultOverlays();
 
-				var bZoomToResults = this.resultFilterFct === null;
+				// update bounds if:
+				// 1. we have results data
+				// 2. AND we are not redrawing with (applying) an active filter
+				var bZoomToResults = this.collection.length > 0 &&
+									 this.resultFilterFct === null;
 
 				if (bZoomToResults)
 					this.resetBounds();

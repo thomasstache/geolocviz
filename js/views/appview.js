@@ -146,6 +146,7 @@ define(
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
+				this.mapview.updateBoundsToNetwork();
 				this.searchview.clearSearchField();
 				this.clearFileForm();
 
