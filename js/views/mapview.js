@@ -878,6 +878,34 @@ define(
 			},
 
 			/**
+			 * Draws the results on the map.
+			 * If the number of results is very large, a heatmap is used.
+			 */
+			drawResults: function() {
+
+				var stats = this.appstate.get("statistics"),
+					resultCount = stats !== undefined ? stats.get("numResults") : 0;
+
+				var useHeatmap = false;
+
+				if (resultCount > this.appsettings.get("maxResultMarkers")) {
+					// force heatmap above max. threshold
+					useHeatmap = true;
+				}
+				else if (resultCount > this.appsettings.get("heatmapSuggestionThreshold")) {
+					// prompt user if he's okay with a heatmap
+					useHeatmap = window.confirm("The loaded data set is very large (" + resultCount + " results).\nWould you like to view it as a heatmap?");
+				}
+
+				if (useHeatmap) {
+					this.drawHeatmap();
+				}
+				else {
+					this.drawResultMarkers();
+				}
+			},
+
+			/**
 			 * Draw results into Heatmap layer.
 			 */
 			drawHeatmap: function() {

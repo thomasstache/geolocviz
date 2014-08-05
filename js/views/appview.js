@@ -202,8 +202,7 @@ define(
 
 				if (this.model.get("sessionsDirty") === true) {
 
-					// this.mapview.drawResultMarkers();
-					this.mapview.drawHeatmap();
+					this.mapview.drawResults();
 
 					this.model.set({
 						sessionsDirty: false,

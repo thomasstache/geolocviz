@@ -40,6 +40,11 @@ define(
 				// marker color thresholds
 				mobilityThreshold: 0.5,
 				indoorThreshold: 0.5,
+
+				// maximum number of results before a heatmap is forced
+				maxResultMarkers: 30000,
+				// number of results after which a heatmap is suggested
+				heatmapSuggestionThreshold: 15000,
 			},
 
 			initialize: function() {
