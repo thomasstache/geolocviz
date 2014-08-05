@@ -244,8 +244,14 @@ define(
 					this.map.controls[position].push(element);
 			},
 
+			/**
+			 * Enables or disables the map zoom controls.
+			 * @param  {Boolean} enable True to enable
+			 */
 			enableZoomControls: function(enable) {
-				enable = enable || true;
+
+				if (enable === undefined)
+					enable = !this.bounds.isEmpty();
 
 				if (this.$zoomBoundsBtn)
 					this.$zoomBoundsBtn.toggleClass("hidden", !enable);
