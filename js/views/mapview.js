@@ -193,6 +193,7 @@ define(
 				this.collection.on("reset", this.onSessionsReset, this);
 
 				// listen for settings changes
+				this.listenTo(this.appsettings, "change:heatmapMaxIntensity change:heatmapSpreadRadius", this.updateHeatmapSettings);
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
@@ -223,8 +224,8 @@ define(
 					this.heatmapLayer = new google.maps.visualization.HeatmapLayer({
 						map: this.map,
 						dissipating: true,
-						maxIntensity: 10,
-						radius: 10,
+						maxIntensity: this.appsettings.get("heatmapMaxIntensity"),
+						radius: this.appsettings.get("heatmapSpreadRadius"),
 						opacity: 0.8,
 					});
 					// for playing with the settings
@@ -694,6 +695,22 @@ define(
 				// redraw markers
 				if (this.appsettings.get("useDynamicMarkerColors"))
 					this.updateMarkerColors();
+			},
+
+			/**
+			 * Update map heatmap layer according to current settings.
+			 */
+			updateHeatmapSettings: function(event) {
+
+				if (!this.heatmapLayer)
+					return;
+
+				if (event.changed.heatmapMaxIntensity !== undefined) {
+					this.heatmapLayer.set("maxIntensity", event.changed.heatmapMaxIntensity);
+				}
+				if (event.changed.heatmapSpreadRadius !== undefined) {
+					this.heatmapLayer.set("radius", event.changed.heatmapSpreadRadius);
+				}
 			},
 
 

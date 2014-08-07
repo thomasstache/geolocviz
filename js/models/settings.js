@@ -45,6 +45,10 @@ define(
 				maxResultMarkers: 30000,
 				// number of results after which a heatmap is suggested
 				heatmapSuggestionThreshold: 15000,
+				// the maximum/upper scale limit
+				heatmapMaxIntensity: 15,
+				// number of pixels data points influence
+				heatmapSpreadRadius: 10,
 			},
 
 			initialize: function() {
