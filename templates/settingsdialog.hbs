@@ -1,28 +1,27 @@
-<div id="settingsdialog">
-	<div class="veilBackground" />
+<div class="veilBackground" />
 
-	<!-- the width/height is necessary to prevent blurry rendering in Chrome due to CSS centering -->
-	<section class="dialog centered" style="width: 26em; height: 14em;">
-		<div class="content">
-			<h3>Settings</h3>
-			<ul>
-				<li><label for="probMobility">Mobility Probability Threshold</label>
-					<input type="number" id="probMobilityInput" step="0.1" min="0" max="1" />
-				</li>
-				<li><label for="probIndoor">Indoor Probability Threshold</label>
-					<input type="number" id="probIndoorInput" step="0.1" min="0" max="1" />
-				</li>
-				<li>
-					<label style="padding-top: 1.5ex;" >
-						<input type="checkbox" id="checkUseDotIcons" />Use dots for accuracy markers
-					</label>
-				</li>
-			</ul>
-		</div>
-		<div class="toolbar" style="position: relative;">
-			<button id="apply-settings">Ok</button>
-			<button id="cancel-settings">Cancel</button>
-			<button id="reset-settings" style="position: absolute; right: 0;">Reset All</button>
-		</div>
-	</section>
-</div>
+<!-- the width/height is necessary to prevent blurry rendering in Chrome due to CSS centering -->
+<section class="dialog centered" style="width: 26em; height: 14em;">
+	<div class="content">
+		<h3>Settings</h3>
+
+		<ul>
+			<li><label for="probMobility">Mobility Probability Threshold</label>
+				<input type="number" id="probMobilityInput" step="0.1" min="0" max="1" />
+			</li>
+			<li><label for="probIndoor">Indoor Probability Threshold</label>
+				<input type="number" id="probIndoorInput" step="0.1" min="0" max="1" />
+			</li>
+			<li>
+				<label style="padding-top: 1.5ex;" >
+					<input type="checkbox" id="checkUseDotIcons" />Use dots for accuracy markers
+				</label>
+			</li>
+		</ul>
+	</div>
+	<div class="toolbar" style="position: relative;">
+		<button id="btnApply">Ok</button>
+		<button id="btnCancel">Cancel</button>
+		<button id="btnReset" style="position: absolute; right: 0;">Reset All</button>
+	</div>
+</section>

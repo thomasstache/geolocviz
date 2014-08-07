@@ -1,8 +1,10 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "hbs!templates/settingsdialog", "hbs!templates/selectoptions"],
+	 "views/settingsdialog",
+	 "models/settings",
+	 "hbs!templates/selectoptions"],
 
-	function($, _, Backbone, dialogTemplate, optionsTemplate) {
+	function($, _, Backbone, SettingsDialog, Settings, optionsTemplate) {
 
 		var SettingsView = Backbone.View.extend({
 			el: $("#settings"),
@@ -19,8 +21,10 @@ define(
 			$checkShowScaleControl: null,
 			$checkDrawNetworkOnTop: null,
 			$selectMarkerColorsAttribute: null,
-			$settingsDialog: null,
 			$moreSettingsButton: null,
+
+			/** @type {SettingsDialog} reference to the dialog node, while open */
+			settingsDialog: null,
 
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
@@ -83,7 +87,6 @@ define(
 				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
 
 				this.renderSettingsButton();
-				this.updateSettingsDialog();
 
 				return this;
 			},
@@ -112,74 +115,31 @@ define(
 
 			/*********************** Popup dialog ***********************/
 
-			renderSettingsDialog: function() {
-
-				if (this.$settingsDialog === null) {
-					$(document.body).append(dialogTemplate());
-					this.$settingsDialog = $("#settingsdialog");
-					this.$settingsDialog.on("click", "#apply-settings", this.commitSettingsDialog.bind(this));
-					this.$settingsDialog.on("click", "#cancel-settings", this.removeSettingsDialog.bind(this));
-					this.$settingsDialog.on("click", "#reset-settings", this.resetSettings.bind(this));
-				}
-
-				return this;
-			},
-
-			/**
-			 * Update the controls in the settings dialog with the current values.
-			 */
-			updateSettingsDialog: function() {
-
-				if (this.$settingsDialog !== null) {
-					$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
-					$("#probIndoorInput").val(this.model.get("indoorThreshold"));
-					$("#checkUseDotIcons").prop("checked", this.model.get("useDotAccuracyMarkers"));
-				}
-			},
-
 			// show settings dialog
 			moreSettingsButtonClicked: function() {
 
-				this.renderSettingsDialog();
-				this.updateSettingsDialog();
+				var dialog = new SettingsDialog({ model: this.model });
+				this.listenToOnce(dialog, "dialog:apply", this.onSettingsApplied);
+				this.listenToOnce(dialog, "dialog:cancel", this.onSettingsDialogClosed);
+				this.settingsDialog = dialog;
 			},
 
 			/**
-			 * Handler for the "Ok" button in the dialog. Commit the settings.
+			 * Handler for the "Ok" button in the dialog.
 			 */
-			commitSettingsDialog: function() {
+			onSettingsApplied: function() {
 
-				var probMobility = $("#probMobilityInput") ? $("#probMobilityInput").val() : 0.5,
-					probIndoor = $("#probIndoorInput") ? $("#probIndoorInput").val() : 0.5,
-					useDotIcons = $("#checkUseDotIcons").prop("checked");
-
-				this.model.set({
-					mobilityThreshold: parseFloat(probMobility),
-					indoorThreshold: parseFloat(probIndoor),
-					useDotAccuracyMarkers: useDotIcons,
-				});
-
-				this.removeSettingsDialog();
 				this.renderSettingsButton();
+				this.onSettingsDialogClosed();
 			},
 
 			/**
 			 * Handler for the "Cancel" button in the dialog.
-			 * Removes the dialog from the DOM and destroys it.
 			 */
-			removeSettingsDialog: function() {
+			onSettingsDialogClosed: function() {
 
-				this.$settingsDialog.remove();
-				this.$settingsDialog = null;
-			},
-
-			/**
-			 * Handler for the "Reset" button in the dialog.
-			 */
-			resetSettings: function() {
-
-				if (confirm("This will revert all settings to their defaults..."))
-					this.model.reset();
+				this.stopListening(this.settingsDialog);
+				this.settingsDialog = null;
 			},
 
 			/*********************** Inline settings ***********************/
