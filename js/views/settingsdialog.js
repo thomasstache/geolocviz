@@ -17,6 +17,8 @@ define(
 			$probMobilityInput: null,
 			$probIndoorInput: null,
 			$checkUseDotIcons: null,
+			$softHeatmapThresholdInput: null,
+			$hardHeatmapThresholdInput: null,
 
 			events: {
 				"click #btnApply": "applyClicked",
@@ -40,6 +42,10 @@ define(
 
 				this.$probMobilityInput = this.$("#probMobilityInput");
 				this.$probIndoorInput = this.$("#probIndoorInput");
+
+				this.$softHeatmapThresholdInput = this.$("#softHeatmapThresholdInput");
+				this.$hardHeatmapThresholdInput = this.$("#hardHeatmapThresholdInput");
+
 				this.$checkUseDotIcons = this.$("#checkUseDotIcons");
 
 				return this;
@@ -50,6 +56,10 @@ define(
 
 				this.$probMobilityInput.val(this.model.get("mobilityThreshold"));
 				this.$probIndoorInput.val(this.model.get("indoorThreshold"));
+
+				this.$softHeatmapThresholdInput.val(this.model.get("heatmapSuggestionThreshold"));
+				this.$hardHeatmapThresholdInput.val(this.model.get("maxResultMarkers"));
+
 				this.$checkUseDotIcons.prop("checked", this.model.get("useDotAccuracyMarkers"));
 			},
 
@@ -64,13 +74,17 @@ define(
 
 			applyClicked: function() {
 
-				var probMobility = this.$probMobilityInput ? this.$probMobilityInput.val() : 0.5,
-					probIndoor = this.$probIndoorInput ? this.$probIndoorInput.val() : 0.5,
+				var probMobility = this.$probMobilityInput ? parseFloat(this.$probMobilityInput.val()) : 0.5,
+					probIndoor = this.$probIndoorInput ? parseFloat(this.$probIndoorInput.val()) : 0.5,
+					heatmapSoftThreshold = this.$softHeatmapThresholdInput ? parseInt(this.$softHeatmapThresholdInput.val()) : 15000,
+					heatmapHardThreshold = this.$hardHeatmapThresholdInput ? parseInt(this.$hardHeatmapThresholdInput.val()) : 30000,
 					useDotIcons = this.$checkUseDotIcons.prop("checked");
 
 				this.model.set({
-					mobilityThreshold: parseFloat(probMobility),
-					indoorThreshold: parseFloat(probIndoor),
+					mobilityThreshold: probMobility,
+					indoorThreshold: probIndoor,
+					maxResultMarkers: heatmapHardThreshold,
+					heatmapSuggestionThreshold: heatmapSoftThreshold,
 					useDotAccuracyMarkers: useDotIcons,
 				});
 
