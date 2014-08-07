@@ -133,6 +133,8 @@ define(
 				if (this.$settingsDialog !== null) {
 					$("#probMobilityInput").val(this.model.get("mobilityThreshold"));
 					$("#probIndoorInput").val(this.model.get("indoorThreshold"));
+					$("#softHeatmapThresholdInput").val(this.model.get("heatmapSuggestionThreshold"));
+					$("#hardHeatmapThresholdInput").val(this.model.get("maxResultMarkers"));
 					$("#checkUseDotIcons").prop("checked", this.model.get("useDotAccuracyMarkers"));
 				}
 			},
@@ -151,11 +153,15 @@ define(
 
 				var probMobility = $("#probMobilityInput") ? $("#probMobilityInput").val() : 0.5,
 					probIndoor = $("#probIndoorInput") ? $("#probIndoorInput").val() : 0.5,
+					heatmapSoftThreshold = $("#softHeatmapThresholdInput") ? $("#softHeatmapThresholdInput").val() : 15000,
+					heatmapHardThreshold = $("#hardHeatmapThresholdInput") ? $("#hardHeatmapThresholdInput").val() : 30000,
 					useDotIcons = $("#checkUseDotIcons").prop("checked");
 
 				this.model.set({
 					mobilityThreshold: parseFloat(probMobility),
 					indoorThreshold: parseFloat(probIndoor),
+					maxResultMarkers: parseFloat(heatmapHardThreshold),
+					heatmapSuggestionThreshold: parseFloat(heatmapSoftThreshold),
 					useDotAccuracyMarkers: useDotIcons,
 				});
 
