@@ -100,10 +100,11 @@ define(
 							    currentFileType = FileTypes.CELLREF;
 							break;
 						default:
-							currentFileType = null;
+							logger.error("Failed to load file '" + filename + "'\n(unrecognized extension: '" + ext + "').");
 					}
 
-					processFileContent(filecontent, filename, currentFileType);
+					if (currentFileType !== null)
+						processFileContent(filecontent, filename, currentFileType);
 				}
 				else {
 					logger.error("onFileReadComplete: readyState not 'DONE'! (" + rdr.readyState + ")");
@@ -129,7 +130,7 @@ define(
 					fileStatistics = new FileStatistics(filename, currentFileType);
 
 				if (currentFileType === null) {
-					alert("Could not recognize the type of file '" + filename + "'!");
+					logger.error("Could not recognize the type of file '" + filename + "'!");
 				}
 				else {
 					// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
@@ -147,7 +148,7 @@ define(
 					}
 					catch (e) {
 						console.error(e.toString());
-						alert("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
+						logger.error("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
 					}
 				}
 
