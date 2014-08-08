@@ -924,9 +924,11 @@ define(
 
 				if (useHeatmap) {
 					this.drawHeatmap();
+					this.appstate.set({ heatmapActive: true });
 				}
 				else {
 					this.drawResultMarkers();
+					this.appstate.set({ heatmapActive: false });
 				}
 			},
 

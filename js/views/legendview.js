@@ -29,15 +29,16 @@ define(
 
 				// listen to some state changes
 				if (this.appstate) {
-					this.appstate.on("change:resultsAvailable", this.onResultsChanged, this);
-					this.appstate.on("change:referenceLocationsAvailable", this.onStateChanged, this);
-					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
-					this.appstate.on("change:markerColorMapper", this.onColorMapperChanged, this);
+					this.listenTo(this.appstate, "change:resultsAvailable", this.onResultsChanged);
+					this.listenTo(this.appstate, "change:referenceLocationsAvailable", this.onStateChanged);
+					this.listenTo(this.appstate, "change:candidateLocationsAvailable", this.onStateChanged);
+					this.listenTo(this.appstate, "change:markerColorMapper", this.onColorMapperChanged);
+					this.listenTo(this.appstate, "change:heatmapActive", this.onHeatmapChanged);
 				}
 
 				if (this.settings) {
-					this.settings.on("change:useDynamicMarkerColors", this.onScaleSettingsChanged, this);
-					this.settings.on("change:markerColorAttribute", this.onColorMapperChanged, this);
+					this.listenTo(this.settings, "change:useDynamicMarkerColors", this.onScaleSettingsChanged);
+					this.listenTo(this.settings, "change:markerColorAttribute", this.onColorMapperChanged);
 				}
 
 				// translate the colors dictionary into an array for our templating
@@ -73,19 +74,31 @@ define(
 			// Render only the legend for dynamic marker colors.
 			renderColorScale: function() {
 
-				var colorMapper = this.appstate.get("markerColorMapper");
-				if (colorMapper !== null) {
+				var context = {};
 
-					var scaleSetup = colorMapper.getInfo();
-
-					var context = {
-						attribute: this.settings.get("markerColorAttribute"),
-						bgGradient: "linear-gradient(to right, blue, cyan, lime, yellow, red)",
-						scaleMin: scaleSetup.scaleMin,
-						scaleMax: scaleSetup.scaleMax
+				if (this.appstate.get("heatmapActive")) {
+					context = {
+						attribute: "Count",
+						bgGradient: "linear-gradient(to right, lime, yellow, red)",
+						scaleMin: 1,
+						scaleMax: this.settings.get("heatmapMaxIntensity"),
 					};
-					this.$colorScale.html(colorScaleTemplate(context));
 				}
+				else {
+
+					var colorMapper = this.appstate.get("markerColorMapper");
+					if (colorMapper !== null) {
+
+						var scaleSetup = colorMapper.getInfo();
+						context = {
+							attribute: this.settings.get("markerColorAttribute"),
+							bgGradient: "linear-gradient(to right, blue, cyan, lime, yellow, red)",
+							scaleMin: scaleSetup.scaleMin,
+							scaleMax: scaleSetup.scaleMax
+						};
+					}
+				}
+				this.$colorScale.html(colorScaleTemplate(context));
 
 				return this;
 			},
@@ -97,6 +110,15 @@ define(
 					this.$el.show();
 				else
 					this.$el.hide();
+			},
+
+			onHeatmapChanged: function(event) {
+
+				if (event.changed.heatmapActive !== undefined) {
+
+					this.renderColorScale();
+					this.toggleLegendMode(this.settings.get("useDynamicMarkerColors"));
+				}
 			},
 
 			/**
@@ -140,8 +162,10 @@ define(
 			// Toggle rendering mode, display either swatches for categories or color scale.
 			toggleLegendMode: function(bDynamicMarkerColors) {
 
-				this.$swatchList.toggleClass("hidden", bDynamicMarkerColors);
-				this.$colorScale.toggleClass("hidden", !bDynamicMarkerColors);
+				var bShowColorScale = bDynamicMarkerColors || this.appstate.get("heatmapActive");
+
+				this.$swatchList.toggleClass("hidden", bShowColorScale);
+				this.$colorScale.toggleClass("hidden", !bShowColorScale);
 			},
 
 			showLegendItem: function(symbol, bShow) {
