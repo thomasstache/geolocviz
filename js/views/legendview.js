@@ -29,15 +29,15 @@ define(
 
 				// listen to some state changes
 				if (this.appstate) {
-					this.appstate.on("change:resultsAvailable", this.onResultsChanged, this);
-					this.appstate.on("change:referenceLocationsAvailable", this.onStateChanged, this);
-					this.appstate.on("change:candidateLocationsAvailable", this.onStateChanged, this);
-					this.appstate.on("change:markerColorMapper", this.onColorMapperChanged, this);
+					this.listenTo(this.appstate, "change:resultsAvailable", this.onResultsChanged);
+					this.listenTo(this.appstate, "change:referenceLocationsAvailable", this.onStateChanged);
+					this.listenTo(this.appstate, "change:candidateLocationsAvailable", this.onStateChanged);
+					this.listenTo(this.appstate, "change:markerColorMapper", this.onColorMapperChanged);
 				}
 
 				if (this.settings) {
-					this.settings.on("change:useDynamicMarkerColors", this.onScaleSettingsChanged, this);
-					this.settings.on("change:markerColorAttribute", this.onColorMapperChanged, this);
+					this.listenTo(this.settings, "change:useDynamicMarkerColors", this.onScaleSettingsChanged);
+					this.listenTo(this.settings, "change:markerColorAttribute", this.onColorMapperChanged);
 				}
 
 				// translate the colors dictionary into an array for our templating
