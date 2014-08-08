@@ -26,6 +26,9 @@ define(
 				// if there are LocationCandidates
 				candidateLocationsAvailable: false,
 
+				// if the application is in heatmap rendering mode
+				heatmapActive: false,
+
 				// if the results are currently filtered
 				resultsFilterActive: false,
 				// last result query (after results:filtered)
@@ -62,6 +65,7 @@ define(
 					resultsReferenceCellsAvailable: false,
 					referenceLocationsAvailable: false,
 					candidateLocationsAvailable: false,
+					heatmapActive: false,
 					resultsFilterActive: false,
 					resultsFilterQuery: null,
 					elementSearchQuery: null,
