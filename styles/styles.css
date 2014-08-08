@@ -396,6 +396,9 @@ input[type="checkbox"] {
 	border: 1px solid rgba(120, 120, 120, .8);
 	background-color: rgba(220, 220, 220, 0.8);
 }
+.legendItem .scaleAttribute {
+	text-transform: capitalize;
+}
 
 /* filter bar UL */
 #filters {
