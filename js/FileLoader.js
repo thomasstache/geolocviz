@@ -62,25 +62,22 @@ define(
 				logger = Logger.getLogger();
 
 				var reader = new FileReader();
-				// If we use onloadend, we need to check the readyState.
-				reader.onloadend = onFileReadComplete;
-				reader.file = file;
+				reader.onloadend = function(evt) { onFileReadComplete(evt, file.name); };
 
 				reader.readAsText(file);
 			}
 
 			/**
 			 * Handler for the loadend event of the FileReader
-			 * @param  {ProgressEvent} evt
+			 * @param {ProgressEvent} evt The event for access to the data.
+			 * @param {String} filename   The name of the file to determine how to parse it.
 			 */
-			function onFileReadComplete(evt) {
+			function onFileReadComplete(evt, filename) {
 				// evt: ProgressEvent, target is the FileReader
 				var rdr = evt.target;
 
 				if (rdr.readyState === FileReader.DONE) {
 
-					// the current file should be tucked on the Reader object
-					var filename = rdr.file ? rdr.file.name : "";
 					var filecontent = rdr.result;
 
 					// check which type of file we're dealing with
@@ -176,20 +173,18 @@ define(
 				request.open("GET", url, /*async=*/ true);
 				request.responseType = responseType;
 
-				request.onloadend = onRequestComplete;
-				// stick the file name on the request object, so we can access it later
-				request.filename = filename;
+				request.onloadend = function(evt) { onRequestComplete(evt, filename); };
 
 				request.send();
 			}
 
 			/**
 			 * Handler for the load event of the XMLHttpRequest
-			 * @param  {ProgressEvent} evt
+			 * @param {ProgressEvent} evt The event for access to the data.
+			 * @param {String} filename   The name of the file to determine how to parse it.
 			 */
-			function onRequestComplete(evt) {
-				var request = evt.target,
-					filename = request.filename;
+			function onRequestComplete(evt, filename) {
+				var request = evt.target;
 
 				if (request.readyState === XMLHttpRequest.DONE && request.status === 200) {
 
