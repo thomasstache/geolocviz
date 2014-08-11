@@ -76,8 +76,8 @@ define(
 
 				var probMobility = this.$probMobilityInput ? parseFloat(this.$probMobilityInput.val()) : 0.5,
 					probIndoor = this.$probIndoorInput ? parseFloat(this.$probIndoorInput.val()) : 0.5,
-					heatmapSoftThreshold = this.$softHeatmapThresholdInput ? parseInt(this.$softHeatmapThresholdInput.val()) : 15000,
-					heatmapHardThreshold = this.$hardHeatmapThresholdInput ? parseInt(this.$hardHeatmapThresholdInput.val()) : 30000,
+					heatmapSoftThreshold = this.$softHeatmapThresholdInput ? parseInt(this.$softHeatmapThresholdInput.val(), 10) : 15000,
+					heatmapHardThreshold = this.$hardHeatmapThresholdInput ? parseInt(this.$hardHeatmapThresholdInput.val(), 10) : 30000,
 					useDotIcons = this.$checkUseDotIcons.prop("checked");
 
 				this.model.set({

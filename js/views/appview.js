@@ -466,7 +466,7 @@ define(
 						break;
 
 					case SearchQuery.TOPIC_RESULT:
-						var searchresult = this.sessions.findResult(parseInt(query.searchterm));
+						var searchresult = this.sessions.findResult(parseInt(query.searchterm, 10));
 						this.sessionSelected(searchresult.session);
 						this.resultSelected(searchresult.result);
 						if (searchresult.result === null)
