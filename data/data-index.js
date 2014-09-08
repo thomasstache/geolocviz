@@ -14,6 +14,7 @@ define(
 			{ name: "cellrefs-MY_Maxis_CHR_KL.txt",    title: "MY Maxis CHR KL 2011" },
 			{ name: "cellrefs-MY_Maxis_GSM.txt",       title: "MY Maxis GSM 2010" },
 			{ name: "cellrefs-TW_CHT_ICSU_Taipeh.txt", title: "TW CHT Taipeh UMTS 2013" },
+			{ name: "cellrefs-CA_Telus_Otwa_LTE.txt",  title: "CA Telus Ottawa LTE 2014" },
 			{ name: "cellrefs-US_ATT-LTE-Houston.txt", title: "US ATT Houston LTE 2013" },
 			{ name: "cellrefs-US_TMO_GPEH_SF2009.txt", title: "US TMO San Francisco 2009" },
 			{ name: "cellrefs-US_TMO_GPEH_SF2011.txt", title: "US TMO San Francisco 2011" },
