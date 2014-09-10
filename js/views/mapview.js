@@ -1614,6 +1614,9 @@ define(
 			 */
 			updateMarkerColors: function() {
 
+				if (this.appstate.get("heatmapActive"))
+					return;
+
 				// remove markers to change
 				this.deleteOverlaysForType(OverlayTypes.GEOLOCMARKER);
 				this.deleteOverlaysForType(OverlayTypes.REFERENCEMARKER);
