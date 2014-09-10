@@ -62,46 +62,42 @@ define(
 			// Fields to import for each technology
 			// (strings as they appear in the cellref files)
 
-			// "set" of sector fields applying to GSM
-			var SECTOR_FIELDS_GSM = Object.freeze({
-				"GSM_SiteIDForCell": true,
+			// sector fields applying to all technologies
+			var SECTOR_FIELDS_COMMON = Object.freeze({
 				"Sector_ID": true,
 				"Azimuth": true,
 				"Beamwidth": true,
 				"CellType": true,
+			});
+
+			// "set" of sector fields applying to GSM
+			var SECTOR_FIELDS_GSM = Object.freeze(_.extend({
+				"GSM_SiteIDForCell": true,
 				"CI": true,
 				"LAC": true,
 				"BCCH": true,
 				"BSIC": true,
-			});
+			}, SECTOR_FIELDS_COMMON));
 
 			// "set" of sector fields applying to WCDMA
-			var SECTOR_FIELDS_WCDMA = Object.freeze({
+			var SECTOR_FIELDS_WCDMA = Object.freeze(_.extend({
 				"WCDMA_SiteIDForCell": true,
-				"Sector_ID": true,
-				"Azimuth": true,
-				"Beamwidth": true,
-				"CellType": true,
 				"LAC": true,
 				"WCDMA_CI": true,
 				"RNCID": true,
 				"UARFCN": true,
 				"SC": true,
-			});
+			}, SECTOR_FIELDS_COMMON));
 
 			// "set" of sector fields applying to LTE
-			var SECTOR_FIELDS_LTE = Object.freeze({
+			var SECTOR_FIELDS_LTE = Object.freeze(_.extend({
 				"LTE_SiteIDForCell": true,
-				"Sector_ID": true,
-				"Azimuth": true,
-				"Beamwidth": true,
-				"CellType": true,
 				"PCI": true,
 				"ECI": true,
 				"TrackingArea": true,
 				"TrackingAreaCode": true,
 				"DL_EARFCN": true,
-			});
+			}, SECTOR_FIELDS_COMMON));
 
 			//////////////////////////////////////////////////////////////////////////
 
