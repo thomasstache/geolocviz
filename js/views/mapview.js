@@ -959,6 +959,8 @@ define(
 				this.heatmapLayer.setData(heatmapData);
 
 				this.zoomToBounds();
+
+				this.enableZoomControls();
 			},
 
 			/**
