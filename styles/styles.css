@@ -309,20 +309,29 @@ header {
 	/* slimmer than default ul */
 	margin: 0;
 }
+/* horizontal layout for settings controls */
 #settings ul li {
-	/* horizontal layout for checkboxes */
-	display: inline-block;
 	margin: 0 1ex;
 	vertical-align: middle;
+}
+/* explicitly not for .hidden, as this selector has high specificity */
+#settings ul li:not(.hidden) {
+	display: inline-block;
 }
 input[type="checkbox"] {
 	/* improve alignment with labels */
 	vertical-align: bottom;
 }
 
+#heatmapMaxIntensityInput,
 #selectMarkerColorsAttribute {
 	margin-left: 10px;
+}
+#selectMarkerColorsAttribute {
 	min-width: 10em;
+}
+#heatmapMaxIntensityInput {
+	width: 10ex;
 }
 
 #btnMore.customized::before {

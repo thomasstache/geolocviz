@@ -102,13 +102,20 @@
 			<ul>
 				<li><input type="checkbox" id="checkShowScaleControl" />
 					<label for="checkShowScaleControl">Display map scale</label></li>
-				<li><input type="checkbox" id="checkDrawNetworkOnTop" />
+				<li class="heatmap hidden">
+					<label for="heatmapMaxIntensityInput">Max. Intensity</label>
+					<input type="number" id="heatmapMaxIntensityInput" step="5" /></li>
+				<li class="markers">
+					<input type="checkbox" id="checkDrawNetworkOnTop" />
 					<label for="checkDrawNetworkOnTop">Draw network on top</label></li>
-				<li><input type="checkbox" id="checkConnectSessions" />
+				<li class="markers">
+					<input type="checkbox" id="checkConnectSessions" />
 					<label for="checkConnectSessions">Connect markers in sessions</label></li>
-				<li><input type="checkbox" id="checkConnectMarkers" />
+				<li class="markers">
+					<input type="checkbox" id="checkConnectMarkers" />
 					<label for="checkConnectMarkers">Connect markers with reference</label></li>
-				<li><input type="checkbox" id="checkDynamicMarkerColors" />
+				<li class="markers">
+					<input type="checkbox" id="checkDynamicMarkerColors" />
 					<label for="checkDynamicMarkerColors">Marker colors by value</label>
 					<select id="selectMarkerColorsAttribute"><!-- {{template}} --></select></li>
 				<li><button id="btnMore">Settings&hellip;</button></li>

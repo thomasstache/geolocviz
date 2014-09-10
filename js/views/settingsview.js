@@ -21,6 +21,7 @@ define(
 			$checkShowScaleControl: null,
 			$checkDrawNetworkOnTop: null,
 			$selectMarkerColorsAttribute: null,
+			$inputHeatmapMaxIntensity: null,
 			$moreSettingsButton: null,
 
 			/** @type {SettingsDialog} reference to the dialog node, while open */
@@ -31,6 +32,7 @@ define(
 				"click #checkConnectSessions": "toggleSessionLines",
 				"click #checkDynamicMarkerColors": "toggleDynamicMarkerColors",
 				"change #selectMarkerColorsAttribute": "attributeSelectionChanged",
+				"change #heatmapMaxIntensityInput": "updateHeatmapIntensity",
 				"click #checkShowScaleControl": "toggleScaleControl",
 				"click #checkDrawNetworkOnTop": "toggleNetworkOnTop",
 				"click #btnMore": "moreSettingsButtonClicked",
@@ -46,15 +48,17 @@ define(
 				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
 				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");
 				this.$selectMarkerColorsAttribute = this.$("#selectMarkerColorsAttribute");
+				this.$inputHeatmapMaxIntensity = this.$("#heatmapMaxIntensityInput");
 				this.$moreSettingsButton = this.$("#btnMore");
 
-				this.model.on("reset", this.render, this);
+				this.listenTo(this.model, "reset", this.render);
 
 				// listen to some state changes
 				if (this.appstate) {
-					this.appstate.on("change:resultsAvailable", this.enableControls, this);
-					this.appstate.on("change:resultsFilterActive", this.enableControls, this);
-					this.appstate.on("change:referenceLocationsAvailable", this.enableControls, this);
+					this.listenTo(this.appstate, "change:resultsAvailable", this.enableControls);
+					this.listenTo(this.appstate, "change:resultsFilterActive", this.enableControls);
+					this.listenTo(this.appstate, "change:referenceLocationsAvailable", this.enableControls);
+					this.listenTo(this.appstate, "change:heatmapActive", this.toggleHeatmapMode);
 				}
 
 				this.render();
@@ -75,6 +79,14 @@ define(
 				this.$selectMarkerColorsAttribute.prop("disabled", bDynamicColorsDisabled);
 			},
 
+			// switch heatmap/markers mode
+			toggleHeatmapMode: function() {
+
+				var showHeatmapSettings = this.appstate.get("heatmapActive");
+				this.$(".markers").toggleClass("hidden", showHeatmapSettings);
+				this.$(".heatmap").toggleClass("hidden", !showHeatmapSettings);
+			},
+
 			render: function() {
 
 				this.renderMarkerAttributeOptions();
@@ -85,6 +97,8 @@ define(
 				this.$checkDynamicMarkerColors.prop("checked", this.model.get("useDynamicMarkerColors"));
 				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
 				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
+
+				this.$inputHeatmapMaxIntensity.val(this.model.get("heatmapMaxIntensity"));
 
 				this.renderSettingsButton();
 
@@ -170,7 +184,11 @@ define(
 
 			attributeSelectionChanged: function() {
 				this.model.set("markerColorAttribute", this.$selectMarkerColorsAttribute.val());
-			}
+			},
+
+			updateHeatmapIntensity: function() {
+				this.model.set("heatmapMaxIntensity", parseInt(this.$inputHeatmapMaxIntensity.val(), 10));
+			},
 		});
 
 		return SettingsView;
