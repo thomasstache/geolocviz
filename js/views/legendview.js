@@ -39,6 +39,7 @@ define(
 				if (this.settings) {
 					this.listenTo(this.settings, "change:useDynamicMarkerColors", this.onScaleSettingsChanged);
 					this.listenTo(this.settings, "change:markerColorAttribute", this.onColorMapperChanged);
+					this.listenTo(this.settings, "change:heatmapMaxIntensity", this.renderColorScale);
 				}
 
 				// translate the colors dictionary into an array for our templating
