@@ -174,8 +174,7 @@ define(
 					this.$zoomBoundsBtn = $("#zoomBoundsBtn")
 						.on("click", this.zoomToBounds.bind(this));
 					this.$viewportSettingsBtn = $("#btnViewportSettings")
-						.on("click", this.showViewportSettings.bind(this))
-						.toggleClass("hidden");
+						.on("click", this.showViewportSettings.bind(this));
 
 					this.initialized = true;
 				}
@@ -200,6 +199,9 @@ define(
 				this.appstate = options.appstate;
 
 				this.setNetworkOnTop(this.appsettings.get("drawNetworkOnTop"));
+
+				// give maps time to initialize before showing button
+				_.delay(this.enableViewportControls.bind(this), 3000);
 
 				// make available for console scripting
 //				window.mapview = this;
@@ -243,6 +245,11 @@ define(
 				var element = document.getElementById(elementId);
 				if (element)
 					this.map.controls[position].push(element);
+			},
+
+			enableViewportControls: function() {
+				if (this.$viewportSettingsBtn)
+					this.$viewportSettingsBtn.removeClass("hidden");
 			},
 
 			/**
