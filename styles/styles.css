@@ -467,10 +467,19 @@ input[type="checkbox"] {
 .propertyList .fileitem,
 .propertyList .sectoritem {
 	font-size: .9em;
-	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	padding-left: 5px;
+}
+/* prohibit line breaks in list items (allow for .sectoritem itself) */
+.propertyList .fileitem,
+.propertyList .sectoritem span {
+	white-space: nowrap;
+}
+/* indent the second+ lines (if line breaks occur) */
+.propertyList .sectoritem {
+	padding-left: 10px;
+	text-indent: -5px;
 }
 
 /* emphasize a sector in the list */
