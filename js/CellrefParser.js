@@ -33,6 +33,7 @@ define(
 				SECTOR_ID: "Sector_ID",
 				AZIMUTH: "Azimuth",
 				BEAMWIDTH: "Beamwidth",
+				HEIGHT: "Height",
 				LAC: "LAC",
 				CELLTYPE: "CellType",
 
@@ -67,6 +68,7 @@ define(
 				"Sector_ID": true,
 				"Azimuth": true,
 				"Beamwidth": true,
+				"Height": true,
 				"CellType": true,
 			});
 
@@ -335,6 +337,9 @@ define(
 
 						var colCellType = attributeColumnIndex[SectorAttributes.CELLTYPE];
 						props.cellType = (colCellType !== undefined && colCellType > 0) ? getAttr(record, SectorAttributes.CELLTYPE, DataTypes.INTEGER) : null;
+
+						var colHeight = attributeColumnIndex[SectorAttributes.HEIGHT];
+						props.height = (colHeight !== undefined && colHeight > 0) ? getAttr(record, SectorAttributes.HEIGHT, DataTypes.FLOAT) : null;
 
 						// technology-dependent properties
 						var elementType = getAttr(record, SectorAttributes.ELEMENTTYPE);

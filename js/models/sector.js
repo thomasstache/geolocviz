@@ -13,6 +13,9 @@ define(
 				// antenna beamwidth
 				beamwidth: 0.0,
 
+				// height above ground
+				height: null,
+
 				// cell identity, (WCDMA: "WCDMA_CI", GSM: "CI")
 				cellIdentity: null,
 				// "network segment" in which the cellIdentity is valid (WCDMA: "RNCID", GSM: "LAC")
@@ -38,6 +41,9 @@ define(
 
 				s += "CI: " + this.get('cellIdentity') +
 					 ", ↗" + this.get('azimuth') + "°";
+
+				if (this.has('height'))
+					s += ", h: " + this.get('height');
 
 				// GSM
 				if (this.has('bcch'))

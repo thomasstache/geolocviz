@@ -15,7 +15,7 @@
 								{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
 								{{#if bcch}}BCCH:{{bcch}}{{/if}}
 								{{#if pci}}PCI:{{pci}}{{/if}}
-								&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}})</span>
+								&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}}{{#if height}} h:{{height}}{{/if}})</span>
 			{{#if isIndoor}}<span class="value small"> Indoor</span>{{/if}}
 			{{#if isSmall}}<span class="value small"> SmallCell</span>{{/if}}
 		{{#if ../enableFilterPrimaryCells}}
