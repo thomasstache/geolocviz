@@ -340,9 +340,6 @@ define(
 			 */
 			onFilterByElementClicked: function(evt) {
 
-				if (!(evt.currentTarget && evt.currentTarget.classList.contains("filterButton")))
-					return;
-
 				var el = evt.currentTarget;
 
 				var topic;

@@ -489,19 +489,24 @@ input[type="checkbox"] {
 .propertyList .sectoritem {
 	padding-left: 10px;
 	text-indent: -5px;
+	position: relative;
 }
 
 /* emphasize a sector in the list */
 .sectoritem.highlighted { font-weight: bold; font-style: italic; }
 
 /* per-sector result filter buttons */
-.sectoritem > .filterButton { display: none; }
-.sectoritem:hover > .filterButton { display: inline-block; }
+.filterButtons {
+	display: none;
+	position: absolute;
+	top: 0; right: 0;
+}
+.sectoritem:hover > .filterButtons { display: inline-block; }
 
-button.lookup-cell,       button.filterByElement       { background-color: rgba(230, 180, 23, 0.2); }
-button.lookup-cell:hover, button.filterByElement:hover { background-color: rgba(247, 216, 119, 0.4); }
-button.lookup-ref-cell,       button.filterByRefcell       { background-color: rgba(132, 230, 23, 0.2); }
-button.lookup-ref-cell:hover, button.filterByRefcell:hover { background-color: rgba(163, 255, 61, 0.4); }
+button.lookup-cell,       button.filterByElement       { background-color: hsl(61, 42%, 75%); }
+button.lookup-cell:hover, button.filterByElement:hover { background-color: hsl(55, 52%, 77%); }
+button.lookup-ref-cell,       button.filterByRefcell       { background-color: hsl(89, 54%, 77%); }
+button.lookup-ref-cell:hover, button.filterByRefcell:hover { background-color: hsl(89, 73%, 75%); }
 
 button.unselect-session {
 	color: rgb(204, 131, 103);

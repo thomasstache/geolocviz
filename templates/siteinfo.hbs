@@ -18,16 +18,19 @@
 								&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}}{{#if height}} h:{{height}}{{/if}})</span>
 			{{#if isIndoor}}<span class="value small"> Indoor</span>{{/if}}
 			{{#if isSmall}}<span class="value small"> SmallCell</span>{{/if}}
-		{{#if ../enableFilterPrimaryCells}}
-			<button class="filterByElement filterButton translucent tiny symbolic"
-					title="Filter only serving sector results"
-					data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
-		{{/if}}
-		{{#if ../enableFilterRefCells}}
-			<button class="filterByRefcell filterButton translucent tiny symbolic"
-					title="Filter only reference sector results"
-					data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
-		{{/if}}
+
+			<span class="filterButtons">
+			{{#if ../enableFilterPrimaryCells}}
+				<button class="filterByElement translucent tiny symbolic"
+						title="Filter only serving sector results"
+						data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
+			{{/if}}
+			{{#if ../enableFilterRefCells}}
+				<button class="filterByRefcell translucent tiny symbolic"
+						title="Filter only reference sector results"
+						data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
+			{{/if}}
+			</span>
 		</li>
 	{{/each}}
 {{/if}}
