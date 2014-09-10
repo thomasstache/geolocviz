@@ -16,8 +16,8 @@
 								{{#if bcch}}BCCH:{{bcch}}{{/if}}
 								{{#if pci}}PCI:{{pci}}{{/if}}
 								&#8599;{{withUnit azimuth "°"}} &#8738;{{withUnit beamwidth "°"}})</span>
-			<span class="value small">{{#if isIndoor}} Indoor{{/if}}</span>
-			<span class="value small">{{#if isSmall}} SmallCell{{/if}}</span>
+			{{#if isIndoor}}<span class="value small"> Indoor</span>{{/if}}
+			{{#if isSmall}}<span class="value small"> SmallCell</span>{{/if}}
 		{{#if ../enableFilterPrimaryCells}}
 			<button class="filterByElement filterButton translucent tiny symbolic"
 					title="Filter only serving sector results"
