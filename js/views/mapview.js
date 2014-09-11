@@ -220,7 +220,7 @@ define(
 			/**
 			 * Initialize and configure the heatmap visualization layer.
 			 */
-			initHeatmap: function() {
+			initHeatmapLayer: function() {
 
 				if (this.initialized && this.heatmapLayer === null) {
 
@@ -231,8 +231,6 @@ define(
 						radius: this.appsettings.get("heatmapSpreadRadius"),
 						opacity: 0.8,
 					});
-					// for playing with the settings
-					window.heatmap = this.heatmapLayer;
 				}
 			},
 
@@ -975,7 +973,7 @@ define(
 				this.deleteResultOverlays();
 				this.resetBounds();
 
-				this.initHeatmap();
+				this.initHeatmapLayer();
 
 				var view = this,
 					thresholds = this.getThresholdSettings();
