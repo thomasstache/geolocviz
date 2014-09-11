@@ -736,6 +736,11 @@ header, footer, button, #playground-app, .toolbar, .dialog {
 	}
 }
 
+/* Prevent overlap of map copyright with bottom controls/legend */
+@media screen and (max-width: 1400px) {
+	.mapcontrols.bottom { margin-bottom: 22px; }
+}
+
 /* some final words about "display:", to override "block" or "inline-block" */
 .invisible { visibility: hidden; }
 .hidden { display: none; }
