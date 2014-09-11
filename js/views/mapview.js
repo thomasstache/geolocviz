@@ -1022,6 +1022,7 @@ define(
 			 */
 			getThresholdSettings: function() {
 				var thresholds = {
+					confidence: this.appsettings.get("confidenceThreshold"),
 					mobility: this.appsettings.get("mobilityThreshold"),
 					indoor: this.appsettings.get("indoorThreshold"),
 				};
@@ -1047,6 +1048,9 @@ define(
 					// check if the result sample matches the current filter
 					if (view.resultFilterFct !== null &&
 						view.resultFilterFct(sample) === false)
+						return;
+
+					if (sample.get("confidence") < thresholds.confidence)
 						return;
 
 					if (sample instanceof AccuracyResult) {
