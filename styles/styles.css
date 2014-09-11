@@ -473,6 +473,10 @@ input[type="checkbox"] {
 	font-size: 0.8em;
 }
 
+#statistics .propertyList {
+	max-height: 10px;
+}
+
 .fileitem,
 .sectoritem {
 	font-size: .9em;
