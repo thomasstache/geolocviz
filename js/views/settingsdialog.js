@@ -16,6 +16,7 @@ define(
 
 			$probMobilityInput: null,
 			$probIndoorInput: null,
+			$confidenceThresholdInput: null,
 			$checkUseDotIcons: null,
 			$softHeatmapThresholdInput: null,
 			$hardHeatmapThresholdInput: null,
@@ -42,6 +43,7 @@ define(
 
 				this.$probMobilityInput = this.$("#probMobilityInput");
 				this.$probIndoorInput = this.$("#probIndoorInput");
+				this.$confidenceThresholdInput = this.$("#confidenceThresholdInput");
 
 				this.$softHeatmapThresholdInput = this.$("#softHeatmapThresholdInput");
 				this.$hardHeatmapThresholdInput = this.$("#hardHeatmapThresholdInput");
@@ -54,8 +56,9 @@ define(
 			// set the controls to the current model values
 			updateControls: function() {
 
-				this.$probMobilityInput.val(this.model.get("mobilityThreshold"));
-				this.$probIndoorInput.val(this.model.get("indoorThreshold"));
+				this.$probMobilityInput.val(toPercent(this.model.get("mobilityThreshold")));
+				this.$probIndoorInput.val(toPercent(this.model.get("indoorThreshold")));
+				this.$confidenceThresholdInput.val(toPercent(this.model.get("confidenceThreshold")));
 
 				this.$softHeatmapThresholdInput.val(this.model.get("heatmapSuggestionThreshold"));
 				this.$hardHeatmapThresholdInput.val(this.model.get("maxResultMarkers"));
@@ -76,13 +79,15 @@ define(
 
 				var probMobility = parseFloat(this.$probMobilityInput.val()),
 					probIndoor = parseFloat(this.$probIndoorInput.val()),
+					confThreshold = parseFloat(this.$confidenceThresholdInput.val()),
 					heatmapSoftThreshold = parseInt(this.$softHeatmapThresholdInput.val(), 10),
 					heatmapHardThreshold = parseInt(this.$hardHeatmapThresholdInput.val(), 10),
 					useDotIcons = this.$checkUseDotIcons.prop("checked");
 
 				this.model.set({
-					mobilityThreshold: probMobility,
-					indoorThreshold: probIndoor,
+					mobilityThreshold: fromPercent(probMobility),
+					indoorThreshold: fromPercent(probIndoor),
+					confidenceThreshold: fromPercent(confThreshold),
 					maxResultMarkers: heatmapHardThreshold,
 					heatmapSuggestionThreshold: heatmapSoftThreshold,
 					useDotAccuracyMarkers: useDotIcons,
@@ -98,6 +103,14 @@ define(
 				this.remove();
 			},
 		});
+
+		function toPercent(val) {
+			return val * 100.0;
+		}
+
+		function fromPercent(val) {
+			return val / 100.0;
+		}
 
 		return SettingsDialog;
 	}
