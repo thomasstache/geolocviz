@@ -1,18 +1,24 @@
 <div class="veilBackground" />
 
 <!-- the width/height is necessary to prevent blurry rendering in Chrome due to CSS centering -->
-<section class="dialog centered" style="width: 26em; height: 21em;">
+<section class="dialog centered" style="width: 26em; height: 25em;">
 	<div class="content">
 		<h3>Settings</h3>
 
 		<ul>
+			<li><h4>Result Filtering</h4></li>
+			<li><label for="confidenceThresholdInput">Min. Confidence Threshold [%]</label>
+				<input type="number" id="confidenceThresholdInput" step="5" min="0" max="100" />
+			</li>
+
 			<li><h4>Result Categorization</h4></li>
-			<li><label for="probMobilityInput">Mobility Probability Threshold</label>
-				<input type="number" id="probMobilityInput" step="0.1" min="0" max="1" />
+			<li><label for="probMobilityInput">Mobility Probability Threshold [%]</label>
+				<input type="number" id="probMobilityInput" step="5" min="0" max="100" />
 			</li>
-			<li><label for="probIndoorInput">Indoor Probability Threshold</label>
-				<input type="number" id="probIndoorInput" step="0.1" min="0" max="1" />
+			<li><label for="probIndoorInput">Indoor Probability Threshold [%]</label>
+				<input type="number" id="probIndoorInput" step="5" min="0" max="100" />
 			</li>
+
 			<li><h4>Heatmap Rendering Mode</h4></li>
 			<li><label for="softHeatmapThresholdInput">Threshold for suggested Heatmap</label>
 				<input type="number" id="softHeatmapThresholdInput" step="1000" min="5000" />

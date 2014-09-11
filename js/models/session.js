@@ -79,23 +79,40 @@ define(
 					latLng = null,
 					firstResult = this.results.first();
 
-				// check if we had extended Axf files, i.e. this is not the default session
+				// get results above confidence threshold
+				var resultsToConsider;
+				if (thresholds.confidence > 0.0) {
+					resultsToConsider = this.results.filter(
+						function filterFct(result) {
+							return result.get("confidence") > thresholds.confidence;
+						}
+					);
+				}
+				else {
+					resultsToConsider = this.results.toArray();
+				}
+
+				if (resultsToConsider.length == 0)
+					return rv;
+
+				// check if we had extended Axf files, i.e. this is not the only default/dummy session
 				var validSessions = this.get("sessionId") > 0;
 
 				// for stationary sessions we can return one WeightedLocation
 				if (validSessions &&
-					firstResult.category(thresholds) === 'S') {
+					firstResult.category(thresholds) === 'S' &&
+					resultsToConsider.length > 1) {
 
 					latLng = GoogleMapsUtils.makeLatLng(firstResult.getGeoPosition());
 					bounds.extend(latLng);
 					rv.push({
 						location: latLng,
-						weight: this.results.length
+						weight: resultsToConsider.length
 					});
 				}
 				else {
 
-					rv = this.results.map(function(result) {
+					rv = _.map(resultsToConsider, function(result) {
 						latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
 						bounds.extend(latLng);
 						return latLng;

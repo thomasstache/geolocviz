@@ -41,6 +41,9 @@ define(
 				mobilityThreshold: 0.5,
 				indoorThreshold: 0.5,
 
+				// minimum confidence to show a marker
+				confidenceThreshold: 0.0,
+
 				// maximum number of results before a heatmap is forced
 				maxResultMarkers: 30000,
 				// number of results after which a heatmap is suggested
@@ -58,8 +61,9 @@ define(
 
 			/** Indicates if "extended" settings deviate from their defaults. */
 			hasCustomSettings: function() {
-				return  this.get("mobilityThreshold") !== this.defaults.mobilityThreshold ||
-						this.get("indoorThreshold") !== this.defaults.indoorThreshold;
+				return  this.get("mobilityThreshold") !== this.defaults.mobilityThreshold
+					 || this.get("indoorThreshold") !== this.defaults.indoorThreshold
+					 || this.get("confidenceThreshold") !== this.defaults.confidenceThreshold;
 			},
 
 			reset: function() {

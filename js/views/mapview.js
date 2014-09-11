@@ -193,6 +193,7 @@ define(
 
 				// listen for settings changes
 				this.listenTo(this.appsettings, "change:heatmapMaxIntensity change:heatmapSpreadRadius", this.updateHeatmapSettings);
+				this.listenTo(this.appsettings, "change:confidenceThreshold", this.confidenceThresholdChanged);
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
@@ -219,7 +220,7 @@ define(
 			/**
 			 * Initialize and configure the heatmap visualization layer.
 			 */
-			initHeatmap: function() {
+			initHeatmapLayer: function() {
 
 				if (this.initialized && this.heatmapLayer === null) {
 
@@ -230,8 +231,6 @@ define(
 						radius: this.appsettings.get("heatmapSpreadRadius"),
 						opacity: 0.8,
 					});
-					// for playing with the settings
-					window.heatmap = this.heatmapLayer;
 				}
 			},
 
@@ -302,6 +301,19 @@ define(
 			/** debug code to visualize the current bounds as a rectangle */
 			debugBounds: function() {
 				this.drawRectangle(this.bounds, "#00FF00");
+			},
+
+			/**
+			 * We would want to zoom if:
+			 * 1. we have results data
+			 * 2. AND we are not redrawing with (applying) an active filter
+			 */
+			shouldZoomToResults: function() {
+
+				var bZoomToResults = this.collection.length > 0 &&
+									 this.resultFilterFct === null;
+
+				return bZoomToResults;
 			},
 
 			/**
@@ -704,6 +716,17 @@ define(
 					this.updateMarkerColors();
 			},
 
+			confidenceThresholdChanged: function() {
+
+				if (this.shouldZoomToResults())
+					this.resetBounds();
+
+				if (this.appstate.get("heatmapActive"))
+					this.drawHeatmap();
+				else
+					_.defer(this.updateMarkerColors.bind(this)); // deferred to allow call stack to unwind, e.g. Settings dialog to close.
+			},
+
 			/**
 			 * Update map heatmap layer according to current settings.
 			 */
@@ -950,7 +973,7 @@ define(
 				this.deleteResultOverlays();
 				this.resetBounds();
 
-				this.initHeatmap();
+				this.initHeatmapLayer();
 
 				var view = this,
 					thresholds = this.getThresholdSettings();
@@ -981,11 +1004,8 @@ define(
 				// clear all result markers
 				this.deleteResultOverlays();
 
-				// update bounds if:
-				// 1. we have results data
-				// 2. AND we are not redrawing with (applying) an active filter
-				var bZoomToResults = this.collection.length > 0 &&
-									 this.resultFilterFct === null;
+				// update bounds only if we are not drawing with an active filter
+				var bZoomToResults = this.shouldZoomToResults();
 
 				if (bZoomToResults)
 					this.resetBounds();
@@ -1022,6 +1042,7 @@ define(
 			 */
 			getThresholdSettings: function() {
 				var thresholds = {
+					confidence: this.appsettings.get("confidenceThreshold"),
 					mobility: this.appsettings.get("mobilityThreshold"),
 					indoor: this.appsettings.get("indoorThreshold"),
 				};
@@ -1047,6 +1068,9 @@ define(
 					// check if the result sample matches the current filter
 					if (view.resultFilterFct !== null &&
 						view.resultFilterFct(sample) === false)
+						return;
+
+					if (sample.get("confidence") < thresholds.confidence)
 						return;
 
 					if (sample instanceof AccuracyResult) {
@@ -1617,7 +1641,8 @@ define(
 			},
 
 			/**
-			 * Toggles result markers between default and colored-by-value modes.
+			 * Redraws result markers after settings changes.
+			 * E.g. toggles result markers between default and colored-by-value modes.
 			 */
 			updateMarkerColors: function() {
 
