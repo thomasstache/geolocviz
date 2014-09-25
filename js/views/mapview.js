@@ -500,8 +500,7 @@ define(
 					return view.isResultMatchingSector(result, query);
 				};
 
-				// draw overlays
-				this.drawResultMarkers();
+				this.drawHeatmapOrResultMarkers();
 			},
 
 			/**
@@ -510,7 +509,7 @@ define(
 			clearAllResultFilters: function() {
 
 				this.resultFilterFct = null;
-				this.drawResultMarkers();
+				this.drawHeatmapOrResultMarkers();
 			},
 
 			/**
@@ -952,13 +951,21 @@ define(
 					useHeatmap = window.confirm("The loaded data set is very large (" + resultCount + " results).\nWould you like to view it as a heatmap?");
 				}
 
-				if (useHeatmap) {
+				this.appstate.set({ heatmapActive: useHeatmap });
+
+				this.drawHeatmapOrResultMarkers();
+			},
+
+			/**
+			 * Draw results as Heatmap or Markers.
+			 */
+			drawHeatmapOrResultMarkers: function() {
+
+				if (this.appstate.get("heatmapActive")) {
 					this.drawHeatmap();
-					this.appstate.set({ heatmapActive: true });
 				}
 				else {
 					this.drawResultMarkers();
-					this.appstate.set({ heatmapActive: false });
 				}
 			},
 
