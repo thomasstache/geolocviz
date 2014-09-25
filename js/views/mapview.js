@@ -957,9 +957,21 @@ define(
 			},
 
 			/**
-			 * Draw results as Heatmap or Markers.
+			 * Draw results as Heatmap or Markers, deleting all existing markers and highlights.
 			 */
 			drawHeatmapOrResultMarkers: function() {
+
+				if (!this.hasGoogleMaps())
+					return;
+
+				// clear all result markers
+				this.deleteResultOverlays();
+
+				// update bounds only if we are not drawing with an active filter
+				var bZoomToResults = this.shouldZoomToResults();
+
+				if (bZoomToResults)
+					this.resetBounds();
 
 				if (this.appstate.get("heatmapActive")) {
 					this.drawHeatmap();
@@ -967,18 +979,17 @@ define(
 				else {
 					this.drawResultMarkers();
 				}
+
+				if (bZoomToResults)
+					this.zoomToBounds();
+
+				this.enableZoomControls();
 			},
 
 			/**
 			 * Draw results into Heatmap layer.
 			 */
 			drawHeatmap: function() {
-
-				if (!this.hasGoogleMaps())
-					return;
-
-				this.deleteResultOverlays();
-				this.resetBounds();
 
 				this.initHeatmapLayer();
 
@@ -994,35 +1005,14 @@ define(
 				heatmapData = _.flatten(heatmapData);
 
 				this.heatmapLayer.setData(heatmapData);
-
-				this.zoomToBounds();
-
-				this.enableZoomControls();
 			},
 
 			/**
-			 * Redraw result markers for all sessions, deleting all existing markers and highlights.
+			 * Redraw result markers for all sessions.
 			 */
 			drawResultMarkers: function() {
 
-				if (!this.hasGoogleMaps())
-					return;
-
-				// clear all result markers
-				this.deleteResultOverlays();
-
-				// update bounds only if we are not drawing with an active filter
-				var bZoomToResults = this.shouldZoomToResults();
-
-				if (bZoomToResults)
-					this.resetBounds();
-
 				this.drawSessions();
-
-				if (bZoomToResults)
-					this.zoomToBounds();
-
-				this.enableZoomControls();
 			},
 
 			/**
