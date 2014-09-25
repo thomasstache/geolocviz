@@ -999,12 +999,68 @@ define(
 				// collect all positions
 				var heatmapData = [];
 				this.collection.each(function(session) {
-					heatmapData.push(session.getPositionsForHeatmap(view.bounds, thresholds));
+					heatmapData.push(view.getHeatmapDataForSession(session, thresholds));
 				});
 				// convert 2D array of arrays to 1D
 				heatmapData = _.flatten(heatmapData);
 
 				this.heatmapLayer.setData(heatmapData);
+			},
+
+			/**
+			 * Returns the positions of the session's results for heatmap visualizations.
+			 * @param {Session} session
+			 * @param {Object} thresholds Indoor/mobility probability thresholds
+			 * @return {Array}
+			 */
+			getHeatmapDataForSession: function(session, thresholds) {
+
+				var rv = [],
+					latLng = null,
+					bounds = this.bounds,
+					firstResult = session.results.first();
+
+				// get results above confidence threshold
+				var resultsToConsider;
+				if (thresholds.confidence > 0.0) {
+					resultsToConsider = session.results.filter(
+						function filterFct(result) {
+							return result.get("confidence") > thresholds.confidence;
+						}
+					);
+				}
+				else {
+					resultsToConsider = session.results.toArray();
+				}
+
+				if (resultsToConsider.length === 0)
+					return rv;
+
+				// check if we had extended Axf files, i.e. this is not the only default/dummy session
+				var validSessions = session.get("sessionId") > 0;
+
+				// for stationary sessions we can return one WeightedLocation
+				if (validSessions &&
+					firstResult.category(thresholds) === 'S' &&
+					resultsToConsider.length > 1) {
+
+					latLng = GoogleMapsUtils.makeLatLng(firstResult.getGeoPosition());
+					bounds.extend(latLng);
+					rv.push({
+						location: latLng,
+						weight: resultsToConsider.length
+					});
+				}
+				else {
+
+					rv = _.map(resultsToConsider, function(result) {
+						latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
+						bounds.extend(latLng);
+						return latLng;
+					});
+				}
+
+				return rv;
 			},
 
 			/**
