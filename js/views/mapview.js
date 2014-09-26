@@ -2,10 +2,10 @@ define(
 	["underscore", "backbone",
 	 "views/viewportdialog",
 	 "collections/overlays",
-	 "models/AccuracyResult", "models/axfresult", "models/sector",
+	 "models/session", "models/AccuracyResult", "models/axfresult", "models/sector",
 	 "types/position", "types/viewport", "types/resultsfilterquery", "types/googlemapsutils", "ColorMapper"],
 	function(_, Backbone,
-			 ViewportDialog, OverlayList, AccuracyResult, AxfResult, Sector,
+			 ViewportDialog, OverlayList, Session, AccuracyResult, AxfResult, Sector,
 			 Position, Viewport, ResultsFilterQuery, GoogleMapsUtils, ColorMapper) {
 
 		// marker types 'n colors
@@ -1042,7 +1042,7 @@ define(
 					return rv;
 
 				// check if we had extended Axf files, i.e. this is not the only default/dummy session
-				var validSessions = session.get("sessionId") > 0;
+				var validSessions = session.get("sessionId") !== Session.ID_DUMMY;
 
 				// for stationary sessions we can return one WeightedLocation
 				if (validSessions &&
@@ -1650,7 +1650,7 @@ define(
 						this.trigger("result:selected", md.model);
 
 					if (md.sessionId !== undefined &&
-						md.sessionId !== 0) {
+						md.sessionId !== Session.ID_DUMMY) {
 
 						var session = this.collection.get(md.sessionId);
 						if (session) {

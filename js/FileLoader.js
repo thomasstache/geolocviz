@@ -1,10 +1,12 @@
 define(
 	["underscore",
 	 "collections/sessions", "collections/results",
-	 "models/AccuracyResult", "models/axfresult", "models/LocationCandidate", "types/position", "types/filestatistics",
+	 "models/session", "models/AccuracyResult", "models/axfresult", "models/LocationCandidate",
+	 "types/position", "types/filestatistics",
 	 "CellrefParser", "types/logger", "jquery.csv"],
 
-	function(_, SessionList, ResultList, AccuracyResult, AxfResult, LocationCandidate, Position, FileStatistics, CellrefParser, Logger) {
+	function(_, SessionList, ResultList, Session, AccuracyResult, AxfResult, LocationCandidate,
+			 Position, FileStatistics, CellrefParser, Logger) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -31,9 +33,6 @@ define(
 
 			// common Collection.add() options (add silently)
 			var OPT_SILENT = { silent: true };
-
-			// dummy session ID for records from files that don't provide it.
-			var SESSION_ID_DEFAULT = 0;
 
 			/** @type {SessionList} reference to the Sessions collection */
 			var sessionList = null;
@@ -386,7 +385,7 @@ define(
 				var probIndoor    = (record.length >= LineLengths.AXF_61) ? record[IDX.PROB_INDOOR] : NaN;
 
 				// session id and primary cell only in extended (XT) files
-				var sessionId     = isExtended ? record[IDX.SESSIONID] : SESSION_ID_DEFAULT;
+				var sessionId     = isExtended ? record[IDX.SESSIONID] : Session.ID_DUMMY;
 				var controllerId  = isExtended ? parseNumber(record[IDX.CONTROLLER]) : NaN;
 				var primaryCellId = isExtended ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
 				var refControllerId = isExtended2 ? parseNumber(record[IDX.REF_CONTROLLER]) : NaN;
