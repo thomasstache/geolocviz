@@ -1033,6 +1033,11 @@ define(
 					resultsToConsider = session.results.toArray();
 				}
 
+				// check if the results match the current filter
+				if (this.resultFilterFct !== null) {
+					resultsToConsider = _.filter(resultsToConsider, this.resultFilterFct);
+				}
+
 				if (resultsToConsider.length === 0)
 					return rv;
 
