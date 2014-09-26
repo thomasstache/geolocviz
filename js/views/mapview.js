@@ -1069,17 +1069,9 @@ define(
 			},
 
 			/**
-			 * Redraw result markers for all sessions.
+			 * Redraw result markers for all sessions in the SessionList collection.
 			 */
 			drawResultMarkers: function() {
-
-				this.drawSessions();
-			},
-
-			/**
-			 * Draw result markers for all sessions in the SessionList collection.
-			 */
-			drawSessions: function() {
 
 				// initialize the color mapper
 				if ( this.appsettings.get("useDynamicMarkerColors") &&
@@ -1714,7 +1706,7 @@ define(
 				this.deleteOverlaysForType(OverlayTypes.AXFMARKER);
 
 				// redraw all the markers
-				this.drawSessions();
+				this.drawResultMarkers();
 
 				// TODO: filter somehow, as performance with dynamic colors gets bad > 1000 results.
 /*				// get the currently highlighted session
