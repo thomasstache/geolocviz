@@ -3,7 +3,7 @@ define(
 	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/session", "models/AccuracyResult", "models/axfresult", "models/sector",
-	 "types/position", "types/viewport", "types/resultsfilterquery", "types/googlemapsutils", "ColorMapper"],
+	 "types/position", "types/viewport", "types/resultsfilterquery", "types/googlemapsutils", "types/colormapper"],
 	function(_, Backbone,
 			 ViewportDialog, OverlayList, Session, AccuracyResult, AxfResult, Sector,
 			 Position, Viewport, ResultsFilterQuery, GoogleMapsUtils, ColorMapper) {

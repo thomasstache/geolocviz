@@ -1,8 +1,9 @@
 define(
 	["jquery", "underscore", "backbone",
+	 "types/colormapper",
 	 "hbs!templates/legend", "hbs!templates/colorscale"],
 
-	function($, _, Backbone, legendTemplate, colorScaleTemplate) {
+	function($, _, Backbone, ColorMapper, legendTemplate, colorScaleTemplate) {
 
 		var LegendView = Backbone.View.extend({
 
