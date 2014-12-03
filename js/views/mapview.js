@@ -889,7 +889,7 @@ define(
 						fillOpacity: 1,
 						scale: _scale,
 						strokeColor: colorDef.color,
-						strokeOpacity: "0.6",
+						strokeOpacity: 0.6,
 						strokeWeight: 2,
 					},
 					position: siteLatLng,
@@ -1405,7 +1405,7 @@ define(
 							fillOpacity: 1,
 							scale: 5,
 							strokeColor: "#333",
-							strokeOpacity: "0.6",
+							strokeOpacity: 0.6,
 							strokeWeight: 1,
 						};
 						// return directly, no MarkerImage is needed.
@@ -1516,7 +1516,7 @@ define(
 						icon: {
 							path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
 							strokeColor: "#000",
-							strokeOpacity: "0.6",
+							strokeOpacity: 0.6,
 							strokeWeight: 1,
 							fillOpacity: opacity,
 							scale: 4
