@@ -196,6 +196,7 @@ define(
 				// listen for settings changes
 				this.listenTo(this.appsettings, "change:heatmapMaxIntensity change:heatmapSpreadRadius", this.updateHeatmapSettings);
 				this.listenTo(this.appsettings, "change:confidenceThreshold", this.confidenceThresholdChanged);
+				this.appsettings.on("change:useDynamicSiteColors", this.updateSiteColors, this);
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
@@ -744,13 +745,28 @@ define(
 				}
 			},
 
+			/**
+			 * Redraws site symbols after settings changes.
+			 */
+			updateSiteColors: function() {
+
+				// remove markers to change
+				this.deleteOverlaysForType(OverlayTypes.SITE);
+
+				// redraw all the markers
+				this.drawSiteMarkers(false);
+			},
+
 
 
 			/**
 			 * Drawing stuff
 			 */
 
-			// Draw the radio network consisting of sites and sectors
+			/**
+			 * Completely redraw the radio network consisting of sites and sectors.
+			 * Update the bounding box if no results are loaded.
+			 */
 			drawNetwork: function() {
 
 				if (!this.hasGoogleMaps())
@@ -762,6 +778,20 @@ define(
 				if (bZoomToNetwork)
 					this.resetBounds();
 
+				this.drawSiteMarkers(bZoomToNetwork);
+
+				if (bZoomToNetwork)
+					this.zoomToBounds();
+
+				this.enableZoomControls();
+			},
+
+			/**
+			 * Draw markers for all sites.
+			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
+			 */
+			drawSiteMarkers: function(bZoomToNetwork) {
+
 				if (this.appsettings.get('useDynamicSiteColors'))
 					this.configureColorMapperForSites();
 
@@ -770,11 +800,6 @@ define(
 				this.siteList.each(function(site) {
 					view.drawSite(site, bZoomToNetwork);
 				});
-
-				if (bZoomToNetwork)
-					this.zoomToBounds();
-
-				this.enableZoomControls();
 			},
 
 			/**
