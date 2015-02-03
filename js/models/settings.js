@@ -29,6 +29,9 @@ define(
 				// draw network above result markers
 				drawNetworkOnTop: false,
 
+				// use attribute for dynamic site colors
+				useDynamicSiteColors: false,
+
 				// use result attributes for dynamic marker colors
 				useDynamicMarkerColors: false,
 				// the name of the result attribute to use for dynamic marker colors

@@ -119,8 +119,10 @@ define(
 			// offset applied to the z-index of site/sector markers according to 'drawNetworkOnTop' setting
 			networkMarkerZOffset: 0,
 
-			// maps the values to colors
+			// maps result values to colors
 			colorMapper: null,
+			// maps site attribute to colors
+			siteColorMapper: null,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -194,6 +196,7 @@ define(
 				// listen for settings changes
 				this.listenTo(this.appsettings, "change:heatmapMaxIntensity change:heatmapSpreadRadius", this.updateHeatmapSettings);
 				this.listenTo(this.appsettings, "change:confidenceThreshold", this.confidenceThresholdChanged);
+				this.appsettings.on("change:useDynamicSiteColors", this.updateSiteColors, this);
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
@@ -742,13 +745,28 @@ define(
 				}
 			},
 
+			/**
+			 * Redraws site symbols after settings changes.
+			 */
+			updateSiteColors: function() {
+
+				// remove markers to change
+				this.deleteOverlaysForType(OverlayTypes.SITE);
+
+				// redraw all the markers
+				this.drawSiteMarkers(false);
+			},
+
 
 
 			/**
 			 * Drawing stuff
 			 */
 
-			// Draw the radio network consisting of sites and sectors
+			/**
+			 * Completely redraw the radio network consisting of sites and sectors.
+			 * Update the bounding box if no results are loaded.
+			 */
 			drawNetwork: function() {
 
 				if (!this.hasGoogleMaps())
@@ -760,16 +778,28 @@ define(
 				if (bZoomToNetwork)
 					this.resetBounds();
 
-				// capture the "this" scope
-				var view = this;
-				this.siteList.each(function(site) {
-					view.drawSite(site, bZoomToNetwork);
-				});
+				this.drawSiteMarkers(bZoomToNetwork);
 
 				if (bZoomToNetwork)
 					this.zoomToBounds();
 
 				this.enableZoomControls();
+			},
+
+			/**
+			 * Draw markers for all sites.
+			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
+			 */
+			drawSiteMarkers: function(bZoomToNetwork) {
+
+				if (this.appsettings.get('useDynamicSiteColors'))
+					this.configureColorMapperForSites();
+
+				// capture the "this" scope
+				var view = this;
+				this.siteList.each(function(site) {
+					view.drawSite(site, bZoomToNetwork);
+				});
 			},
 
 			/**
@@ -797,12 +827,23 @@ define(
 					if (bZoomToNetwork)
 						this.bounds.extend(latLng);
 
+					var icon, zIndex;
+					if (this.appsettings.get('useDynamicSiteColors') && this.siteColorMapper !== null) {
+						icon = this.getMarkerIcon(IconTypes.SITE, "dynamic");
+						icon.fillColor = this.siteColorMapper.getColor(site.get('netSegment'));
+						zIndex = -99; // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
+					}
+					else {
+						icon = this.getMarkerIcon(IconTypes.SITE);
+						zIndex = Z_Index.SITE + this.networkMarkerZOffset;
+					}
+
 					var marker = new google.maps.Marker({
-						icon: this.getMarkerIcon(IconTypes.SITE),
+						icon: icon,
 						position: latLng,
 						map: this.map,
 						title: makeTooltip(site),
-						zIndex: Z_Index.SITE + this.networkMarkerZOffset
+						zIndex: zIndex
 					});
 					marker.metaData = {
 						model: site
@@ -910,6 +951,30 @@ define(
 				);
 
 				this.registerOverlay(OverlayTypes.SECTOR, marker);
+			},
+
+			/**
+			 * Configures ColorMapper for the network symbols.
+			 */
+			configureColorMapperForSites: function() {
+
+				var values = this.siteList.pluck('netSegment');
+				// discard illegal values
+				values = _.filter(values, function(num){ return num !== -1; });
+
+				if (values.length > 0) {
+
+					var min = _.min(values),
+						max = _.max(values);
+
+					if (this.siteColorMapper === null)
+						this.siteColorMapper = new ColorMapper(min, max);
+					else
+						this.siteColorMapper.setLimits(min, max);
+				}
+				else {
+					this.siteColorMapper = null;
+				}
 			},
 
 			/**
@@ -1387,7 +1452,20 @@ define(
 						break;
 
 					case IconTypes.SITE:
-						if (option == "selected") {
+						if (option == "dynamic") {
+							icon = {
+								path: google.maps.SymbolPath.CIRCLE,
+								fillColor: "#000", // dummy color
+								fillOpacity: 1,
+								scale: 3,
+								strokeColor: "#333",
+								strokeOpacity: 0.6,
+								strokeWeight: 1,
+							};
+							// return directly, no MarkerImage is needed.
+							return icon;
+						}
+						else if (option == "selected") {
 							imagePath = 'images/siteSelectedBig.png';
 							geometry.size = new google.maps.Size(13,13);
 							geometry.anchor = new google.maps.Point(6,6);

@@ -17,6 +17,7 @@ define(
 
 			$checkConnectMarkers: null,
 			$checkConnectSessions: null,
+			$checkDynamicSiteColors: null,
 			$checkDynamicMarkerColors: null,
 			$checkShowScaleControl: null,
 			$checkDrawNetworkOnTop: null,
@@ -30,6 +31,7 @@ define(
 			events: {
 				"click #checkConnectMarkers": "toggleReferenceLines",
 				"click #checkConnectSessions": "toggleSessionLines",
+				"click #checkDynamicSiteColors": "toggleDynamicSiteColors",
 				"click #checkDynamicMarkerColors": "toggleDynamicMarkerColors",
 				"change #selectMarkerColorsAttribute": "attributeSelectionChanged",
 				"change #heatmapMaxIntensityInput": "updateHeatmapIntensity",
@@ -44,6 +46,7 @@ define(
 
 				this.$checkConnectMarkers = this.$("#checkConnectMarkers");
 				this.$checkConnectSessions = this.$("#checkConnectSessions");
+				this.$checkDynamicSiteColors = this.$("#checkDynamicSiteColors");
 				this.$checkDynamicMarkerColors = this.$("#checkDynamicMarkerColors");
 				this.$checkShowScaleControl = this.$("#checkShowScaleControl");
 				this.$checkDrawNetworkOnTop = this.$("#checkDrawNetworkOnTop");
@@ -94,6 +97,7 @@ define(
 
 				this.$checkConnectMarkers.prop("checked", this.model.get("drawReferenceLines"));
 				this.$checkConnectSessions.prop("checked", this.model.get("drawSessionLines"));
+				this.$checkDynamicSiteColors.prop("checked", this.model.get("useDynamicSiteColors"));
 				this.$checkDynamicMarkerColors.prop("checked", this.model.get("useDynamicMarkerColors"));
 				this.$checkShowScaleControl.prop("checked", this.model.get("showScaleControl"));
 				this.$checkDrawNetworkOnTop.prop("checked", this.model.get("drawNetworkOnTop"));
@@ -164,6 +168,14 @@ define(
 
 			toggleSessionLines: function() {
 				this.model.set("drawSessionLines", this.$checkConnectSessions.prop("checked"));
+			},
+
+			toggleDynamicSiteColors: function() {
+				var bUseDynamicColors = this.$checkDynamicSiteColors.prop("checked");
+
+				_.defer(function() {
+					this.model.set("useDynamicSiteColors", bUseDynamicColors);
+				}.bind(this));
 			},
 
 			toggleDynamicMarkerColors: function() {
