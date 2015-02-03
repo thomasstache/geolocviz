@@ -348,6 +348,7 @@ define(
 								props.bcch = getAttr(record, SectorAttributes.GSM_BCCH, DataTypes.INTEGER);
 								props.bsic = getAttr(record, SectorAttributes.GSM_BSIC, DataTypes.INTEGER);
 
+								props.technology = Site.TECH_GSM;
 								props.cellIdentity = getAttr(record, SectorAttributes.GSM_CI, DataTypes.INTEGER);
 								props.netSegment = getAttr(record, SectorAttributes.LAC, DataTypes.INTEGER);
 								break;
@@ -355,6 +356,7 @@ define(
 								props.scramblingCode = getAttr(record, SectorAttributes.WCDMA_SC, DataTypes.INTEGER);
 								props.uarfcn = getAttr(record, SectorAttributes.WCDMA_UARFCN, DataTypes.INTEGER);
 
+								props.technology = Site.TECH_WCDMA;
 								props.cellIdentity = getAttr(record, SectorAttributes.WCDMA_CI, DataTypes.INTEGER);
 								props.netSegment = getAttr(record, SectorAttributes.WCDMA_RNCID, DataTypes.INTEGER);
 								break;
@@ -362,6 +364,7 @@ define(
 								props.earfcn = getAttr(record, SectorAttributes.LTE_EARFCN, DataTypes.INTEGER);
 								props.pci = getAttr(record, SectorAttributes.LTE_PCI, DataTypes.INTEGER);
 
+								props.technology = Site.TECH_LTE;
 								props.cellIdentity = getAttr(record, SectorAttributes.LTE_ECI, DataTypes.INTEGER);
 
 								// pick between "TrackingAreaCode" and "TrackingArea", prefer the former

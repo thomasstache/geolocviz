@@ -1,7 +1,8 @@
 define(
-	["underscore", "backbone"],
+	["underscore", "backbone",
+	 "templates/helpers/technologyterm"],
 
-	function(_, Backbone) {
+	function(_, Backbone, getTechnologyTerm) {
 
 		var Sector = Backbone.Model.extend({
 
@@ -16,6 +17,8 @@ define(
 				// height above ground
 				height: null,
 
+				// network system/technology: GSM, WCDMA, LTE...
+				technology: null,
 				// cell identity, (WCDMA: "WCDMA_CI", GSM: "CI")
 				cellIdentity: null,
 				// "network segment" in which the cellIdentity is valid (WCDMA: "RNCID", GSM: "LAC")
@@ -44,6 +47,10 @@ define(
 
 				if (this.has('height'))
 					s += ", h: " + this.get('height');
+
+				var tech = this.has('technology') ? this.get('technology') : "unknown";
+				if (this.has('netSegment'))
+					s += ", " + getTechnologyTerm(tech, "netsegment") + ": " + this.get('netSegment');
 
 				// GSM
 				if (this.has('bcch'))

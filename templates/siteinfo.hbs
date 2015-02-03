@@ -9,7 +9,7 @@
 	<li><span class="label">Sectors:</span></li>
 	{{#each sectors}}
 		<li class="sectoritem{{#if highlight}} highlighted{{/if}}"
-			title="{{id}}{{#if uarfcn}}, f:{{uarfcn}}{{/if}}{{#if earfcn}}, f:{{earfcn}}{{/if}}{{#if isIndoor}}, Indoor{{/if}}" >
+			title="{{id}}{{#if uarfcn}}, f:{{uarfcn}}{{/if}}{{#if earfcn}}, f:{{earfcn}}{{/if}}{{#if netSegment}}, {{technologyterm technology 'netsegment'}}: {{netSegment}}{{/if}}{{#if isIndoor}}, Indoor{{/if}}" >
 			<span>{{id}}</span>
 			<span class="value">(CI:{{cellIdentity}}
 								{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
