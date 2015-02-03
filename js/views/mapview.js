@@ -827,13 +827,15 @@ define(
 					if (bZoomToNetwork)
 						this.bounds.extend(latLng);
 
-					var icon;
+					var icon, zIndex;
 					if (this.appsettings.get('useDynamicSiteColors') && this.siteColorMapper !== null) {
 						icon = this.getMarkerIcon(IconTypes.SITE, "dynamic");
 						icon.fillColor = this.siteColorMapper.getColor(site.get('netSegment'));
+						zIndex = -99; // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
 					}
 					else {
 						icon = this.getMarkerIcon(IconTypes.SITE);
+						zIndex = Z_Index.SITE + this.networkMarkerZOffset;
 					}
 
 					var marker = new google.maps.Marker({
@@ -841,7 +843,7 @@ define(
 						position: latLng,
 						map: this.map,
 						title: makeTooltip(site),
-						zIndex: Z_Index.SITE + this.networkMarkerZOffset
+						zIndex: zIndex
 					});
 					marker.metaData = {
 						model: site
