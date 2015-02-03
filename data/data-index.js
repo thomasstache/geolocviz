@@ -9,7 +9,7 @@ define(
 			{ name: "cellrefs-NL_Vf_Amsterdam.txt",    title: "NL Vf Amsterdam 2012" },
 			{ name: "cellrefs-UK_Vf_GPEH.txt",         title: "UK Vf London 2010" },
 			{ name: "cellrefs-RO_Vf_GPEH.txt",         title: "RO Vf Brasov 2010" },
-			{ name: "cellrefs-BR_Claro_CHR.txt",       title: "BR Brasilia GSM 2010" },
+			{ name: "cellrefs-BR_Claro_CHR.txt",       title: "BR Brasilia CHR 2010" },
 			{ name: "cellrefs-CHL_Entel_RPMO.txt",     title: "CHL Entel RPMO 2013" },
 			{ name: "cellrefs-BA_Robi_GPEH_Dhaka.txt", title: "BA Robi Dhaka UMTS 2014" },
 			{ name: "cellrefs-MY_Maxis_CHR_KL.txt",    title: "MY Maxis CHR KL 2011" },
