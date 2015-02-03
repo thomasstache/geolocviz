@@ -16,7 +16,9 @@ define(
 				// collection of sectors
 				sectors: null,
 				// network system/technology: GSM, WCDMA, LTE...
-				technology: ""
+				technology: "",
+				// netSegment of the first sector
+				netSegment: null
 			},
 
 			initialize: function() {
@@ -38,6 +40,13 @@ define(
 			 */
 			addSector: function(sector, addOptions) {
 				this.get("sectors").add(sector, addOptions);
+
+				if (!this.has('netSegment')) {
+
+					var netSegment = (sector instanceof Backbone.Model) ? sector.get('netSegment')
+																		: sector.netSegment;
+					this.set('netSegment', netSegment);
+				}
 			},
 
 			/**
