@@ -119,8 +119,10 @@ define(
 			// offset applied to the z-index of site/sector markers according to 'drawNetworkOnTop' setting
 			networkMarkerZOffset: 0,
 
-			// maps the values to colors
+			// maps result values to colors
 			colorMapper: null,
+			// maps site attribute to colors
+			siteColorMapper: null,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -760,6 +762,9 @@ define(
 				if (bZoomToNetwork)
 					this.resetBounds();
 
+				if (this.appsettings.get('useDynamicSiteColors'))
+					this.configureColorMapperForSites();
+
 				// capture the "this" scope
 				var view = this;
 				this.siteList.each(function(site) {
@@ -797,8 +802,17 @@ define(
 					if (bZoomToNetwork)
 						this.bounds.extend(latLng);
 
+					var icon;
+					if (this.appsettings.get('useDynamicSiteColors') && this.siteColorMapper !== null) {
+						icon = this.getMarkerIcon(IconTypes.SITE, "dynamic");
+						icon.fillColor = this.siteColorMapper.getColor(site.get('netSegment'));
+					}
+					else {
+						icon = this.getMarkerIcon(IconTypes.SITE);
+					}
+
 					var marker = new google.maps.Marker({
-						icon: this.getMarkerIcon(IconTypes.SITE),
+						icon: icon,
 						position: latLng,
 						map: this.map,
 						title: makeTooltip(site),
@@ -910,6 +924,30 @@ define(
 				);
 
 				this.registerOverlay(OverlayTypes.SECTOR, marker);
+			},
+
+			/**
+			 * Configures ColorMapper for the network symbols.
+			 */
+			configureColorMapperForSites: function() {
+
+				var values = this.siteList.pluck('netSegment');
+				// discard illegal values
+				values = _.filter(values, function(num){ return num !== -1; });
+
+				if (values.length > 0) {
+
+					var min = _.min(values),
+						max = _.max(values);
+
+					if (this.siteColorMapper === null)
+						this.siteColorMapper = new ColorMapper(min, max);
+					else
+						this.siteColorMapper.setLimits(min, max);
+				}
+				else {
+					this.siteColorMapper = null;
+				}
 			},
 
 			/**
@@ -1386,7 +1424,20 @@ define(
 						break;
 
 					case IconTypes.SITE:
-						if (option == "selected") {
+						if (option == "dynamic") {
+							icon = {
+								path: google.maps.SymbolPath.CIRCLE,
+								fillColor: "#000", // dummy color
+								fillOpacity: 1,
+								scale: 3,
+								strokeColor: "#333",
+								strokeOpacity: 0.6,
+								strokeWeight: 1,
+							};
+							// return directly, no MarkerImage is needed.
+							return icon;
+						}
+						else if (option == "selected") {
 							imagePath = 'images/siteSelectedBig.png';
 							geometry.size = new google.maps.Size(13,13);
 							geometry.anchor = new google.maps.Point(6,6);
