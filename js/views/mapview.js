@@ -1153,6 +1153,7 @@ define(
 								visible = view.appsettings.get("drawMarkers_I");
 								break;
 							case "M":
+								/* falls through */
 							default:
 								color = MarkerColors.GEOLOCATED;
 								visible = view.appsettings.get("drawMarkers_M");
