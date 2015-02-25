@@ -3,10 +3,10 @@ define(
 	 "collections/sessions", "collections/results",
 	 "models/session", "models/AccuracyResult", "models/axfresult", "models/LocationCandidate",
 	 "types/position", "types/filestatistics",
-	 "CellrefParser", "types/logger", "jquery.csv"],
+	 "CellrefParser", "types/logger", "parsenumber", "jquery.csv"],
 
 	function(_, SessionList, ResultList, Session, AccuracyResult, AxfResult, LocationCandidate,
-			 Position, FileStatistics, CellrefParser, Logger) {
+			 Position, FileStatistics, CellrefParser, Logger, parseNumber) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -452,19 +452,6 @@ define(
 					}
 				}
 				return session;
-			}
-
-			/**
-			 * Helper function to validate and convert numeric values.
-			 */
-			function parseNumber(text) {
-				if (typeof text === "number")
-					return text;
-
-				if (text.indexOf(",") > 0)
-					text = text.replace(",", ".");
-
-				return parseFloat(text);
 			}
 
 			// return the external API

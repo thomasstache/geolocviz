@@ -1,9 +1,9 @@
 define(
 	["underscore",
 	 "collections/sites",
-	 "models/site", "types/position", "types/logger"],
+	 "models/site", "types/position", "types/logger", "parsenumber"],
 
-	function(_, SiteList, Site, Position, Logger) {
+	function(_, SiteList, Site, Position, Logger, parseNumber) {
 
 		/**
 		 * Singleton module to parse and load data from files.
@@ -421,21 +421,6 @@ define(
 				}
 //>>excludeEnd("debugExclude");
 				return val;
-			}
-
-			/**
-			 * Helper function to validate and convert numeric values.
-			 * @param  {String} text
-			 * @return {Number}
-			 */
-			function parseNumber(text) {
-				if (text === undefined)
-					return NaN;
-
-				if (typeof text === "string" && text.indexOf(",") > 0)
-					text = text.replace(",", ".");
-
-				return parseFloat(text);
 			}
 
 			/**
