@@ -516,25 +516,6 @@ define(
 			},
 
 			/**
-			 * Removes all overlays from the map and destroys them.
-			 */
-			deleteAllOverlays: function() {
-
-				this.overlays.removeAll();
-				this.resetBounds();
-				this.deleteHeatmapData();
-
-				this.highlightedSessionId = -1;
-				this.highlightedCandidateSampleCid = -1;
-
-				this.selectedMarkerHighlight = null;
-				this.selectedReferenceMarkerHighlight = null;
-				this.selectedReferenceLineHighlight = null;
-
-				this.selectedSiteHighlight = null;
-			},
-
-			/**
 			 * Removes all site/sector overlays from the map.
 			 */
 			deleteNetworkOverlays: function() {
@@ -606,19 +587,6 @@ define(
 					category: category,
 					ref: overlay
 				}, { silent: true });
-			},
-
-			/**
-			 * Filter function for result markers.
-			 * @param  {Overlay} overlay The model to check
-			 * @return {Boolean}         True if this is a result marker overlay
-			 */
-			isResultMarker: function(overlay) {
-
-				var type = overlay.get('type');
-				return (type === OverlayTypes.GEOLOCMARKER ||
-						type === OverlayTypes.AXFMARKER ||
-						type === OverlayTypes.REFERENCEMARKER);
 			},
 
 			/**
