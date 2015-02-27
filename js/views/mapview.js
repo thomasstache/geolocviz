@@ -3,9 +3,12 @@ define(
 	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/session", "models/AccuracyResult", "models/axfresult", "models/sector",
+	 "views/map/heatmaplayer",
 	 "types/position", "types/viewport", "types/resultsfilterquery", "types/googlemapsutils", "types/colormapper"],
+
 	function(_, Backbone,
 			 ViewportDialog, OverlayList, Session, AccuracyResult, AxfResult, Sector,
+			 HeatmapLayer,
 			 Position, Viewport, ResultsFilterQuery, GoogleMapsUtils, ColorMapper) {
 
 		// marker types 'n colors
@@ -74,7 +77,7 @@ define(
 			/** @type {google.maps.Map} the Google Maps control */
 			map: null,
 
-			/** @type {google.maps.visualization.HeatmapLayer} heatmap visualization layer */
+			/** @type {HeatmapLayer} heatmap view */
 			heatmapLayer: null,
 
 			// zoom-to-bounds map control
@@ -194,7 +197,6 @@ define(
 				this.collection.on("reset", this.onSessionsReset, this);
 
 				// listen for settings changes
-				this.listenTo(this.appsettings, "change:heatmapMaxIntensity change:heatmapSpreadRadius", this.updateHeatmapSettings);
 				this.listenTo(this.appsettings, "change:confidenceThreshold", this.confidenceThresholdChanged);
 				this.appsettings.on("change:useDynamicSiteColors", this.updateSiteColors, this);
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
@@ -218,23 +220,6 @@ define(
 			hasGoogleMaps: function() {
 				return (window.google !== undefined &&
 						google.maps !== undefined);
-			},
-
-			/**
-			 * Initialize and configure the heatmap visualization layer.
-			 */
-			initHeatmapLayer: function() {
-
-				if (this.initialized && this.heatmapLayer === null) {
-
-					this.heatmapLayer = new google.maps.visualization.HeatmapLayer({
-						map: this.map,
-						dissipating: true,
-						maxIntensity: this.appsettings.get("heatmapMaxIntensity"),
-						radius: this.appsettings.get("heatmapSpreadRadius"),
-						opacity: 0.8,
-					});
-				}
 			},
 
 			/**
@@ -297,13 +282,23 @@ define(
 			 */
 			zoomToBounds: function() {
 
-				if (!this.bounds.isEmpty())
-					this.map.fitBounds(this.bounds);
+				var bounds = this.appstate.get("heatmapActive") ? this.heatmapLayer.getBounds() : this.bounds;
+
+				if (!bounds.isEmpty())
+					this.map.fitBounds(bounds);
 			},
 
 			/** debug code to visualize the current bounds as a rectangle */
 			debugBounds: function() {
 				this.drawRectangle(this.bounds, "#00FF00");
+			},
+
+			/**
+			 * Returns the current filter function for result/heatmap layers.
+			 * @return {Function}
+			 */
+			getResultFilterFunction: function() {
+				return this.resultFilterFct;
 			},
 
 			/**
@@ -570,11 +565,6 @@ define(
 				this.overlays.remove(list);
 			},
 
-			deleteHeatmapData: function() {
-				if (this.heatmapLayer)
-					this.heatmapLayer.setData([]);
-			},
-
 			/**
 			 * Store a reference to the maps overlay object by type.
 			 * @param {OverlayTypes} type The type of the overlay
@@ -629,7 +619,6 @@ define(
 
 				this.deleteResultOverlays();
 				this.clearAllResultFilters();
-				this.deleteHeatmapData();
 			},
 
 			/**
@@ -686,31 +675,14 @@ define(
 					this.updateMarkerColors();
 			},
 
+			// TODO: move into resultLayer
 			confidenceThresholdChanged: function() {
 
 				if (this.shouldZoomToResults())
 					this.resetBounds();
 
-				if (this.appstate.get("heatmapActive"))
-					this.drawHeatmap();
-				else
+				if (this.appstate.get("heatmapActive") == false)
 					_.defer(this.updateMarkerColors.bind(this)); // deferred to allow call stack to unwind, e.g. Settings dialog to close.
-			},
-
-			/**
-			 * Update map heatmap layer according to current settings.
-			 */
-			updateHeatmapSettings: function(event) {
-
-				if (!this.heatmapLayer)
-					return;
-
-				if (event.changed.heatmapMaxIntensity !== undefined) {
-					this.heatmapLayer.set("maxIntensity", event.changed.heatmapMaxIntensity);
-				}
-				if (event.changed.heatmapSpreadRadius !== undefined) {
-					this.heatmapLayer.set("radius", event.changed.heatmapSpreadRadius);
-				}
 			},
 
 			/**
@@ -1024,81 +996,17 @@ define(
 			 */
 			drawHeatmap: function() {
 
-				this.initHeatmapLayer();
-
-				var view = this,
-					thresholds = this.appsettings.getThresholdSettings();
-
-				// collect all positions
-				var heatmapData = [];
-				this.collection.each(function(session) {
-					heatmapData.push(view.getHeatmapDataForSession(session, thresholds));
-				});
-				// convert 2D array of arrays to 1D
-				heatmapData = _.flatten(heatmapData);
-
-				this.heatmapLayer.setData(heatmapData);
-			},
-
-			/**
-			 * Returns the positions of the session's results for heatmap visualizations.
-			 * @param {Session} session
-			 * @param {Object} thresholds Indoor/mobility probability thresholds
-			 * @return {Array}
-			 */
-			getHeatmapDataForSession: function(session, thresholds) {
-
-				var rv = [],
-					latLng = null,
-					bounds = this.bounds,
-					firstResult = session.results.first();
-
-				// get results above confidence threshold
-				var resultsToConsider;
-				if (thresholds.confidence > 0.0) {
-					resultsToConsider = session.results.filter(
-						function filterFct(result) {
-							return result.get("confidence") > thresholds.confidence;
-						}
-					);
-				}
-				else {
-					resultsToConsider = session.results.toArray();
-				}
-
-				// check if the results match the current filter
-				if (this.resultFilterFct !== null) {
-					resultsToConsider = _.filter(resultsToConsider, this.resultFilterFct);
-				}
-
-				if (resultsToConsider.length === 0)
-					return rv;
-
-				// check if we had extended Axf files, i.e. this is not the only default/dummy session
-				var validSessions = session.get("sessionId") !== Session.ID_DUMMY;
-
-				// for stationary sessions we can return one WeightedLocation
-				if (validSessions &&
-					firstResult.category(thresholds) === 'S' &&
-					resultsToConsider.length > 1) {
-
-					latLng = GoogleMapsUtils.makeLatLng(firstResult.getGeoPosition());
-					bounds.extend(latLng);
-					rv.push({
-						location: latLng,
-						weight: resultsToConsider.length
-					});
-				}
-				else {
-
-					rv = _.map(resultsToConsider, function(result) {
-						latLng = GoogleMapsUtils.makeLatLng(result.getGeoPosition());
-						bounds.extend(latLng);
-						return latLng;
+				if (this.heatmapLayer === null) {
+					this.heatmapLayer = new HeatmapLayer({
+						mapview: this,
+						map: this.map,
+						appstate: this.appstate,
+						settings: this.appsettings,
+						collection: this.collection
 					});
 				}
 
-				return rv;
+				this.heatmapLayer.draw();
 			},
 
 			/**
