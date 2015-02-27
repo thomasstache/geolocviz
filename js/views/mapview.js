@@ -3,12 +3,12 @@ define(
 	 "views/viewportdialog",
 	 "collections/overlays",
 	 "models/session", "models/AccuracyResult", "models/axfresult", "models/sector",
-	 "views/map/heatmaplayer",
+	 "views/map/heatmaplayer", "views/map/networklayer",
 	 "types/position", "types/viewport", "types/resultsfilterquery", "types/googlemapsutils", "types/colormapper"],
 
 	function(_, Backbone,
 			 ViewportDialog, OverlayList, Session, AccuracyResult, AxfResult, Sector,
-			 HeatmapLayer,
+			 HeatmapLayer, NetworkLayer,
 			 Position, Viewport, ResultsFilterQuery, GoogleMapsUtils, ColorMapper) {
 
 		// marker types 'n colors
@@ -21,22 +21,13 @@ define(
 			/*ACTIX:		{ bgcolor: "006983", color: "CCCCCC", smb: "A", label: "Home" },*/
 		});
 
-		var SectorColors = Object.freeze({
-			DEFAULT: { color: "#333", fillcolor: "#6AF" },
-			SMLCELL:  { color: "#5B720E", fillcolor: "#B5E61D" }, /* green*/
-			INDOOR:  { color: "#A349A4", fillcolor: "#C878E7"}, /* violet */
-		});
-
 		var IconTypes = Object.freeze({
 			PIN: "pin",
 			DOT: "dot",
 			DYNAMIC: "dynamic",
-			SITE: "site",
 		});
 
 		var OverlayTypes = Object.freeze({
-			SITE: "siteSymbol",
-			SECTOR: "sectorSymbol",
 			REFERENCEMARKER: "refMarker",
 			GEOLOCMARKER: "geoMarker",
 			AXFMARKER: "axfMarker",
@@ -49,14 +40,8 @@ define(
 
 		var Z_Index = Object.freeze({
 			HIGHLIGHT: -10, // TS: only negative values really put the highlight under the result markers
-			SITE: 10,
-			SECTOR: 20,
 			RESULT: 100,
-			ONTOP: 200, // additional offset to bump markers to top
 		});
-
-		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
-		var DEFAULT_SECTOR_SCALE = 2.0;
 
 		// "map" of already created Marker icons by type
 		var IconCache = {};
@@ -79,6 +64,8 @@ define(
 
 			/** @type {HeatmapLayer} heatmap view */
 			heatmapLayer: null,
+			/** @type {NetworkLayer} the network view */
+			networkLayer: null,
 
 			// zoom-to-bounds map control
 			$zoomBoundsBtn: null,
@@ -110,22 +97,14 @@ define(
 			selectedReferenceMarkerHighlight: null,
 			selectedReferenceLineHighlight: null,
 
-			/** @type {Marker} reference to overlay used to highlight the selected site */
-			selectedSiteHighlight: null,
-
 			// id of the currently highlighted session (see drawSessionLines())
 			highlightedSessionId: -1,
 
 			// cid of the sample/result for which candidate markers are drawn (see drawCandidateMarkers())
 			highlightedCandidateSampleCid: -1,
 
-			// offset applied to the z-index of site/sector markers according to 'drawNetworkOnTop' setting
-			networkMarkerZOffset: 0,
-
 			// maps result values to colors
 			colorMapper: null,
-			// maps site attribute to colors
-			siteColorMapper: null,
 
 			// returns the colors dictionary
 			colors: function() { return MarkerColors; },
@@ -192,19 +171,15 @@ define(
 				this.overlays = new OverlayList();
 
 				this.siteList = options.siteList;
-				this.siteList.on("reset", this.deleteNetworkOverlays, this);
 
-				this.collection.on("reset", this.onSessionsReset, this);
+				this.listenTo(this.collection, "reset", this.onSessionsReset);
 
 				// listen for settings changes
 				this.listenTo(this.appsettings, "change:confidenceThreshold", this.confidenceThresholdChanged);
-				this.appsettings.on("change:useDynamicSiteColors", this.updateSiteColors, this);
 				this.appsettings.on("change:useDynamicMarkerColors change:mobilityThreshold change:indoorThreshold change:useDotAccuracyMarkers", this.updateMarkerColors, this);
 				this.appsettings.on("change", this.onSettingsChanged, this);
 
 				this.appstate = options.appstate;
-
-				this.setNetworkOnTop(this.appsettings.get("drawNetworkOnTop"));
 
 				// give maps time to initialize before showing button
 				_.delay(this.enableViewportControls.bind(this), 3000);
@@ -246,7 +221,7 @@ define(
 			enableZoomControls: function(enable) {
 
 				if (enable === undefined)
-					enable = !this.bounds.isEmpty();
+					enable = !this.getBounds().isEmpty();
 
 				if (this.$zoomBoundsBtn)
 					this.$zoomBoundsBtn.toggleClass("hidden", !enable);
@@ -260,29 +235,29 @@ define(
 			},
 
 			/**
-			 * Adjusts the view bounds rectangle to fit the network sites.
-			 * Use e.g. after clearing results
+			 * Returns the bounds to zoom to - could be network or results.
+			 * @return {LatLngBounds}
 			 */
-			updateBoundsToNetwork: function() {
-				this.resetBounds();
+			getBounds: function() {
 
-				var view = this;
-				this.siteList.each(function(site) {
-					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
-
-					if (isValidLatLng(latLng))
-						view.bounds.extend(latLng);
-				});
-
-				this.enableZoomControls();
+				// network or results?
+				var bounds;
+				if (this.collection.length > 0) {
+					bounds = this.appstate.get("heatmapActive") ? this.heatmapLayer.getBounds() : this.bounds;
+				}
+				else {
+					bounds = this.networkLayer.getBounds();
+				}
+				return bounds;
 			},
 
 			/**
+			 * Handler for the click on the Zoom-to-bounds button.
 			 * Adjusts the viewport center and zoom to fit the currently collected bounds rectangle.
 			 */
 			zoomToBounds: function() {
 
-				var bounds = this.appstate.get("heatmapActive") ? this.heatmapLayer.getBounds() : this.bounds;
+				var bounds = this.getBounds();
 
 				if (!bounds.isEmpty())
 					this.map.fitBounds(bounds);
@@ -290,7 +265,7 @@ define(
 
 			/** debug code to visualize the current bounds as a rectangle */
 			debugBounds: function() {
-				this.drawRectangle(this.bounds, "#00FF00");
+				this.drawRectangle(this.getBounds(), "#00FF00");
 			},
 
 			/**
@@ -354,50 +329,6 @@ define(
 			/**
 			 * Overlay handling
 			 */
-
-			/**
-			 * Update the z-index of the given marker according to the current "on top" offset.
-			 * @param {Marker} marker  Google Maps Marker or Polyline object
-			 * @param {Number} zIndex
-			 */
-			setMarkerZIndex: function(marker, zIndex) {
-				if (marker)
-					marker.setZIndex(zIndex + this.networkMarkerZOffset);
-			},
-
-			/**
-			 * Change the z-index offset for network markers and updates all existing markers.
-			 * @param {Boolean} drawNetworkOnTop True for "on top", false for below.
-			 */
-			setNetworkOnTop: function(drawNetworkOnTop) {
-				this.networkMarkerZOffset = drawNetworkOnTop ? Z_Index.ONTOP : 0;
-				this.updateZIndexForNetworkOverlays();
-			},
-
-			/**
-			 * Updates the z-index for all network overlays.
-			 */
-			updateZIndexForNetworkOverlays: function() {
-
-				var sites = this.overlays.byType(OverlayTypes.SITE),
-				    sectors = this.overlays.byType(OverlayTypes.SECTOR),
-				    overlays = sites.concat(sectors);
-
-				var view = this;
-
-				_.each(
-					overlays,
-					function(overlay) {
-						var marker = overlay.get('ref'),
-						    zIndex = overlay.get('type') === OverlayTypes.SITE ? Z_Index.SITE : Z_Index.SECTOR;
-						view.setMarkerZIndex(marker, zIndex);
-					}
-				);
-
-				if (this.selectedSiteHighlight) {
-					this.setMarkerZIndex(this.selectedSiteHighlight, Z_Index.SITE + 10);
-				}
-			},
 
 			/**
 			 * Update the visibility of the given marker.
@@ -511,16 +442,6 @@ define(
 			},
 
 			/**
-			 * Removes all site/sector overlays from the map.
-			 */
-			deleteNetworkOverlays: function() {
-
-				this.highlightSite(null);
-				this.deleteOverlaysForType(OverlayTypes.SITE);
-				this.deleteOverlaysForType(OverlayTypes.SECTOR);
-			},
-
-			/**
 			 * Removes all result + session overlays from the map.
 			 */
 			deleteResultOverlays: function() {
@@ -622,6 +543,14 @@ define(
 			},
 
 			/**
+			 * Listener for "reset" on NetworkLayer.
+			 */
+			onNetworkLayerReset: function() {
+
+				this.enableZoomControls();
+			},
+
+			/**
 			 * Update map overlay visibility according to current settings.
 			 */
 			onSettingsChanged: function(event) {
@@ -661,10 +590,6 @@ define(
 				if (event.changed.markerColorAttribute !== undefined) {
 					this.markerAttributeChanged(event.changed.markerColorAttribute);
 				}
-
-				if (event.changed.drawNetworkOnTop !== undefined) {
-					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
-				}
 			},
 
 			markerAttributeChanged: function(attributeName) {
@@ -681,20 +606,8 @@ define(
 				if (this.shouldZoomToResults())
 					this.resetBounds();
 
-				if (this.appstate.get("heatmapActive") == false)
+				if (this.appstate.get("heatmapActive") === false)
 					_.defer(this.updateMarkerColors.bind(this)); // deferred to allow call stack to unwind, e.g. Settings dialog to close.
-			},
-
-			/**
-			 * Redraws site symbols after settings changes.
-			 */
-			updateSiteColors: function() {
-
-				// remove markers to change
-				this.deleteOverlaysForType(OverlayTypes.SITE);
-
-				// redraw all the markers
-				this.drawSiteMarkers(false);
 			},
 
 
@@ -715,10 +628,19 @@ define(
 				// only zoom to the whole network if we don't have results displayed
 				var bZoomToNetwork = this.collection.length === 0;
 
-				if (bZoomToNetwork)
-					this.resetBounds();
+				if (this.networkLayer === null) {
+					this.networkLayer = new NetworkLayer({
+						mapview: this,
+						map: this.map,
+						appstate: this.appstate,
+						settings: this.appsettings,
+						collection: this.siteList
+					});
 
-				this.drawSiteMarkers(bZoomToNetwork);
+					this.listenTo(this.networkLayer, "reset", this.onNetworkLayerReset);
+				}
+
+				this.networkLayer.draw();
 
 				if (bZoomToNetwork)
 					this.zoomToBounds();
@@ -726,196 +648,6 @@ define(
 				this.enableZoomControls();
 			},
 
-			/**
-			 * Draw markers for all sites.
-			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
-			 */
-			drawSiteMarkers: function(bZoomToNetwork) {
-
-				if (this.appsettings.get('useDynamicSiteColors'))
-					this.configureColorMapperForSites();
-
-				// capture the "this" scope
-				var view = this;
-				this.siteList.each(function(site) {
-					view.drawSite(site, bZoomToNetwork);
-				});
-			},
-
-			/**
-			 * Creates a marker for a site and adds it to the map.
-			 * @param  {Site}    site           The model for the site
-			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
-			 */
-			drawSite: function(site, bZoomToNetwork) {
-
-				var view = this;
-				var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
-
-				// helper function to collect and format tooltip data
-				function makeTooltip(site) {
-
-					var lines = site.getSectors().map(function(sector){
-						return sector.getTooltipText();
-					});
-					lines.unshift(site.get('id'));
-					return lines.join("\n");
-				}
-
-				if (isValidLatLng(latLng)) {
-
-					if (bZoomToNetwork)
-						this.bounds.extend(latLng);
-
-					var icon, zIndex;
-					if (this.appsettings.get('useDynamicSiteColors') && this.siteColorMapper !== null) {
-						icon = this.getMarkerIcon(IconTypes.SITE, "dynamic");
-						icon.fillColor = this.siteColorMapper.getColor(site.get('netSegment'));
-						zIndex = -99; // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
-					}
-					else {
-						icon = this.getMarkerIcon(IconTypes.SITE);
-						zIndex = Z_Index.SITE + this.networkMarkerZOffset;
-					}
-
-					var marker = new google.maps.Marker({
-						icon: icon,
-						position: latLng,
-						map: this.map,
-						title: makeTooltip(site),
-						zIndex: zIndex
-					});
-					marker.metaData = {
-						model: site
-					};
-					this.registerOverlay(OverlayTypes.SITE, marker);
-
-					// click event to the for the marker
-					google.maps.event.addListener(marker, 'click',
-						function() {
-							// in here "this" is bound to the marker
-							view.onSiteClick(this);
-						}
-					);
-				}
-			},
-
-			/**
-			 * Creates markers for all sectors in the site's SectorList.
-			 * The markers are drawn using SVG symbol paths.
-			 * @param  {Site} site
-			 */
-			drawSectorsForSite: function(site) {
-
-				if (site &&
-					site.getSectors().length > 0) {
-
-					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
-					if (isValidLatLng(latLng)) {
-
-						var sectors = site.getSectorsSortedBy('azimuth');
-						var lastAzimuth = NaN;
-						var scale = DEFAULT_SECTOR_SCALE;
-
-						for (var i = 0; i < sectors.length; i++) {
-
-							var sector = sectors[i];
-							var azimuth = sector.get('azimuth');
-
-							// increase the symbol scale if the sector has the same azimuth as the one before
-							if (azimuth === lastAzimuth)
-								scale += 1.0;
-							else
-								scale = DEFAULT_SECTOR_SCALE;
-
-							lastAzimuth = azimuth;
-
-							this.drawSector(sector, latLng, scale);
-						}
-					}
-				}
-			},
-
-			/**
-			 * Draw a symbol for the given sector.
-			 * @param  {Sector} sector     The model with the sector's data
-			 * @param  {LatLng} siteLatLng The location of the parent site
-			 * @param  {Number} scale      (optional) Scaling factor for the symbol size
-			 */
-			drawSector: function(sector, siteLatLng, scale) {
-
-				var view = this;
-
-				var _scale = scale || DEFAULT_SECTOR_SCALE;
-				var azi = sector.get('azimuth');
-
-				var colorDef;
-				var cellType = sector.get('cellType');
-				if (cellType == Sector.TYPE_INDOOR) {
-					colorDef = SectorColors.INDOOR;
-				}
-				else if (cellType == Sector.TYPE_SMALLCELL) {
-					colorDef = SectorColors.SMLCELL;
-				}
-				else {
-					colorDef = SectorColors.DEFAULT;
-				}
-
-				var marker = new google.maps.Marker({
-
-					icon: {
-						path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
-						rotation: azi,
-						fillColor: colorDef.fillcolor,
-						fillOpacity: 1,
-						scale: _scale,
-						strokeColor: colorDef.color,
-						strokeOpacity: 0.6,
-						strokeWeight: 2,
-					},
-					position: siteLatLng,
-					map: this.map,
-					title: sector.getTooltipText(),
-					zIndex: Z_Index.SECTOR + this.networkMarkerZOffset - _scale // the bigger the symbol, the lower we place it
-				});
-
-				marker.metaData = {
-					model: sector
-				};
-
-				// click event to the for the marker
-				google.maps.event.addListener(marker, 'dblclick',
-					function() {
-						view.onSectorDblClick(this);
-					}
-				);
-
-				this.registerOverlay(OverlayTypes.SECTOR, marker);
-			},
-
-			/**
-			 * Configures ColorMapper for the network symbols.
-			 */
-			configureColorMapperForSites: function() {
-
-				var values = this.siteList.pluck('netSegment');
-				// discard illegal values
-				values = _.filter(values, function(num){ return num !== -1; });
-
-				if (values.length > 0) {
-
-					var min = _.min(values),
-						max = _.max(values);
-
-					if (this.siteColorMapper === null)
-						this.siteColorMapper = new ColorMapper(min, max);
-					else
-						this.siteColorMapper.setLimits(min, max);
-				}
-				else {
-					this.siteColorMapper = null;
-				}
-			},
 
 			/**
 			 * Configures ColorMapper for the attribute.
@@ -1315,32 +1047,6 @@ define(
 						};
 						break;
 
-					case IconTypes.SITE:
-						if (option == "dynamic") {
-							icon = {
-								path: google.maps.SymbolPath.CIRCLE,
-								fillColor: "#000", // dummy color
-								fillOpacity: 1,
-								scale: 3,
-								strokeColor: "#333",
-								strokeOpacity: 0.6,
-								strokeWeight: 1,
-							};
-							// return directly, no MarkerImage is needed.
-							return icon;
-						}
-						else if (option == "selected") {
-							imagePath = 'images/siteSelectedBig.png';
-							geometry.size = new google.maps.Size(13,13);
-							geometry.anchor = new google.maps.Point(6,6);
-						}
-						else {
-							imagePath = 'images/site.png';
-							geometry.size = new google.maps.Size(9,9);
-							geometry.anchor = new google.maps.Point(4,4);
-						}
-						break;
-
 					case IconTypes.DYNAMIC:
 						icon = {
 							path: google.maps.SymbolPath.CIRCLE,
@@ -1512,22 +1218,6 @@ define(
 			},
 
 			/**
-			 * Creates a marker with a custom graphic to highlight sites and adds it to the map.
-			 * @return {Marker} reference to the created marker
-			 */
-			createHighlightForSites: function() {
-
-				var marker = new google.maps.Marker({
-					icon: this.getMarkerIcon(IconTypes.SITE, "selected"),
-					map: this.map,
-					zIndex: Z_Index.SITE + this.networkMarkerZOffset + 10
-				});
-				this.registerOverlay(OverlayTypes.SELECTIONVIZ, marker);
-
-				return marker;
-			},
-
-			/**
 			 * Helper method for visual inspection of the bounding box.
 			 * @param {LatLngBounds} bounds Coordinates for the rectangle
 			 * @param {String}       color  The stroke color as HTML color of the format "#FFFFFF"
@@ -1544,41 +1234,6 @@ define(
 				});
 
 				this.registerOverlay(OverlayTypes.DEBUG, rect);
-			},
-
-			/**
-			 * Handler for clicks on map markers.
-			 */
-			onSiteClick: function(siteMarker) {
-
-				if (siteMarker && siteMarker.metaData) {
-
-					var md = siteMarker.metaData;
-					if (md.model)
-						this.trigger("site:selected", md.model);
-				}
-			},
-
-			/**
-			 * Handler for double-clicks on sector markers.
-			 */
-			onSectorDblClick: function(marker) {
-
-				if (marker && marker.metaData) {
-
-					var md = marker.metaData;
-					if (md.model) {
-
-						var sector = md.model;
-						var query = new ResultsFilterQuery(
-							ResultsFilterQuery.TOPIC_PRIMARYCELL,
-							sector.get('id'),
-							sector.get('netSegment'),
-							sector.get('cellIdentity')
-						);
-						this.filterResultsBySector(query);
-					}
-				}
 			},
 
 			/**
@@ -1772,47 +1427,6 @@ define(
 					this.setMarkerVisible(this.selectedMarkerHighlight, false);
 					this.setMarkerVisible(this.selectedReferenceMarkerHighlight, false);
 					this.setMarkerVisible(this.selectedReferenceLineHighlight, false);
-				}
-			},
-
-			/**
-			 * Highlight the given site by drawing an overlay.
-			 * @param {Site}    site          The model of the site
-			 * @param {Boolean} ensureVisible Controls if map viewport should be adjusted
-			 */
-			highlightSite: function(site, ensureVisible) {
-
-				if (site) {
-
-					if (!this.selectedSiteHighlight) {
-						// create overlay for reuse for all site highlighting needs
-						this.selectedSiteHighlight = this.createHighlightForSites();
-					}
-
-					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
-					var bShow = isValidLatLng(latLng);
-					if (bShow) {
-						// update the position
-						this.selectedSiteHighlight.setPosition(latLng);
-					}
-					this.setMarkerVisible(this.selectedSiteHighlight, bShow);
-
-					// draw sectors for the site
-					this.deleteOverlaysForType(OverlayTypes.SECTOR);
-					this.drawSectorsForSite(site);
-
-					if (ensureVisible && bShow) {
-						var bounds = this.map.getBounds();
-						// check manually, as fitBounds() even zooms out for unchanged bounds
-						if (!bounds.contains(latLng)){
-							bounds.extend(latLng);
-							this.map.fitBounds(bounds);
-						}
-					}
-				}
-				else {
-					// reset previous highlighted site
-					this.setMarkerVisible(this.selectedSiteHighlight, false);
 				}
 			},
 

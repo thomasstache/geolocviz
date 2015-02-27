@@ -129,7 +129,6 @@ define(
 				}
 
 				this.sessions.reset();
-				this.mapview.updateBoundsToNetwork();
 				this.mapview.zoomToBounds();
 			},
 
@@ -146,7 +145,6 @@ define(
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
-				this.mapview.updateBoundsToNetwork();
 				this.searchview.clearSearchField();
 				this.clearFileForm();
 
