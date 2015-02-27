@@ -1027,7 +1027,7 @@ define(
 				this.initHeatmapLayer();
 
 				var view = this,
-					thresholds = this.getThresholdSettings();
+					thresholds = this.appsettings.getThresholdSettings();
 
 				// collect all positions
 				var heatmapData = [];
@@ -1121,18 +1121,6 @@ define(
 			},
 
 			/**
-			 * Returns an object with the parameters for BaseResult.category()
-			 */
-			getThresholdSettings: function() {
-				var thresholds = {
-					confidence: this.appsettings.get("confidenceThreshold"),
-					mobility: this.appsettings.get("mobilityThreshold"),
-					indoor: this.appsettings.get("indoorThreshold"),
-				};
-				return thresholds;
-			},
-
-			/**
 			 * Draw markers for results in the given session matching the current filter
 			 * @param  {Session} session The session model.
 			 */
@@ -1140,7 +1128,7 @@ define(
 
 				var view = this;
 
-				var thresholds = this.getThresholdSettings();
+				var thresholds = this.appsettings.getThresholdSettings();
 
 				var refLinesEnabled = this.appsettings.get("drawReferenceLines");
 
@@ -1289,7 +1277,7 @@ define(
 			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
 
 				var view = this;
-				var letter = candidate ? candidate.category(this.getThresholdSettings()) : colorDef.smb;
+				var letter = candidate ? candidate.category(this.appsettings.getThresholdSettings()) : colorDef.smb;
 				var icon;
 
 				if (type === OverlayTypes.AXFMARKER) {
@@ -1302,7 +1290,7 @@ define(
 						icon.fillColor = this.colorMapper.getColor(value);
 					}
 					else {
-						var cat = sample.category(this.getThresholdSettings());
+						var cat = sample.category(this.appsettings.getThresholdSettings());
 						icon = this.getMarkerIcon(IconTypes.DOT, cat);
 					}
 				}

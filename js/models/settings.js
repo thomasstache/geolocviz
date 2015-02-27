@@ -69,6 +69,18 @@ define(
 					 || this.get("confidenceThreshold") !== this.defaults.confidenceThreshold;
 			},
 
+			/**
+			 * Returns an object with the parameters for BaseResult.category()
+			 */
+			getThresholdSettings: function() {
+				var thresholds = {
+					confidence: this.get("confidenceThreshold"),
+					mobility: this.get("mobilityThreshold"),
+					indoor: this.get("indoorThreshold"),
+				};
+				return thresholds;
+			},
+
 			reset: function() {
 				this.set(this.defaults);
 				this.trigger("reset");
