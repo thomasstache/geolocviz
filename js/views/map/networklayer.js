@@ -1,11 +1,11 @@
 define(
 	["underscore", "backbone",
-	 "collections/overlays", "models/sector",
-	 "types/position", "types/resultsfilterquery", "types/googlemapsutils", "types/colormapper"],
+	 "collections/overlays", "models/site", "models/sector",
+	 "types/position", "types/googlemapsutils", "types/colormapper"],
 
 	function(_, Backbone,
-			 OverlayList, Sector,
-			 Position, ResultsFilterQuery, GoogleMapsUtils, ColorMapper) {
+			 OverlayList, Site, Sector,
+			 Position, GoogleMapsUtils, ColorMapper) {
 
 		var SectorColors = Object.freeze({
 			DEFAULT: { color: "#333", fillcolor: "#6AF" },
@@ -43,8 +43,9 @@ define(
 
 		/**
 		 * Radio Network Map Layer.
-		 * Emits the following events:
-		 *   site:selected - parameter: Site model
+		 * Emits the following events: event name (payload)
+		 *   site:selected (Site model)
+		 *   sector:selected (Sector model)
 		 *   reset
 		 */
 		var NetworkLayer = Backbone.View.extend({
@@ -339,13 +340,7 @@ define(
 					if (md.model) {
 
 						var sector = md.model;
-						var query = new ResultsFilterQuery(
-							ResultsFilterQuery.TOPIC_PRIMARYCELL,
-							sector.get('id'),
-							sector.get('netSegment'),
-							sector.get('cellIdentity')
-						);
-						this.mapview.filterResultsBySector(query);
+						this.trigger("sector:selected", sector);
 					}
 				}
 			},

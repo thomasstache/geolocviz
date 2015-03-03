@@ -199,7 +199,8 @@ define(
 				});
 
 				this.listenTo(this.networkLayer, "reset", this.onNetworkLayerReset);
-				this.listenTo(this.networkLayer, "site:selected", this.triggerSiteSelected);
+				this.listenTo(this.networkLayer, "site:selected", this.onSiteSelected);
+				this.listenTo(this.networkLayer, "sector:selected", this.onSectorSelected);
 			},
 
 			initHeatmapLayer: function() {
@@ -354,11 +355,25 @@ define(
 			},
 
 			/**
-			 * Handler for the NetworkLayer's event. Proxy/bubble it.
+			 * Handler for the NetworkLayer's site selection event. Proxy/bubble it.
 			 */
-			triggerSiteSelected: function(data) {
+			onSiteSelected: function(data) {
 
 				this.trigger("site:selected", data);
+			},
+
+			/**
+			 * Handler for the NetworkLayer's sector selection event. Filter results attributed to that sector.
+			 */
+			onSectorSelected: function(sector) {
+
+				var query = new ResultsFilterQuery(
+					ResultsFilterQuery.TOPIC_PRIMARYCELL,
+					sector.get('id'),
+					sector.get('netSegment'),
+					sector.get('cellIdentity')
+				);
+				this.filterResultsBySector(query);
 			},
 
 			/**
