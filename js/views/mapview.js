@@ -270,9 +270,13 @@ define(
 				if (this.collection.length > 0) {
 					bounds = this.appstate.get("heatmapActive") ? this.heatmapLayer.getBounds() : this.bounds;
 				}
-				else {
+				else if (this.networkLayer) {
 					bounds = this.networkLayer.getBounds();
 				}
+				else {
+					bounds = new google.maps.LatLngBounds(); // empty dummy bounds
+				}
+
 				return bounds;
 			},
 
