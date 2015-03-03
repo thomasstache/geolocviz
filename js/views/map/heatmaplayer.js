@@ -7,6 +7,11 @@ define(
 			 Session, AxfResult,
 			 Position, ResultsFilterQuery, GoogleMapsUtils) {
 
+		/**
+		 * Result Heatmap Map Layer.
+		 * Emits the following events:
+		 *   reset
+		 */
 		var HeatmapLayer = Backbone.View.extend({
 
 			/** @type {MapView} the parent view */
@@ -113,6 +118,9 @@ define(
 			onSessionsReset: function() {
 
 				this.deleteHeatmapData();
+				this.resetBounds();
+
+				this.trigger("reset");
 			},
 
 			/**
