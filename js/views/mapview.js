@@ -188,6 +188,30 @@ define(
 //				window.mapview = this;
 			},
 
+			initNetworkLayer: function() {
+
+				this.networkLayer = new NetworkLayer({
+					mapview: this,
+					map: this.map,
+					appstate: this.appstate,
+					settings: this.appsettings,
+					collection: this.siteList
+				});
+
+				this.listenTo(this.networkLayer, "reset", this.onNetworkLayerReset);
+			},
+
+			initHeatmapLayer: function() {
+
+				this.heatmapLayer = new HeatmapLayer({
+					mapview: this,
+					map: this.map,
+					appstate: this.appstate,
+					settings: this.appsettings,
+					collection: this.collection
+				});
+			},
+
 			/**
 			 * Check for availabitity of the Google Maps API
 			 * @return {Boolean} Returns true if the API is available.
@@ -629,15 +653,7 @@ define(
 				var bZoomToNetwork = this.collection.length === 0;
 
 				if (this.networkLayer === null) {
-					this.networkLayer = new NetworkLayer({
-						mapview: this,
-						map: this.map,
-						appstate: this.appstate,
-						settings: this.appsettings,
-						collection: this.siteList
-					});
-
-					this.listenTo(this.networkLayer, "reset", this.onNetworkLayerReset);
+					this.initNetworkLayer();
 				}
 
 				this.networkLayer.draw();
@@ -729,13 +745,7 @@ define(
 			drawHeatmap: function() {
 
 				if (this.heatmapLayer === null) {
-					this.heatmapLayer = new HeatmapLayer({
-						mapview: this,
-						map: this.map,
-						appstate: this.appstate,
-						settings: this.appsettings,
-						collection: this.collection
-					});
+					this.initHeatmapLayer();
 				}
 
 				this.heatmapLayer.draw();
