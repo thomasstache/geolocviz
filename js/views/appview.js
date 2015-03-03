@@ -547,7 +547,6 @@ define(
 					this.model.set("elementSearchQuery", null);
 
 				this.model.set("selectedSite", site);
-				this.mapview.highlightSite(site, true);
 			},
 
 

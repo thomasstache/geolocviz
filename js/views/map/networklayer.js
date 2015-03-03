@@ -41,6 +41,12 @@ define(
 				   !isNaN(latLng.lng());
 		}
 
+		/**
+		 * Radio Network Map Layer.
+		 * Emits the following events:
+		 *   site:selected - parameter: Site model
+		 *   reset
+		 */
 		var NetworkLayer = Backbone.View.extend({
 
 			/** @type {MapView} the parent view */
@@ -85,6 +91,8 @@ define(
 				this.listenTo(this.settings, "change:useDynamicSiteColors", this.updateSiteColors);
 				this.listenTo(this.settings, "change:drawNetworkOnTop", this.onSettingsChanged);
 
+				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
+
 				this.resetBounds();
 
 				this.setNetworkOnTop(this.settings.get("drawNetworkOnTop"));
@@ -98,6 +106,12 @@ define(
 				if (event.changed.drawNetworkOnTop !== undefined) {
 					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
 				}
+			},
+
+			selectedSiteChanged: function(event) {
+
+				var site = event.changed.selectedSite;
+				this.highlightSite(site);
 			},
 
 			/**
@@ -331,7 +345,7 @@ define(
 							sector.get('netSegment'),
 							sector.get('cellIdentity')
 						);
-						this.filterResultsBySector(query);
+						this.mapview.filterResultsBySector(query);
 					}
 				}
 			},
@@ -339,9 +353,8 @@ define(
 			/**
 			 * Highlight the given site by drawing an overlay.
 			 * @param {Site}    site          The model of the site
-			 * @param {Boolean} ensureVisible Controls if map viewport should be adjusted
 			 */
-			highlightSite: function(site, ensureVisible) {
+			highlightSite: function(site) {
 
 				if (site) {
 
@@ -359,10 +372,10 @@ define(
 					this.mapview.setMarkerVisible(this.selectedSiteHighlight, bShow);
 
 					// draw sectors for the site
-					this.deleteOverlaysForType(OverlayTypes.SECTOR);
+					this.overlays.removeByType(OverlayTypes.SECTOR);
 					this.drawSectorsForSite(site);
 
-					if (ensureVisible && bShow) {
+					if (bShow) {
 						var bounds = this.map.getBounds();
 						// check manually, as fitBounds() even zooms out for unchanged bounds
 						if (!bounds.contains(latLng)){

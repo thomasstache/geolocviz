@@ -199,6 +199,7 @@ define(
 				});
 
 				this.listenTo(this.networkLayer, "reset", this.onNetworkLayerReset);
+				this.listenTo(this.networkLayer, "site:selected", this.triggerSiteSelected);
 			},
 
 			initHeatmapLayer: function() {
@@ -348,7 +349,13 @@ define(
 				this.viewportDialog = null;
 			},
 
+			/**
+			 * Handler for the NetworkLayer's event. Proxy/bubble it.
+			 */
+			triggerSiteSelected: function(data) {
 
+				this.trigger("site:selected", data);
+			},
 
 			/**
 			 * Overlay handling
