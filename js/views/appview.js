@@ -88,7 +88,7 @@ define(
 					appstate: this.model,
 				});
 
-				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
+				this.legendview = new LegendView({ settings: this.settings, appstate: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);

@@ -1,9 +1,9 @@
 define(
 	["jquery", "underscore", "backbone",
-	 "types/colormapper",
+	 "types/colormapper", "views/map/markercolors",
 	 "hbs!templates/legend", "hbs!templates/colorscale"],
 
-	function($, _, Backbone, ColorMapper, legendTemplate, colorScaleTemplate) {
+	function($, _, Backbone, ColorMapper, MarkerColors, legendTemplate, colorScaleTemplate) {
 
 		var LegendView = Backbone.View.extend({
 
@@ -44,7 +44,7 @@ define(
 				}
 
 				// translate the colors dictionary into an array for our templating
-				var colorDict = options.colors;
+				var colorDict = MarkerColors;
 				this.colorData = {
 					swatches: []
 				};
