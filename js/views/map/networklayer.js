@@ -1,10 +1,12 @@
 define(
 	["underscore", "backbone",
-	 "collections/overlays", "models/site", "models/sector",
+	 "views/map/baselayer",
+	 "models/site", "models/sector",
 	 "types/position", "types/googlemapsutils", "types/colormapper"],
 
 	function(_, Backbone,
-			 OverlayList, Site, Sector,
+			 BaseLayer,
+			 Site, Sector,
 			 Position, GoogleMapsUtils, ColorMapper) {
 
 		var SectorColors = Object.freeze({
@@ -48,24 +50,7 @@ define(
 		 *   sector:selected (Sector model)
 		 *   reset
 		 */
-		var NetworkLayer = Backbone.View.extend({
-
-			/** @type {MapView} the parent view */
-			mapview: null,
-
-			/** @type {google.maps.Map} the Google Maps control */
-			map: null,
-
-			/** @type {AppState} the shared app state */
-			appstate: null,
-			/** @type {Settings} the settings model */
-			settings: null,
-
-			// bounding rectangle around all reference and geolocated markers
-			bounds: null,
-
-			/** @type {OverlayList} collection of all map objects */
-			overlays: null,
+		var NetworkLayer = BaseLayer.extend({
 
 			/** @type {Marker} reference to overlay used to highlight the selected site */
 			selectedSiteHighlight: null,
@@ -78,13 +63,7 @@ define(
 
 			initialize: function(options) {
 
-				this.settings = options.settings;
-				this.appstate = options.appstate;
-				this.mapview = options.mapview;
-				this.map = options.map;
-
-				// a collection to keep our overlays in sight
-				this.overlays = new OverlayList();
+				BaseLayer.prototype.initialize.apply(this, [options]);
 
 				this.listenTo(this.collection, "reset", this.deleteNetworkOverlays);
 
@@ -93,8 +72,6 @@ define(
 				this.listenTo(this.settings, "change:drawNetworkOnTop", this.onSettingsChanged);
 
 				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
-
-				this.resetBounds();
 
 				this.setNetworkOnTop(this.settings.get("drawNetworkOnTop"));
 			},
@@ -364,7 +341,7 @@ define(
 						// update the position
 						this.selectedSiteHighlight.setPosition(latLng);
 					}
-					this.mapview.setMarkerVisible(this.selectedSiteHighlight, bShow);
+					this.setMarkerVisible(this.selectedSiteHighlight, bShow);
 
 					// draw sectors for the site
 					this.overlays.removeByType(OverlayTypes.SECTOR);
@@ -381,7 +358,7 @@ define(
 				}
 				else {
 					// reset previous highlighted site
-					this.mapview.setMarkerVisible(this.selectedSiteHighlight, false);
+					this.setMarkerVisible(this.selectedSiteHighlight, false);
 				}
 			},
 
@@ -482,21 +459,6 @@ define(
 				else {
 					this.colorMapper = null;
 				}
-			},
-
-
-
-			/****     Bounds     ****/
-
-			getBounds: function() {
-				return this.bounds;
-			},
-
-			/**
-			 * Resets the view bounds rectangle
-			 */
-			resetBounds: function() {
-				this.bounds = new google.maps.LatLngBounds();
 			},
 
 
