@@ -479,19 +479,12 @@ define(
 			sessionSelected: function(session) {
 
 				this.model.set("selectedSession", session);
-				// connect session results
-				this.mapview.drawSessionLines(session);
 			},
 
 			// Handler for "result:selected" event. Update the info display and highlight result on map.
 			resultSelected: function(result) {
 
 				this.model.set("selectedResult", result);
-				var view = this.mapview;
-				// this timeout is necessary to make the result marker doubleclick work
-				setTimeout(function(){
-					view.highlightResult(result);
-				}, 200);
 			},
 
 			// Handler for "session:unselected" event. Unselect session and results.
@@ -530,7 +523,6 @@ define(
 			sessionFocussed: function(session) {
 
 				this.model.set("focussedSessionId", session.id);
-				this.mapview.focusSession(session);
 			},
 
 			// Handler for "session:unfocussed" event. Zoom the map view.
