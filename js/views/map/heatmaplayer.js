@@ -1,9 +1,11 @@
 define(
 	["underscore", "backbone",
+	 "views/map/baselayer",
 	 "models/session", "models/axfresult",
 	 "types/position", "types/resultsfilterquery", "types/googlemapsutils"],
 
 	function(_, Backbone,
+			 BaseLayer,
 			 Session, AxfResult,
 			 Position, ResultsFilterQuery, GoogleMapsUtils) {
 
@@ -12,31 +14,19 @@ define(
 		 * Emits the following events:
 		 *   reset
 		 */
-		var HeatmapLayer = Backbone.View.extend({
+		var HeatmapLayer = BaseLayer.extend({
 
 			/** @type {MapView} the parent view */
 			mapview: null,
 
-			/** @type {google.maps.Map} the Google Maps control */
-			map: null,
-
 			/** @type {google.maps.visualization.HeatmapLayer} heatmap visualization layer */
 			heatmapLayer: null,
 
-			/** @type {AppState} the shared app state */
-			appstate: null,
-			/** @type {Settings} the settings model */
-			settings: null,
-
-			// bounding rectangle around all reference and geolocated markers
-			bounds: null,
-
 			initialize: function(options) {
 
-				this.settings = options.settings;
-				this.appstate = options.appstate;
+				BaseLayer.prototype.initialize.apply(this, [options]);
+
 				this.mapview = options.mapview;
-				this.map = options.map;
 
 				// Initialize and configure the heatmap visualization layer.
 				this.heatmapLayer = new google.maps.visualization.HeatmapLayer({
@@ -73,17 +63,6 @@ define(
 				heatmapData = _.flatten(heatmapData);
 
 				this.heatmapLayer.setData(heatmapData);
-			},
-
-			getBounds: function() {
-				return this.bounds;
-			},
-
-			/**
-			 * Resets the view bounds rectangle
-			 */
-			resetBounds: function() {
-				this.bounds = new google.maps.LatLngBounds();
 			},
 
 			deleteHeatmapData: function() {
