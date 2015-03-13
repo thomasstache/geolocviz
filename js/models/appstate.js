@@ -20,6 +20,8 @@ define(
 				resultsAvailable: false,
 				// if result data with reference cells was loaded
 				resultsReferenceCellsAvailable: false,
+				// if result data has been edited
+				resultsEdited: false,
 
 				// if there are AccuracyResults
 				referenceLocationsAvailable: false,

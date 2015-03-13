@@ -765,6 +765,7 @@ define(
 							var pos = GoogleMapsUtils.makePosition(marker.position);
 							sample.updateGeoPosition(pos);
 							this.updateSessionLines();
+							this.appstate.set("resultsEdited", true);
 						}
 					}
 				}
