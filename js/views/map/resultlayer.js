@@ -352,6 +352,7 @@ define(
 						map: bVisible ? this.map : null,
 						icon: icon,
 						title: label,
+						draggable: true,
 						zIndex: Z_Index.RESULT
 					}
 				);
@@ -384,6 +385,11 @@ define(
 					function() {
 						// in here "this" is bound to the marker
 						view.onMarkerDblClick(this);
+					}
+				);
+				google.maps.event.addListener(marker, 'dragend',
+					function() {
+						view.onMarkerDragEnd(this);
 					}
 				);
 
@@ -523,6 +529,16 @@ define(
 						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled);
 					}
 				}
+			},
+
+			/**
+			 * Redraw the session lines, e.g. after positions changed.
+			 */
+			updateSessionLines: function() {
+				var selectedSession = this.appstate.get('selectedSession');
+				// force a redraw, even if "selectedSession.id == highlightedSessionId"
+				this.highlightedSessionId = -1;
+				this.drawSessionLines(selectedSession);
 			},
 
 			// create a circle shape for reuse for all result highlighting needs
@@ -726,6 +742,30 @@ define(
 					else {
 						// type unknown or "not geoloc"
 						this.deleteCandidateMarkers();
+					}
+				}
+			},
+
+			/**
+			 * Handler for drag end on map result markers.
+			 */
+			onMarkerDragEnd: function(marker) {
+
+				if (marker && marker.metaData) {
+
+					var md = marker.metaData;
+
+					if (md.type !== undefined &&
+						md.type === OverlayTypes.AXFMARKER &&
+						md.model !== undefined) {
+
+						// update position in AxfResult
+						var sample = md.model;
+						if (sample && sample instanceof AxfResult) {
+							var pos = GoogleMapsUtils.makePosition(marker.position);
+							sample.updateGeoPosition(pos);
+							this.updateSessionLines();
+						}
 					}
 				}
 			},

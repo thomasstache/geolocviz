@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
-	 "models/baseresult"],
+	 "models/baseresult", "types/position"],
 
-	function(_, Backbone, BaseResult) {
+	function(_, Backbone, BaseResult, Position) {
 
 		var AxfResult = BaseResult.extend({
 
@@ -53,6 +53,17 @@ define(
 				rv.num = this.getIndex() + 1;
 				rv.resultCount = this.collection.length;
 				return rv;
+			},
+
+			/**
+			 * Returns the geolocated position.
+			 * @param {Position} value the new position
+			 */
+			updateGeoPosition: function(value) {
+				if (!value instanceof Position)
+					return;
+
+				this.set('position', value);
 			},
 
 			/**

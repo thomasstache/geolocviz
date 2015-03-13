@@ -13,6 +13,14 @@ define(
 			return latLng;
 		};
 
+		/** Convert a LatLng into a Position. */
+		GoogleMapsUtils.makePosition = function(latLng) {
+			if (!latLng instanceof google.maps.LatLng)
+				return;
+
+			return new Position(latLng.lat(), latLng.lng());
+		};
+
 		/**
 		 * Adds a given location to the array, if the location differs from the previous one.
 		 * @param  {Array}  latLngArray A collection of LatLng locations
