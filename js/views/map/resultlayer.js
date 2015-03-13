@@ -169,11 +169,7 @@ define(
 
 				var thresholds = this.settings.getThresholdSettings();
 
-				var refLinesEnabled = this.settings.get("drawReferenceLines");
-
 				session.results.each(function(sample) {
-
-					var color = null, visible = true;
 
 					// check if the result sample matches the current filter
 					if (resultFilterFct !== null &&
@@ -184,83 +180,87 @@ define(
 						return;
 
 					if (sample instanceof AccuracyResult) {
-						var refLoc = GoogleMapsUtils.makeLatLng(sample.get('position'));
 
-						// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
-						if (isValidLatLng(refLoc)) {
-
-							view.bounds.extend(refLoc);
-
-							view.createMarker(OverlayTypes.REFERENCEMARKER,
-											  refLoc,
-											  "#" + sample.get('msgId'),
-											  MarkerColors.REFERENCE,
-											  view.settings.get("drawMarkers_R"),
-											  sample);
-						}
-
-						var bestCand = sample.getBestLocationCandidate();
-						var bestLoc = GoogleMapsUtils.makeLatLng(bestCand.get('position'));
-
-						switch (bestCand.category(thresholds)) {
-							case "S":
-								color = MarkerColors.STATIONARY;
-								visible = view.settings.get("drawMarkers_S");
-								break;
-							case "I":
-							case "IM":
-								color = MarkerColors.INDOOR;
-								visible = view.settings.get("drawMarkers_I");
-								break;
-							case "M":
-								/* falls through */
-							default:
-								color = MarkerColors.GEOLOCATED;
-								visible = view.settings.get("drawMarkers_M");
-								break;
-						}
-
-						view.createMarker(OverlayTypes.GEOLOCMARKER,
-										  bestLoc,
-										  "#" + sample.get('msgId'),
-										  color,
-										  visible,
-										  sample);
-
-						view.bounds.extend(bestLoc);
-
-						// connect measured and calculated points with lines
-						view.drawReferenceLine(refLoc, bestLoc, refLinesEnabled);
+						view.drawAccuracyResult(sample);
 					}
 					else if (sample instanceof AxfResult) {
 
-						var location = GoogleMapsUtils.makeLatLng(sample.get('position'));
-						switch (sample.category(thresholds)) {
-							case "S":
-								color = MarkerColors.STATIONARY;
-								visible = view.settings.get("drawMarkers_S");
-								break;
-							case "I":
-							case "IM":
-								color = MarkerColors.INDOOR;
-								visible = view.settings.get("drawMarkers_I");
-								break;
-							case "M":
-								color = MarkerColors.GEOLOCATED;
-								visible = view.settings.get("drawMarkers_M");
-								break;
-						}
-
-						view.createMarker(OverlayTypes.AXFMARKER,
-										  location,
-										  "#" + sample.get('msgId'),
-										  color,
-										  visible,
-										  sample);
-
-						view.bounds.extend(location);
+						view.drawResult(sample);
 					}
 				});
+			},
+
+			/**
+			 * Draw markers and line for accuracy results.
+			 * @param  {AccuracyResult} sample
+			 */
+			drawAccuracyResult: function(sample) {
+
+				var refLinesVisible = this.settings.get("drawReferenceLines"),
+					refLoc = GoogleMapsUtils.makeLatLng(sample.get('position'));
+
+				// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
+				if (isValidLatLng(refLoc)) {
+
+					this.bounds.extend(refLoc);
+
+					this.createMarker(OverlayTypes.REFERENCEMARKER,
+									  refLoc,
+									  "#" + sample.get('msgId'),
+									  MarkerColors.REFERENCE,
+									  this.settings.get("drawMarkers_R"),
+									  sample);
+				}
+
+				var bestCand = sample.getBestLocationCandidate();
+				var bestLoc = GoogleMapsUtils.makeLatLng(bestCand.get('position'));
+
+				this.drawResult(bestCand, OverlayTypes.GEOLOCMARKER, sample);
+
+				// connect measured and calculated points with lines
+				this.drawReferenceLine(refLoc, bestLoc, refLinesVisible);
+			},
+
+			/**
+			 * Draw a marker for an (AXF) result.
+			 * @param  {BaseResult} sample       the model for the marker
+			 * @param  {OverlayTypes} markerType controls the marker shape, if omitted the default is AXFMARKER
+			 * @param  {BaseResult} parent       (optional) the model of the parent, e.g. if sample is a LocationCandidate
+			 */
+			drawResult: function(sample, markerType, parent) {
+
+				markerType = markerType || OverlayTypes.AXFMARKER;
+				// for LocationCandidate a parent model should be provided
+				var model = parent || sample;
+
+				var color = null, visible = true,
+					thresholds = this.settings.getThresholdSettings();
+
+				var location = GoogleMapsUtils.makeLatLng(sample.get('position'));
+				switch (sample.category(thresholds)) {
+					case "S":
+						color = MarkerColors.STATIONARY;
+						visible = this.settings.get("drawMarkers_S");
+						break;
+					case "I":
+					case "IM":
+						color = MarkerColors.INDOOR;
+						visible = this.settings.get("drawMarkers_I");
+						break;
+					case "M":
+						color = MarkerColors.GEOLOCATED;
+						visible = this.settings.get("drawMarkers_M");
+						break;
+				}
+
+				this.createMarker(markerType,
+								  location,
+								  "#" + sample.get('msgId'),
+								  color,
+								  visible,
+								  model);
+
+				this.bounds.extend(location);
 			},
 
 			/**
@@ -316,7 +316,8 @@ define(
 			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
 
 				var view = this;
-				var letter = candidate ? candidate.category(this.settings.getThresholdSettings()) : colorDef.smb;
+				var thresholds = this.settings.getThresholdSettings();
+				var letter = candidate ? candidate.category(thresholds) : colorDef.smb;
 				var icon;
 
 				if (type === OverlayTypes.AXFMARKER) {
@@ -329,7 +330,7 @@ define(
 						icon.fillColor = this.colorMapper.getColor(value);
 					}
 					else {
-						var cat = sample.category(this.settings.getThresholdSettings());
+						var cat = sample.category(thresholds);
 						icon = this.getMarkerIcon(IconTypes.DOT, cat);
 					}
 				}
