@@ -25,6 +25,7 @@ define(
 				"change #fileInput"      : "fileInputChanged",
 				"click #cmdClearAllData" : "clearData",
 				"click #cmdClearResults" : "clearResults",
+				"click #cmdDownloadAxf"  : "downloadResults",
 				"click #dropCancel"      : "hideDropZone",
 				"drop #fileDropZone"     : "dropHandler"
 			},
@@ -70,6 +71,7 @@ define(
 
 				// listen to changes
 				this.model.on("change:busy", this.busyStateChanged, this);
+				this.listenTo(this.model, "change:resultsEdited", this.onResultsEdited);
 				this.sessions.on("add", this.sessionsUpdated, this);
 				this.siteList.on("add", this.networkUpdated, this);
 
@@ -155,6 +157,25 @@ define(
 				this.clearFileForm();
 
 				this.model.set("busy", false);
+			},
+
+			/**
+			 * Enable the download button.
+			 */
+			onResultsEdited: function(event) {
+				this.$("#cmdDownloadAxf").prop("disabled", event.changed.resultsEdited === false);
+			},
+
+			/**
+			 * Generate a result file and offer it for download.
+			 */
+			downloadResults: function() {
+
+				// generate file contents
+				// attach file to Link
+				var $link = $("#downloadlink");
+				// show the link
+				$link.toggleClass("hidden", false);
 			},
 
 			// reset the form to clear old file names
