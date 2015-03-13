@@ -239,7 +239,7 @@ define(
 
 			/**
 			 * Returns the current filter function for result/heatmap layers.
-			 * @return {Function}
+			 * @return {Function} the active function or {@code null}
 			 */
 			getResultFilterFunction: function() {
 				return this.resultFilterFct;
