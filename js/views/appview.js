@@ -88,7 +88,7 @@ define(
 					appstate: this.model,
 				});
 
-				this.legendview = new LegendView({ settings: this.settings, appstate: this.model, colors: this.mapview.colors() });
+				this.legendview = new LegendView({ settings: this.settings, appstate: this.model });
 
 				this.mapview.on("session:selected", this.sessionSelected, this);
 				this.mapview.on("result:selected", this.resultSelected, this);
@@ -129,7 +129,6 @@ define(
 				}
 
 				this.sessions.reset();
-				this.mapview.updateBoundsToNetwork();
 				this.mapview.zoomToBounds();
 			},
 
@@ -146,7 +145,6 @@ define(
 				// revert all attributes to defaults
 				this.model.set(this.model.defaults);
 
-				this.mapview.updateBoundsToNetwork();
 				this.searchview.clearSearchField();
 				this.clearFileForm();
 
@@ -481,19 +479,12 @@ define(
 			sessionSelected: function(session) {
 
 				this.model.set("selectedSession", session);
-				// connect session results
-				this.mapview.drawSessionLines(session);
 			},
 
 			// Handler for "result:selected" event. Update the info display and highlight result on map.
 			resultSelected: function(result) {
 
 				this.model.set("selectedResult", result);
-				var view = this.mapview;
-				// this timeout is necessary to make the result marker doubleclick work
-				setTimeout(function(){
-					view.highlightResult(result);
-				}, 200);
 			},
 
 			// Handler for "session:unselected" event. Unselect session and results.
@@ -532,7 +523,6 @@ define(
 			sessionFocussed: function(session) {
 
 				this.model.set("focussedSessionId", session.id);
-				this.mapview.focusSession(session);
 			},
 
 			// Handler for "session:unfocussed" event. Zoom the map view.
@@ -549,7 +539,6 @@ define(
 					this.model.set("elementSearchQuery", null);
 
 				this.model.set("selectedSite", site);
-				this.mapview.highlightSite(site, true);
 			},
 
 
