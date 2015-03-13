@@ -7,11 +7,11 @@ define(
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
 	 "views/searchview", "views/labelView", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
-	 "types/searchquery", "FileLoader", "types/logger"],
+	 "types/searchquery", "FileLoader", "filewriter", "types/logger"],
 
 	function($, _, Backbone,
 			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView, SessionTableView, ResultTableView,
-			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, Logger) {
+			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, FileWriter, Logger) {
 
 		var AppView = Backbone.View.extend({
 
@@ -174,6 +174,8 @@ define(
 				// generate file contents
 				// attach file to Link
 				var $link = $("#downloadlink");
+
+				$link[0].href = FileWriter.createAxfFileAsURL(this.sessions);
 				// show the link
 				$link.toggleClass("hidden", false);
 			},
