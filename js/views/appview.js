@@ -172,12 +172,16 @@ define(
 			downloadResults: function() {
 
 				// generate file contents
-				// attach file to Link
-				var $link = $("#downloadlink");
+				var url = FileWriter.createAxfFileAsURL(this.sessions);
 
-				$link[0].href = FileWriter.createAxfFileAsURL(this.sessions);
-				// show the link
-				$link.toggleClass("hidden", false);
+				if (url !== undefined && url !== null) {
+
+					// attach file to Link
+					var $link = $("#downloadlink");
+					$link[0].href = url;
+					// show the link
+					$link.toggleClass("hidden", false);
+				}
 			},
 
 			// reset the form to clear old file names
