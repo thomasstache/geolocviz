@@ -339,7 +339,7 @@ define(
 			/**
 			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
-			 * FileId | MessNum | DTLatitude | DTLongitude | CTLatitude | CTLongitude | Distance | PositionConfidence | MobilityProb | IndoorProb | SessionId | Controller | PrimaryCellId
+			 * MessNum | Time | Latitude | Longitude | GPSConfidence | PositionConfidence | MobilityProb | Drive_Session | IndoorOutdoor_Session | MeasurementReport | IndoorProb | SessionId | Controller | PrimaryCellId
 			 *
 			 * @param {Array} record         array of data fields
 			 * @param {FileStatistics} stats A reference to statistics about the current file
@@ -401,6 +401,8 @@ define(
 					timestamp: parseNumber(record[IDX.TIMEOFFSET]),
 					position: new Position(parseNumber(record[IDX.GEO_LAT]),
 										   parseNumber(record[IDX.GEO_LON])),
+					driveSession: record[IDX.MOBILE_YN],
+					indoor: record[IDX.INDOOR_YN],
 					isMeasReport: (parseNumber(record[IDX.MEAS_REPORT]) == 1),
 					confidence: percent2Decimal(record[IDX.CONF]),
 					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
