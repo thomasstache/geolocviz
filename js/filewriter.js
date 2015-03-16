@@ -8,6 +8,8 @@ define(
 
 			var AXFFILE_HEADER = "#Message Number,Time,Latitude,Longitude,GPS_Confidence,Data_Position_Confidence,Mobility_Probability,Drive_Session,IndoorOutdoor_Session,MeasurementReport,Indoor_Probability";
 			var AXFFILE_HEADER_XT = ",SessionId,Controller,PrimaryCellId";
+
+			/** @type {DOMString} reference to our last object URL */
 			var textFile = null;
 
 			/**
@@ -92,7 +94,7 @@ define(
 			 * (from http://stackoverflow.com/a/21016088/103417)
 			 *
 			 * @param  {String} text The file contents
-			 * @return {File}
+			 * @return {DOMString}
 			 */
 			function makeTextFile(text) {
 
@@ -118,7 +120,7 @@ define(
 				var ok = 'URL' in window && 'createObjectURL' in URL;
 
 				if (!ok)
-					alert('The Object URL APIs are not fully supported in this browser. Consider using Mozilla Firefox (>33) or Google Chrome (>40)!');
+					alert('The Object URL APIs are not fully supported in this browser. Consider using Mozilla Firefox (>=4) or Google Chrome (>=32)!');
 
 				return ok;
 			}
@@ -126,7 +128,7 @@ define(
 			/**
 			 * Creates an AXF file containing the results in the given sessions.
 			 * @param  {SessionList} sessions the list of Session models
-			 * @return {ObjectURL}            an object URL for the file for download
+			 * @return {DOMString}            an object URL for the file for download
 			 */
 			function createAxfFileAsURL(sessions) {
 
