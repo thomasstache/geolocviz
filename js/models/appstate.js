@@ -71,6 +71,7 @@ define(
 					resultsReferenceCellsAvailable: false,
 					referenceLocationsAvailable: false,
 					candidateLocationsAvailable: false,
+					resultsEdited: false,
 					heatmapActive: false,
 					resultsFilterActive: false,
 					resultsFilterQuery: null,

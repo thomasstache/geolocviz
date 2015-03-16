@@ -129,6 +129,7 @@ define(
 				// update app state (selections et al)
 				this.model.resetResultsData();
 				this.clearFileForm();
+				this.showFileDownloadView(false);
 
 				// update statistics
 				if (this.model.has("statistics")) {
@@ -155,6 +156,7 @@ define(
 
 				this.searchview.clearSearchField();
 				this.clearFileForm();
+				this.showFileDownloadView(false);
 
 				this.model.set("busy", false);
 			},
@@ -163,7 +165,10 @@ define(
 			 * Enable the download button.
 			 */
 			onResultsEdited: function(event) {
-				this.$("#cmdDownloadAxf").prop("disabled", event.changed.resultsEdited === false);
+
+				var enableDownload = event.changed.resultsEdited;
+				this.showFileDownloadView(enableDownload);
+				this.$("#cmdDownloadAxf").prop("disabled", enableDownload === false);
 			},
 
 			/**
@@ -341,6 +346,16 @@ define(
 			},
 			hideDropZone: function() {
 				$("#fileDropVeil").fadeOut("fast");
+			},
+
+			// Show/hide file download controls.
+			showFileDownloadView: function(show) {
+
+				// hide the link until Download button is clicked.
+				if (!show)
+					this.$("#downloadlink").toggleClass("hidden", true);
+
+				this.$("#fileDownloadView").toggleClass("hidden", show === false);
 			},
 
 			dropHandler: function (evt) {

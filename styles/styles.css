@@ -226,7 +226,7 @@ header {
 }
 #fileForm,
 #fileRepositoryView,
-#fileDownloadView,
+#fileDownloadView:not(.hidden),
 #searchView {
 	display: inline-block;
 	vertical-align: middle;
