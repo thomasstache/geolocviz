@@ -8,6 +8,7 @@ define(
 			{ name: "cellrefs-DE_O2_UMTS_2014.txt",    title: "DE o2 UMTS 2014" },
 			{ name: "cellrefs-NL_Vf_Amsterdam.txt",    title: "NL Vf Amsterdam 2012" },
 			{ name: "cellrefs-UK_Vf_GPEH.txt",         title: "UK Vf London 2010" },
+			{ name: "cellrefs-UK_Vf_GPEH_London2015.txt", title: "UK Vf London 2015" },
 			{ name: "cellrefs-RO_Vf_GPEH.txt",         title: "RO Vf Brasov 2010" },
 			{ name: "cellrefs-BR_Claro_CHR.txt",       title: "BR Brasilia CHR 2010" },
 			{ name: "cellrefs-CHL_Entel_RPMO.txt",     title: "CHL Entel RPMO 2013" },
