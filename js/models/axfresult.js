@@ -38,6 +38,10 @@ define(
 				// id of the reference cell (corresponds to "CI" or "WCDMA_CI")
 				referenceCellId: null,
 
+				// @type{Boolean} if the position was manually edited
+				edited: false,
+				originalPosition: null,
+
 				// just stored in case we write it back to file
 				driveSession: null,
 				indoor: null,
@@ -68,7 +72,30 @@ define(
 				if (!value instanceof Position)
 					return;
 
+				// retain original position
+				if (this.get('edited') === false) {
+
+					this.set({
+						edited: true,
+						originalPosition: this.get('position')
+					});
+				}
+
 				this.set('position', value);
+			},
+
+			/**
+			 * Revert changes to the position attribute.
+			 */
+			revertGeoPosition: function() {
+
+				if (this.get('edited') === false)
+					return;
+
+				this.set({
+					edited: false,
+					position: this.get('originalPosition'),
+				});
 			},
 
 			/**

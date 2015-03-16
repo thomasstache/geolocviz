@@ -21,6 +21,7 @@ define(
 		 *   result:nav-next
 		 *   result:nav-last
 		 *   result:lookupElement
+		 *   result:revertPosition (Result model)
 		 *   result:filterByElement
 		 *   result:listAll
 		 *   site:unselected
@@ -43,6 +44,7 @@ define(
 				"click .results-last": "onLastResultClicked",
 				"click .lookup-cell": "onLookupCellClicked",
 				"click .lookup-ref-cell": "onLookupRefCellClicked",
+				"click .revert-position": "onRevertPositionClicked",
 				"click .filterByElement" : "onFilterByElementClicked",
 				"click .filterByRefcell" : "onFilterByElementClicked",
 				"click .listAllSessions" : "onListAllSessionsClicked",
@@ -313,6 +315,14 @@ define(
 			 */
 			onLookupRefCellClicked: function() {
 				this.triggerCellLookup(true);
+			},
+
+			/**
+			 * Click handler for the "revert result position" button.
+			 */
+			onRevertPositionClicked: function() {
+				this.trigger("result:revertPosition", this.model.get('selectedResult'));
+				this.renderResultInfo();
 			},
 
 			triggerCellLookup: function(useRefCell) {

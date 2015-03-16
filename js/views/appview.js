@@ -111,6 +111,7 @@ define(
 				this.listenTo(this.infoview, "result:nav-prev", this.resultsNavigateToPrevious);
 				this.listenTo(this.infoview, "result:nav-next", this.resultsNavigateToNext);
 				this.listenTo(this.infoview, "result:nav-last", this.resultsNavigateToLast);
+				this.listenTo(this.infoview, "result:revertPosition", this.resultsRevertPosition);
 				this.listenTo(this.infoview, "result:lookupElement", this.resultsLookupElement);
 				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
 				this.listenTo(this.infoview, "site:unselected", this.clearNetworkSelections);
@@ -633,6 +634,14 @@ define(
 				    query.netSegment !== undefined) {
 
 					this.mapview.filterResultsBySector(query);
+				}
+			},
+
+			resultsRevertPosition: function(result) {
+
+				if (result) {
+					result.revertGeoPosition();
+					// TODO: trigger map redraw
 				}
 			},
 

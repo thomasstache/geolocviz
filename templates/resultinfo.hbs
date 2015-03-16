@@ -10,6 +10,10 @@
 	<li>
 		<span class="label">Lat:</span>&nbsp;<span class="value">{{roundNumber position.lat digits=5}}</span>
 		<span class="label">Lon:</span>&nbsp;<span class="value">{{roundNumber position.lon digits=5}}</span>
+		{{#if edited}}
+		<span class="label"> (Edited)</span>
+		<button class="revert-position translucent tiny symbolic" title="Revert Position">&#8617;</button>
+		{{/if}}
 	</li>
 {{/if}}
 	{{#if timestamp}}
