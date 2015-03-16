@@ -106,6 +106,7 @@ define(
 				this.listenTo(this.infoview, "result:nav-last", this.resultsNavigateToLast);
 				this.listenTo(this.infoview, "result:lookupElement", this.resultsLookupElement);
 				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
+				this.listenTo(this.infoview, "site:unselected", this.clearNetworkSelections);
 
 				this.listenTo(this.filterview, "results:clear-filter", this.resultsClearFilter);
 				this.listenTo(this.searchview, "search", this.searchHandler);
@@ -539,6 +540,12 @@ define(
 					this.model.set("elementSearchQuery", null);
 
 				this.model.set("selectedSite", site);
+			},
+
+			// Handler for "site:unselected" event. Unselect sites and sectors.
+			clearNetworkSelections: function() {
+
+				this.siteSelected(null);
 			},
 
 

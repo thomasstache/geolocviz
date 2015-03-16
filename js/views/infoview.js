@@ -23,6 +23,7 @@ define(
 		 *   result:lookupElement
 		 *   result:filterByElement
 		 *   result:listAll
+		 *   site:unselected
 		 */
 		var InfoView = Backbone.View.extend({
 			el: $("#infoView"),
@@ -41,6 +42,7 @@ define(
 				"click .filterByRefcell" : "onFilterByElementClicked",
 				"click .listAllSessions" : "onListAllSessionsClicked",
 				"click .listAllResults" : "onListAllResultsClicked",
+				"click .unselect-site" : "onUnselectSiteClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -280,6 +282,14 @@ define(
 
 			triggerNavigationEvent: function(eventType) {
 				this.trigger("result:" + eventType, this.model.get("selectedResult"));
+			},
+
+			/**
+			 * Click handler for the "(/)" button. Unselect site.
+			 */
+			onUnselectSiteClicked: function() {
+
+				this.trigger("site:unselected");
 			},
 
 			/**

@@ -512,12 +512,14 @@ button.lookup-cell:hover, button.filterByElement:hover { background-color: hsl(5
 button.lookup-ref-cell,       button.filterByRefcell       { background-color: hsl(89, 54%, 77%); }
 button.lookup-ref-cell:hover, button.filterByRefcell:hover { background-color: hsl(89, 73%, 75%); }
 
-button.unselect-session {
+button.unselect-session,
+button.unselect-site {
 	color: rgb(204, 131, 103);
 	border-color: rgba(110, 60, 20, 0.2);
 	background-color: rgba(190, 90, 23, 0.1);
+	font-size: 11px;
 }
-button.unselect-session:hover { background-color: rgba(230, 170, 120, 0.3); }
+button.unselect-session:hover, button.unselect-site:hover { background-color: rgba(230, 170, 120, 0.3); }
 
 /* Table Views */
 
