@@ -138,6 +138,9 @@ define(
 					results.add(session.results.models);
 				});
 
+				results.comparator = 'msgId';
+				results.sort();
+
 				var content = writeHeader();
 
 				results.each(function(result) {
