@@ -5,7 +5,7 @@ define(
 
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
-	 "views/searchview", "views/labelview", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
+	 "views/searchview", "views/labelView", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
 	 "types/searchquery", "FileLoader", "types/logger"],
 
