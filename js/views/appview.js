@@ -90,25 +90,25 @@ define(
 
 				this.legendview = new LegendView({ settings: this.settings, appstate: this.model });
 
-				this.mapview.on("session:selected", this.sessionSelected, this);
-				this.mapview.on("result:selected", this.resultSelected, this);
-				this.mapview.on("results:filtered", this.resultsFiltered, this);
-				this.mapview.on("site:selected", this.siteSelected, this);
+				this.listenTo(this.mapview, "session:selected", this.sessionSelected);
+				this.listenTo(this.mapview, "result:selected", this.resultSelected);
+				this.listenTo(this.mapview, "results:filtered", this.resultsFiltered);
+				this.listenTo(this.mapview, "site:selected", this.siteSelected);
 
-				this.infoview.on("session:focussed", this.sessionFocussed, this);
-				this.infoview.on("session:unfocussed", this.sessionUnfocussed, this);
-				this.infoview.on("session:unselected", this.clearSelections, this);
+				this.listenTo(this.infoview, "session:focussed", this.sessionFocussed);
+				this.listenTo(this.infoview, "session:unfocussed", this.sessionUnfocussed);
+				this.listenTo(this.infoview, "session:unselected", this.clearSelections);
 				this.listenTo(this.infoview, "session:listAll", this.showSessionTable);
 				this.listenTo(this.infoview, "result:listAll", this.showResultTable);
-				this.infoview.on("result:nav-first", this.resultsNavigateToFirst, this);
-				this.infoview.on("result:nav-prev", this.resultsNavigateToPrevious, this);
-				this.infoview.on("result:nav-next", this.resultsNavigateToNext, this);
-				this.infoview.on("result:nav-last", this.resultsNavigateToLast, this);
-				this.infoview.on("result:lookupElement", this.resultsLookupElement, this);
-				this.infoview.on("result:filterByElement", this.resultsFilterByElement, this);
+				this.listenTo(this.infoview, "result:nav-first", this.resultsNavigateToFirst);
+				this.listenTo(this.infoview, "result:nav-prev", this.resultsNavigateToPrevious);
+				this.listenTo(this.infoview, "result:nav-next", this.resultsNavigateToNext);
+				this.listenTo(this.infoview, "result:nav-last", this.resultsNavigateToLast);
+				this.listenTo(this.infoview, "result:lookupElement", this.resultsLookupElement);
+				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
 
-				this.filterview.on("results:clear-filter", this.resultsClearFilter, this);
-				this.searchview.on("search", this.searchHandler, this);
+				this.listenTo(this.filterview, "results:clear-filter", this.resultsClearFilter);
+				this.listenTo(this.searchview, "search", this.searchHandler);
 
 				$("#fileInput").prop("disabled", false);
 			},
