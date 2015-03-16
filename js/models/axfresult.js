@@ -37,10 +37,11 @@ define(
 				refControllerId: null,
 				// id of the reference cell (corresponds to "CI" or "WCDMA_CI")
 				referenceCellId: null,
-				
+
 				// just stored in case we write it back to file
 				driveSession: null,
-				indoor: null
+				indoor: null,
+				confScalingFactor: null
 			},
 
 			constructor: function AxfResult() {

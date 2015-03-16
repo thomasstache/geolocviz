@@ -7,10 +7,13 @@ define(
 		var FileWriter = (function() {
 
 			var AXFFILE_HEADER = "#Message Number,Time,Latitude,Longitude,GPS_Confidence,Data_Position_Confidence,Mobility_Probability,Drive_Session,IndoorOutdoor_Session,MeasurementReport,Indoor_Probability";
-			var AXFFILE_HEADER_XT = ",SessionId,Controller,PrimaryCellId";
+			var AXFFILE_HEADER_XT = ",SessionId,Controller,PrimaryCellId,ReferenceController,ReferenceCellId,ConfidenceThresholdScalingFactor";
 
 			/** @type {DOMString} reference to our last object URL */
 			var textFile = null;
+
+			// TODO: make configurable
+			var extendedAxf = true;
 
 			/**
 			 * Format the header for the AXF file.
@@ -18,7 +21,7 @@ define(
 			 */
 			function writeHeader() {
 
-				return AXFFILE_HEADER + AXFFILE_HEADER_XT + "\n";
+				return AXFFILE_HEADER + (extendedAxf ? AXFFILE_HEADER_XT : "") + "\n";
 			}
 
 			/**
@@ -27,6 +30,7 @@ define(
 			 * @return {String}
 			 */
 			function writeResultLine(result) {
+				/* jshint unused:false, esnext:true */
 
 				/* Available model attributes:
 
@@ -43,7 +47,8 @@ define(
 					refControllerId: null,
 					referenceCellId: null,
 					driveSession: null,
-					indoor: null
+					indoor: null,
+					confScalingFactor: null,
 				*/
 
 				var p = result.toJSON(),
@@ -55,8 +60,16 @@ define(
 				var lat = p.position.lat.toFixed(6),
 					lon = p.position.lon.toFixed(6);
 
-				// Drive_Session = 1, MeasurementReport = 0
-				var text = `${p.msgId},${p.timestamp},${lat},${lon},,${conf_pct},${mob_pct},${p.driveSession},${p.indoor},${measRpt},${ind_pct},${p.sessionId}\n`;
+				// data from extended AXF files
+				var extension = "";
+				if (extendedAxf) {
+					var refControllerId = p.refControllerId || "",
+						referenceCellId = p.referenceCellId || "",
+						confScalingFactor = p.confScalingFactor || "";
+					extension = `,${p.sessionId},${p.controllerId},${p.primaryCellId},${refControllerId},${referenceCellId},${confScalingFactor}`;
+				}
+
+				var text = `${p.msgId},${p.timestamp},${lat},${lon},,${conf_pct},${mob_pct},${p.driveSession},${p.indoor},${measRpt},${ind_pct}${extension}\n`;
 
 				return text;
 			}
