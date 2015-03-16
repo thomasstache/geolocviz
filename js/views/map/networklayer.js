@@ -343,10 +343,6 @@ define(
 					}
 					this.setMarkerVisible(this.selectedSiteHighlight, bShow);
 
-					// draw sectors for the site
-					this.overlays.removeByType(OverlayTypes.SECTOR);
-					this.drawSectorsForSite(site);
-
 					if (bShow) {
 						var bounds = this.map.getBounds();
 						// check manually, as fitBounds() even zooms out for unchanged bounds
@@ -360,6 +356,10 @@ define(
 					// reset previous highlighted site
 					this.setMarkerVisible(this.selectedSiteHighlight, false);
 				}
+
+				// draw sectors for the site
+				this.overlays.removeByType(OverlayTypes.SECTOR);
+				this.drawSectorsForSite(site);
 			},
 
 			/**
