@@ -33,7 +33,7 @@
 	//eval call. This allows some browsers to see each evaled script as a
 	//separate script in the script debugger even though they are all combined
 	//in the same file.
-	// useSourceUrl: true, // TS: don't use this for the moment, disables pragmas
+	useSourceUrl: true, // TS: don't use this for the moment, disables pragmas
 
 	//If set to true, any files that were combined into a build layer will be
 	//removed from the output folder.
