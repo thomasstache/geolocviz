@@ -363,6 +363,7 @@ define(
 					PRIM_CELL_ID: 13, // XT
 					REF_CONTROLLER: 14, // XT2
 					REF_CELL_ID: 15, // XT2
+					SCALEFACTOR: 16, // XT2
 				});
 
 				function percent2Decimal(value) {
@@ -390,6 +391,7 @@ define(
 				var primaryCellId = isExtended ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
 				var refControllerId = isExtended2 ? parseNumber(record[IDX.REF_CONTROLLER]) : NaN;
 				var referenceCellId = isExtended2 ? parseNumber(record[IDX.REF_CELL_ID]) : NaN;
+				var confScalingFactor = isExtended2 ? record[IDX.SCALEFACTOR] : null;
 
 				var sessionProperties = {
 					sessionId: sessionId
@@ -411,6 +413,7 @@ define(
 					primaryCellId: primaryCellId,
 					refControllerId: refControllerId,
 					referenceCellId: referenceCellId,
+					confScalingFactor: confScalingFactor,
 				};
 
 				var session = getSession(sessionId, sessionProperties);
