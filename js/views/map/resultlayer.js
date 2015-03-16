@@ -764,8 +764,11 @@ define(
 						if (sample && sample instanceof AxfResult) {
 							var pos = GoogleMapsUtils.makePosition(marker.position);
 							sample.updateGeoPosition(pos);
-							this.updateSessionLines();
 							this.appstate.set("resultsEdited", true);
+
+							this.updateSessionLines();
+							if (this.appstate.get('selectedResult') === sample)
+								this.highlightResult(sample);
 						}
 					}
 				}
