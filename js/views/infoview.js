@@ -55,6 +55,9 @@ define(
 			/** @type {AppState} the shared app state */
 			model: null,
 
+			/** @type {BaseResult} the currently displayed result model */
+			selectedResult: null,
+
 			$tbSessionToolbar: null,
 			$tbResultsToolbar: null,
 			$focusBtn: null,
@@ -98,9 +101,28 @@ define(
 				this.renderSessionInfo();
 			},
 
-			onResultChanged: function() {
+			onResultChanged: function(event) {
+
+				var result = event.changed.selectedResult;
+
+				if (this.selectedResult !== result) {
+
+					this.stopListening(this.selectedResult);
+					this.selectedResult = result;
+
+					if (result !== null)
+						this.listenTo(this.selectedResult, "change:edited", this.onResultEdited);
+				}
 
 				this.updateResultsControls();
+				this.renderResultInfo();
+			},
+
+			/**
+			 * Handler for the "change:edited" event on the current result model.
+			 */
+			onResultEdited: function() {
+
 				this.renderResultInfo();
 			},
 
@@ -322,7 +344,6 @@ define(
 			 */
 			onRevertPositionClicked: function() {
 				this.trigger("result:revertPosition", this.model.get('selectedResult'));
-				this.renderResultInfo();
 			},
 
 			triggerCellLookup: function(useRefCell) {
