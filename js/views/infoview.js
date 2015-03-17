@@ -170,7 +170,7 @@ define(
 			// Render the result template.
 			renderResultInfo: function() {
 
-				var result = this.model.get("selectedResult");
+				var result = this.selectedResult;
 				var context = result !== null ? result.getInfo() : {};
 				if (result instanceof AccuracyResult) {
 					context.isAccuracyResult = true;
@@ -310,7 +310,7 @@ define(
 			},
 
 			triggerNavigationEvent: function(eventType) {
-				this.trigger("result:" + eventType, this.model.get("selectedResult"));
+				this.trigger("result:" + eventType, this.selectedResult);
 			},
 
 			/**
@@ -343,12 +343,12 @@ define(
 			 * Click handler for the "revert result position" button.
 			 */
 			onRevertPositionClicked: function() {
-				this.trigger("result:revertPosition", this.model.get('selectedResult'));
+				this.trigger("result:revertPosition", this.selectedResult);
 			},
 
 			triggerCellLookup: function(useRefCell) {
 
-				var result = this.model.get("selectedResult");
+				var result = this.selectedResult;
 				var sectorProps = result.getSectorProperties();
 
 				var params = null;
@@ -411,7 +411,7 @@ define(
 			/* Updates toolbar button (enabled/visibility) states on result change. */
 			updateResultsControls: function() {
 
-				var result = this.model.get("selectedResult");
+				var result = this.selectedResult;
 
 				var canNavigateBwd = result !== null && result.hasPrevious();
 				var canNavigateFwd = result !== null && result.hasNext();
