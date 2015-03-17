@@ -121,12 +121,34 @@ define(
 				this.focusSession(session);
 			},
 
-			selectedResultChanged: function(event) {
+			/**
+			 * Handler for the "change:selectedResult" event on AppState.
+			 */
+			selectedResultChanged: function(appstate) {
 
-				var result = event.changed.selectedResult;
+				var result = appstate.changed.selectedResult;
+
+				var oldResult = appstate.previous("selectedResult");
+				if (oldResult)
+					this.stopListening(oldResult);
+
+				if (result !== null) {
+					this.listenTo(result, {
+						"change:edited": this.selectedResultEdited,
+						"change:position": this.highlightResult
+					});
+				}
 
 				// this timeout is necessary to make the result marker doubleclick work
 				_.defer(this.highlightResult.bind(this, result));
+			},
+
+			/**
+			 * Handler for the "change:edited" event on the selected result model.
+			 */
+			selectedResultEdited: function() {
+				// connect results along restored positions
+				this.updateSessionLines();
 			},
 
 			/**
@@ -767,8 +789,6 @@ define(
 							this.appstate.set("resultsEdited", true);
 
 							this.updateSessionLines();
-							if (this.appstate.get('selectedResult') === sample)
-								this.highlightResult(sample);
 						}
 					}
 				}
