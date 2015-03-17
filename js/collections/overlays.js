@@ -33,15 +33,15 @@ define(
 			/**
 			 * Store a reference to the maps overlay object by type.
 			 * @param {OverlayTypes} type The type of the overlay
-			 * @param {Overlay} overlay   The GoogleMaps overlay object. One of {Marker/Line/Polyline}
+			 * @param {MVCObject} marker  The GoogleMaps object. One of {Marker/Line/Polyline}
 			 * @param {String}  category  (optional) for results we can store the category for filtering.
 			 */
-			register: function(type, overlay, category) {
-				this.add({
+			register: function(type, marker, category) {
+				this.add(new Overlay({
 					type: type,
 					category: category,
-					ref: overlay
-				}, { silent: true });
+					ref: marker
+				}), { silent: true });
 			},
 
 			// returns the subset of items matching the given type
