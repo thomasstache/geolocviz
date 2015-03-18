@@ -17,6 +17,10 @@ define(
 				timestamp: 0,
 			},
 
+			constructor: function BaseResult() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			category: function(thresholds) {
 
 				var cat, probMobility = this.get('probMobility');

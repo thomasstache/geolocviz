@@ -21,6 +21,10 @@ define(
 				numSectors: 0,
 			},
 
+			constructor: function Statistics() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 				this.set("files", []);
 			},

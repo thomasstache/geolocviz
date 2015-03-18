@@ -14,6 +14,10 @@ define(
 				ref: null,
 			},
 
+			constructor: function Overlay() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			// ensure to remove the pin from the map and release GoogleMaps object
 			removeFromMap: function() {
 

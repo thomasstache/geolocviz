@@ -7,6 +7,10 @@ define(
 		var SiteList = Backbone.Collection.extend({
 			model: Site,
 
+			constructor: function SiteList() {
+				Backbone.Collection.prototype.constructor.apply(this, arguments);
+			},
+
 			/**
 			 * Returns the first site whose sector list has a match for all the properties.
 			 * @param  {Object} sectorProps List of key-value pairs that should match

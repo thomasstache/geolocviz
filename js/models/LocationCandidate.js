@@ -28,6 +28,10 @@ define(
 				primaryCellId: null,
 			},
 
+			constructor: function LocationCandidate() {
+				BaseResult.prototype.constructor.apply(this, arguments);
+			},
+
 			getInfo: function() {
 
 				var rv = this.toJSON();

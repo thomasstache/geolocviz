@@ -56,6 +56,10 @@ define(
 				statistics: null
 			},
 
+			constructor: function AppState() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			/**
 			 * Reset the attributes corresponding to results data to their defaults.
 			 */

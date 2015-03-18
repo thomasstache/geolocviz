@@ -36,6 +36,10 @@ define(
 				uarfcn: null,
 			},
 
+			constructor: function Sector() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 			},
 

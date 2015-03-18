@@ -39,6 +39,10 @@ define(
 				referenceCellId: null,
 			},
 
+			constructor: function AxfResult() {
+				BaseResult.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 
 			},

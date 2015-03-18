@@ -15,6 +15,10 @@ define(
 
 			sortDirection: null,
 
+			constructor: function SortableCollection() {
+				Backbone.Collection.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 				this.sortDirection = SortableCollection.SORT_ASCENDING;
 			},

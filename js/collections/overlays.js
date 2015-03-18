@@ -7,6 +7,10 @@ define(
 		var OverlayList = Backbone.Collection.extend({
 			model: Overlay,
 
+			constructor: function OverlayList() {
+				Backbone.Collection.prototype.constructor.apply(this, arguments);
+			},
+
 			removeAll: function() {
 				this.each(function(overlay) {
 					overlay.removeFromMap();

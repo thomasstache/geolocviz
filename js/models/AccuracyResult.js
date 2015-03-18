@@ -21,6 +21,10 @@ define(
 			/** @type {LocationCandidateList} collection of LocationCandidates */
 			locationCandidates: null,
 
+			constructor: function AccuracyResult() {
+				BaseResult.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 				// the list of candidate locations from the algorithms
 				this.locationCandidates = new LocationCandidateList();

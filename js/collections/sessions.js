@@ -7,6 +7,10 @@ define(
 		var SessionList = Backbone.Collection.extend({
 			model: Session,
 
+			constructor: function SessionList() {
+				Backbone.Collection.prototype.constructor.apply(this, arguments);
+			},
+
 			/**
 			 * Returns the session with the given ID.
 			 * @param  {Number} sessionId

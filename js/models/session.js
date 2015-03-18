@@ -17,6 +17,10 @@ define(
 			/** @type {ResultList} collection of results (with base type BaseResult) */
 			results: null,
 
+			constructor: function Session() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 				// the list of geolocation results
 				this.results = new ResultList();

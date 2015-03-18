@@ -21,6 +21,10 @@ define(
 				netSegment: null
 			},
 
+			constructor: function Site() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 				if (!this.get("technology"))
 					this.set("technology", Site.TECH_UNKNOWN);

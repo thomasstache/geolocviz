@@ -57,6 +57,10 @@ define(
 				heatmapSpreadRadius: 10,
 			},
 
+			constructor: function Settings() {
+				Backbone.Model.prototype.constructor.apply(this, arguments);
+			},
+
 			initialize: function() {
 				this.fetch();
 				this.on("change", this.save, this);

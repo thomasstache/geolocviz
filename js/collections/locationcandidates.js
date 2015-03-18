@@ -6,6 +6,10 @@ define(
 
 		var LocationCandidateList = Backbone.Collection.extend({
 			model: LocationCandidate,
+
+			constructor: function LocationCandidateList() {
+				Backbone.Collection.prototype.constructor.apply(this, arguments);
+			},
 		});
 
 		return LocationCandidateList;
