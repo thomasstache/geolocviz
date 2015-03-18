@@ -10,6 +10,11 @@ define(
 		 *   repository:fileselected
 		 */
 		var FileRepositoryView = Backbone.View.extend({
+
+			constructor: function FileRepositoryView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#fileRepositoryView"),
 
 			events: {

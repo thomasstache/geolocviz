@@ -13,6 +13,10 @@ define(
 
 		var SessionTableView = TableDialogView.extend({
 
+			constructor: function SessionTableView() {
+				TableDialogView.prototype.constructor.apply(this, arguments);
+			},
+
 			id: "sessionTableDialog",
 
 			caption: "All Sessions",

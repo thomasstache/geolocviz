@@ -5,6 +5,10 @@ define(
 
 		var LabelView = Backbone.View.extend({
 
+			constructor: function LabelView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#labelView"),
 
 			$labelInput: null,

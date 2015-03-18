@@ -7,6 +7,11 @@ define(
 	function($, _, Backbone, SettingsDialog, Settings, optionsTemplate) {
 
 		var SettingsView = Backbone.View.extend({
+
+			constructor: function SettingsView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#settings"),
 
 			/** @type {Settings} the settings model */

@@ -21,6 +21,10 @@ define(
 
 		var MapView = Backbone.View.extend({
 
+			constructor: function MapView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#mapView"),
 
 			/** @type {google.maps.Map} the Google Maps control */

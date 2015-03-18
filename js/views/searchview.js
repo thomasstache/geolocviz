@@ -5,6 +5,11 @@ define(
 	function($, _, Backbone, SearchQuery) {
 
 		var SearchView = Backbone.View.extend({
+
+			constructor: function SearchView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#searchView"),
 
 			$helpPanel: null,

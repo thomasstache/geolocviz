@@ -13,6 +13,10 @@ define(
 
 		var ResultTableView = TableDialogView.extend({
 
+			constructor: function ResultTableView() {
+				TableDialogView.prototype.constructor.apply(this, arguments);
+			},
+
 			id: "recordTableDialog",
 
 			caption: "",

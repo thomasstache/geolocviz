@@ -7,6 +7,10 @@ define(
 
 		var LegendView = Backbone.View.extend({
 
+			constructor: function LegendView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#mapLegend"),
 
 			events: {

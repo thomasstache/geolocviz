@@ -14,6 +14,11 @@ define(
 			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, Logger) {
 
 		var AppView = Backbone.View.extend({
+
+			constructor: function AppView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#playground-app"),
 
 			events: {

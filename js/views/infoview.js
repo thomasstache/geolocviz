@@ -26,6 +26,11 @@ define(
 		 *   site:unselected
 		 */
 		var InfoView = Backbone.View.extend({
+
+			constructor: function InfoView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#infoView"),
 
 			events: {

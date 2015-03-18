@@ -5,6 +5,11 @@ define(
 	function($, Backbone, filterbarTemplate) {
 
 		var FilterView = Backbone.View.extend({
+
+			constructor: function FilterView() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			el: $("#filterBar"),
 
 			/** @type {AppState} the shared app state */
