@@ -600,7 +600,7 @@ define(
 			/*********************** Result Interaction ***********************/
 
 			/**
-			 * Handler for "results:lookupElement" event. Lookup site/sector
+			 * Handler for "result:lookupElement" event. Lookup site/sector
 			 * @param  {Object} query
 			 */
 			resultsLookupElement: function(query) {
@@ -637,11 +637,14 @@ define(
 				}
 			},
 
+			/**
+			 * Handler for "result:revertPosition" event. Lookup site/sector
+			 * @param  {AxfResult} result
+			 */
 			resultsRevertPosition: function(result) {
 
 				if (result) {
 					result.revertGeoPosition();
-					// TODO: trigger map redraw
 				}
 			},
 
