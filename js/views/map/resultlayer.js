@@ -134,7 +134,7 @@ define(
 
 				if (result !== null) {
 					this.listenTo(result, {
-						"change:edited": this.selectedResultEdited,
+						"position-reverted": this.selectedResultReverted,
 						"change:position": this.highlightResult
 					});
 				}
@@ -144,9 +144,9 @@ define(
 			},
 
 			/**
-			 * Handler for the "change:edited" event on the selected result model.
+			 * Handler for the "position-reverted" event on the selected result model.
 			 */
-			selectedResultEdited: function() {
+			selectedResultReverted: function() {
 				// connect results along restored positions
 				this.updateSessionLines();
 			},

@@ -96,6 +96,8 @@ define(
 					edited: false,
 					position: this.get('originalPosition'),
 				});
+
+				this.trigger("position-reverted");
 			},
 
 			/**
