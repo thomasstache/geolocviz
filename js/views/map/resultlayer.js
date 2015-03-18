@@ -1,12 +1,12 @@
 define(
 	["underscore", "backbone",
 	 "views/map/baselayer", "views/map/markercolors",
-	 "models/session", "models/AccuracyResult", "models/axfresult", "models/site", "models/sector",
+	 "models/session", "models/AccuracyResult", "models/axfresult", "models/site", "models/sector", "models/resultoverlay",
 	 "types/position", "types/googlemapsutils", "types/colormapper"],
 
 	function(_, Backbone,
 			 BaseLayer, MarkerColors,
-			 Session, AccuracyResult, AxfResult, Site, Sector,
+			 Session, AccuracyResult, AxfResult, Site, Sector, ResultOverlay,
 			 Position, GoogleMapsUtils, ColorMapper) {
 
 		/**
@@ -392,7 +392,12 @@ define(
 				// register the marker
 				if (type !== undefined) {
 					// use the symbol as a category
-					this.overlays.register(type, marker, colorDef.smb);
+					this.overlays.add(new ResultOverlay({
+						type: type,
+						category: colorDef.smb,
+						ref: marker,
+						result: md.model,
+					}));
 					md.type = type;
 				}
 
