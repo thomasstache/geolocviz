@@ -66,10 +66,16 @@ define(
 					var refControllerId = p.refControllerId || "",
 						referenceCellId = p.referenceCellId || "",
 						confScalingFactor = p.confScalingFactor || "";
-					extension = `,${p.sessionId},${p.controllerId},${p.primaryCellId},${refControllerId},${referenceCellId},${confScalingFactor}`;
+
+					// extension = `,${p.sessionId},${p.controllerId},${p.primaryCellId},${refControllerId},${referenceCellId},${confScalingFactor}`;
+					extension = "," + p.sessionId + "," + p.controllerId + "," + p.primaryCellId + "," + refControllerId + "," + referenceCellId + "," + confScalingFactor;
 				}
 
-				var text = `${p.msgId},${p.timestamp},${lat},${lon},,${conf_pct},${mob_pct},${p.driveSession},${p.indoor},${measRpt},${ind_pct}${extension}\n`;
+				/**
+				 * TODO: Don't use ES6 template strings yet, as r.js can't parse/optimize them.
+				 */
+				// var text = `${p.msgId},${p.timestamp},${lat},${lon},,${conf_pct},${mob_pct},${p.driveSession},${p.indoor},${measRpt},${ind_pct}${extension}\n`;
+				var text =  p.msgId + "," + p.timestamp + "," + lat + "," + lon + ",," + conf_pct + "," + mob_pct + "," + p.driveSession + "," + p.indoor + "," + measRpt + "," + ind_pct + extension + "\n";
 
 				return text;
 			}
