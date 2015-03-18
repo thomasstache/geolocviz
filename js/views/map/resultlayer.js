@@ -18,6 +18,10 @@ define(
 		 */
 		var ResultLayer = BaseLayer.extend({
 
+			constructor: function ResultLayer() {
+				BaseLayer.prototype.constructor.apply(this, arguments);
+			},
+
 			/** @type {MapView} the parent view */
 			mapview: null,
 

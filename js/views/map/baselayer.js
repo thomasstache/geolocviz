@@ -9,6 +9,10 @@ define(
 		 */
 		var BaseLayer = Backbone.View.extend({
 
+			constructor: function BaseLayer() {
+				Backbone.View.prototype.constructor.apply(this, arguments);
+			},
+
 			/** @type {google.maps.Map} the Google Maps control */
 			map: null,
 

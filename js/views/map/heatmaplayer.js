@@ -16,6 +16,10 @@ define(
 		 */
 		var HeatmapLayer = BaseLayer.extend({
 
+			constructor: function HeatmapLayer() {
+				BaseLayer.prototype.constructor.apply(this, arguments);
+			},
+
 			/** @type {MapView} the parent view */
 			mapview: null,
 

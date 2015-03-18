@@ -52,6 +52,10 @@ define(
 		 */
 		var NetworkLayer = BaseLayer.extend({
 
+			constructor: function NetworkLayer() {
+				BaseLayer.prototype.constructor.apply(this, arguments);
+			},
+
 			/** @type {Marker} reference to overlay used to highlight the selected site */
 			selectedSiteHighlight: null,
 
