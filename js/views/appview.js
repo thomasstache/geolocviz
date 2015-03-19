@@ -6,11 +6,13 @@ define(
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
 	 "views/searchview", "views/labelView", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
+	 "views/downloaddialog",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
 	 "types/searchquery", "FileLoader", "filewriter", "types/logger"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView, SessionTableView, ResultTableView,
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView,
+			 SessionTableView, ResultTableView, DownloadDialog,
 			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, FileWriter, Logger) {
 
 		var AppView = Backbone.View.extend({
@@ -53,6 +55,7 @@ define(
 			filerepositoryview: null,
 			sessiontableview: null,
 			resulttableview: null,
+			downloadDialog: null,
 
 			initialize: function() {
 
@@ -187,15 +190,20 @@ define(
 
 					var fileName = (axffiles.length === 1) ? axffiles[0].name : "result.axf";
 
-					// attach file to Link
-					var $link = $("#downloadlink");
-					if ($link) {
-						$link.prop("href", url);
-						$link.prop("download", fileName);
-					}
 					// show the link
-					$link.toggleClass("hidden", false);
+					var dialog = new DownloadDialog({
+						url: url,
+						filename: fileName,
+					});
+					this.listenToOnce(dialog, "dialog:cancel", this.onDownloadDialogClosed);
+					this.downloadDialog = dialog;
 				}
+			},
+
+			/** remove all listeners from the dialog */
+			onDownloadDialogClosed: function() {
+				this.stopListening(this.downloadDialog);
+				this.downloadDialog = null;
 			},
 
 			// reset the form to clear old file names
@@ -360,11 +368,7 @@ define(
 			// Show/hide file download controls.
 			showFileDownloadView: function(show) {
 
-				// hide the link until Download button is clicked.
-				if (!show)
-					this.$("#downloadlink").toggleClass("hidden", true);
-
-				this.$("#fileDownloadView").toggleClass("hidden", show === false);
+				this.$("#cmdDownloadAxf").toggleClass("hidden", show === false);
 			},
 
 			dropHandler: function (evt) {

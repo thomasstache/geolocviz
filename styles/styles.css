@@ -226,7 +226,6 @@ header {
 }
 #fileForm,
 #fileRepositoryView,
-#fileDownloadView:not(.hidden),
 #searchView {
 	display: inline-block;
 	vertical-align: middle;
@@ -235,6 +234,8 @@ header {
 	position: absolute;
 	top: 0; right: 0;
 }
+
+#cmdDownloadAxf { background-color: hsl(51, 100%, 70%) } /* gold */
 
 #searchInput, #searchHelp {
 	width: 160px;
@@ -349,6 +350,13 @@ input[type="checkbox"] {
 
 #viewportDialog li label { padding: 0 4px; }
 #viewportDialog li:first-of-type { margin-bottom: 5px; }
+
+#downloadDialog .downloadLink {
+	overflow: hidden;
+	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
 
 /* Overlays on top of map */
 

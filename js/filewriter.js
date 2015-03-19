@@ -9,9 +9,6 @@ define(
 			var AXFFILE_HEADER = "#Message Number,Time,Latitude,Longitude,GPS_Confidence,Data_Position_Confidence,Mobility_Probability,Drive_Session,IndoorOutdoor_Session,MeasurementReport,Indoor_Probability";
 			var AXFFILE_HEADER_XT = ",SessionId,Controller,PrimaryCellId,ReferenceController,ReferenceCellId,ConfidenceThresholdScalingFactor";
 
-			/** @type {DOMString} reference to our last object URL */
-			var textFile = null;
-
 			// TODO: make configurable
 			var extendedAxf = true;
 
@@ -105,11 +102,7 @@ define(
 
 				// If we are replacing a previously generated file we need to
 				// manually revoke the object URL to avoid memory leaks.
-				if (textFile !== null) {
-				  window.URL.revokeObjectURL(textFile);
-				}
-
-				textFile = window.URL.createObjectURL(data);
+				var textFile = window.URL.createObjectURL(data);
 
 				// returns a URL you can use as a href
 				return textFile;
