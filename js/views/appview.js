@@ -182,9 +182,17 @@ define(
 
 				if (url !== undefined && url !== null) {
 
+					var stats = this.model.get("statistics"),
+						axffiles = stats.getFileStatsForType(FileLoader.FileTypes.AXF);
+
+					var fileName = (axffiles.length === 1) ? axffiles[0].name : "result.axf";
+
 					// attach file to Link
 					var $link = $("#downloadlink");
-					$link[0].href = url;
+					if ($link) {
+						$link.prop("href", url);
+						$link.prop("download", fileName);
+					}
 					// show the link
 					$link.toggleClass("hidden", false);
 				}

@@ -76,6 +76,18 @@ define(
 					this.set("files", _.difference(files, obsolete));
 			},
 
+			/**
+			 * Returns the FileStatistics matching the given type.
+			 * @param  {FileType} type
+			 * @return {Array}
+			 */
+			getFileStatsForType: function(type) {
+
+				var files = this.get("files");
+
+				return _.where(files, {type: type});
+			},
+
 			addTo: function(attribute, value) {
 				if (this.has(attribute)) {
 					var current = this.get(attribute);
