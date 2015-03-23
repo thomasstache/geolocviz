@@ -235,6 +235,14 @@ header {
 	top: 0; right: 0;
 }
 
+/* Edit Mode Controls */
+
+#toggleResultsEditMode.active {
+	background-color: hsl(25, 100%, 90%);
+	border-color: hsl(27, 85%, 60%);
+	color: hsl(27, 85%, 60%);
+	box-shadow:
+}
 #cmdDownloadAxf { background-color: hsl(51, 100%, 70%) } /* gold */
 
 #searchInput, #searchHelp {
@@ -251,7 +259,7 @@ header {
 	border-color: rgb(214, 214, 214);
 }
 #loadButton:not([disabled]):hover,
-#loadButton:active { background-color: rgba(230, 235, 240, 0.5); }
+#loadButton:active, #loadButton.active { background-color: rgba(230, 235, 240, 0.5); }
 
 #fileRepositoryPanel {
 	margin-left: 2px;

@@ -20,6 +20,9 @@ define(
 				resultsAvailable: false,
 				// if result data with reference cells was loaded
 				resultsReferenceCellsAvailable: false,
+
+				// if result markers can be edited
+				resultsEditMode: false,
 				// if result data has been edited
 				resultsEdited: false,
 
@@ -71,6 +74,7 @@ define(
 					resultsReferenceCellsAvailable: false,
 					referenceLocationsAvailable: false,
 					candidateLocationsAvailable: false,
+					resultsEditMode: false,
 					resultsEdited: false,
 					heatmapActive: false,
 					resultsFilterActive: false,

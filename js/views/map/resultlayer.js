@@ -55,6 +55,7 @@ define(
 				this.listenTo(this.appstate, "change:selectedSession", this.selectedSessionChanged);
 				this.listenTo(this.appstate, "change:selectedResult", this.selectedResultChanged);
 				this.listenTo(this.appstate, "change:focussedSessionId", this.focussedSessionChanged);
+				this.listenTo(this.appstate, "change:resultsEditMode", this.resultsEditModeChanged);
 			},
 
 			/**
@@ -102,6 +103,17 @@ define(
 
 				if (this.appstate.get("heatmapActive") === false)
 					_.defer(this.updateMarkerColors.bind(this)); // deferred to allow call stack to unwind, e.g. Settings dialog to close.
+			},
+
+			/**
+			 * Change listener for AppState's "resultsEditMode" property
+			 * @param {AppState} appstate
+			 */
+			resultsEditModeChanged: function(appstate) {
+
+				if (appstate.changed.resultsEditMode !== undefined) {
+					_.defer(this.setOverlaysDraggable.bind(this), OverlayTypes.AXFMARKER, appstate.changed.resultsEditMode);
+				}
 			},
 
 			selectedSessionChanged: function(event) {
@@ -326,7 +338,7 @@ define(
 
 			/**
 			 * Creates a marker and adds it to the map.
-			 * @param {OverlayTypes}      type      The type of the marker
+			 * @param {OverlayTypes}      type      The type of the marker (one of REFERENCEMARKER, GEOLOCMARKER, AXFMARKER, CANDIDATEMARKER)
 			 * @param {LatLng}            latlng    The geographical position for the marker
 			 * @param {String}            label     Tooltip for the marker
 			 * @param {MarkerColors}      colorDef  The color definition to use
@@ -340,10 +352,12 @@ define(
 				var view = this;
 				var thresholds = this.settings.getThresholdSettings();
 				var letter = candidate ? candidate.category(thresholds) : colorDef.smb;
-				var icon;
+				var icon,
+					draggable = false;
 
 				if (type === OverlayTypes.AXFMARKER) {
 
+					draggable = this.appstate.get("resultsEditMode");
 					if (this.settings.get("useDynamicMarkerColors")) {
 
 						var value = sample.get(this.settings.get("markerColorAttribute"));
@@ -374,7 +388,7 @@ define(
 						map: bVisible ? this.map : null,
 						icon: icon,
 						title: label,
-						draggable: true,
+						draggable: draggable,
 						zIndex: Z_Index.RESULT
 					}
 				);
@@ -936,6 +950,24 @@ define(
 					function(overlay) {
 						var marker = overlay.get('ref');
 						view.setMarkerVisible(marker, bVisible);
+					}
+				);
+			},
+
+			/**
+			 * Toggle the "draggable" property of AXF result markers
+			 * @param {OverlayTypes} type
+			 * @param {Boolean}      bDraggable True to drag
+			 */
+			setOverlaysDraggable: function(type, bDraggable) {
+
+				var overlays = this.overlays.byType(type);
+
+				_.each(
+					overlays,
+					function(overlay) {
+						var marker = overlay.get('ref');
+						marker.setDraggable(bDraggable);
 					}
 				);
 			},

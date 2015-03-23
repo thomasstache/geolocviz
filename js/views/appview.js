@@ -28,6 +28,7 @@ define(
 				"click #cmdClearAllData" : "clearData",
 				"click #cmdClearResults" : "clearResults",
 				"click #cmdDownloadAxf"  : "downloadResults",
+				"click #toggleResultsEditMode" : "toggleResultsEditMode",
 				"click #dropCancel"      : "hideDropZone",
 				"drop #fileDropZone"     : "dropHandler"
 			},
@@ -134,6 +135,7 @@ define(
 				this.model.resetResultsData();
 				this.clearFileForm();
 				this.showFileDownloadView(false);
+				this.enableEditModeControls(false);
 
 				// update statistics
 				if (this.model.has("statistics")) {
@@ -161,8 +163,16 @@ define(
 				this.searchview.clearSearchField();
 				this.clearFileForm();
 				this.showFileDownloadView(false);
+				this.enableEditModeControls(false);
 
 				this.model.set("busy", false);
+			},
+
+			toggleResultsEditMode: function() {
+				var oldMode = this.model.get("resultsEditMode");
+				this.model.set("resultsEditMode", !oldMode);
+
+				this.$("#toggleResultsEditMode").toggleClass("active");
 			},
 
 			/**
@@ -319,6 +329,8 @@ define(
 
 					if (filestats.referenceCellsAvailable)
 						this.model.set("resultsReferenceCellsAvailable", true);
+
+					this.enableEditModeControls(true);
 				}
 
 				stats.trigger("change");
@@ -369,6 +381,17 @@ define(
 			showFileDownloadView: function(show) {
 
 				this.$("#cmdDownloadAxf").toggleClass("hidden", show === false);
+			},
+
+			// Enable/disable results edit controls.
+			enableEditModeControls: function(enable) {
+
+				var el = this.$("#toggleResultsEditMode");
+
+				if (!enable)
+					el.removeClass("active");
+
+				el.prop("disabled", !enable);
 			},
 
 			dropHandler: function (evt) {
