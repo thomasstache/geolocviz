@@ -54,11 +54,20 @@ define(
 
 				if (session) {
 
-					this.caption = "Records in Session " + session.get("sessionId");
-					this.session = session;
+					this.setSession(session);
 				}
 
 				TableDialogView.prototype.initialize.apply(this);
+			},
+
+			/**
+			 * Update the session to be displayed.
+			 * @param {Session} session
+			 */
+			setSession: function(session) {
+
+				this.caption = "Records in Session " + session.get("sessionId");
+				this.session = session;
 			},
 
 			/**

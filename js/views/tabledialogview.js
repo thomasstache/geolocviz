@@ -101,6 +101,11 @@ define(
 				return this;
 			},
 
+			// Update the dialog header element with the current caption.
+			renderCaption: function() {
+				this.$("#tableCaption").html(this.caption);
+			},
+
 			// Render the table body with the current sort configuration.
 			updateTable: function() {
 
@@ -169,6 +174,7 @@ define(
 
 				this.fillCollection();
 				this.updateTable();
+				this.renderCaption();
 				this.$el.show();
 			},
 

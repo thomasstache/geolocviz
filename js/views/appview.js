@@ -727,7 +727,7 @@ define(
 				}
 				else {
 					// dialog is just hidden
-					this.resulttableview.session = this.model.get("selectedSession");
+					this.resulttableview.setSession(this.model.get("selectedSession"));
 					this.resulttableview.reshow();
 				}
 			},
