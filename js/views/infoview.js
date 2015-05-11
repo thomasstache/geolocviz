@@ -21,6 +21,7 @@ define(
 		 *   result:nav-next
 		 *   result:nav-last
 		 *   result:lookupElement
+		 *   result:revertPosition (Result model)
 		 *   result:filterByElement
 		 *   result:listAll
 		 *   site:unselected
@@ -43,6 +44,7 @@ define(
 				"click .results-last": "onLastResultClicked",
 				"click .lookup-cell": "onLookupCellClicked",
 				"click .lookup-ref-cell": "onLookupRefCellClicked",
+				"click .revert-position": "onRevertPositionClicked",
 				"click .filterByElement" : "onFilterByElementClicked",
 				"click .filterByRefcell" : "onFilterByElementClicked",
 				"click .listAllSessions" : "onListAllSessionsClicked",
@@ -52,6 +54,9 @@ define(
 
 			/** @type {AppState} the shared app state */
 			model: null,
+
+			/** @type {BaseResult} the currently displayed result model */
+			selectedResult: null,
 
 			$tbSessionToolbar: null,
 			$tbResultsToolbar: null,
@@ -96,9 +101,28 @@ define(
 				this.renderSessionInfo();
 			},
 
-			onResultChanged: function() {
+			onResultChanged: function(event) {
+
+				var result = event.changed.selectedResult;
+
+				if (this.selectedResult !== result) {
+
+					this.stopListening(this.selectedResult);
+					this.selectedResult = result;
+
+					if (result !== null)
+						this.listenTo(this.selectedResult, "change:edited", this.onResultEdited);
+				}
 
 				this.updateResultsControls();
+				this.renderResultInfo();
+			},
+
+			/**
+			 * Handler for the "change:edited" event on the current result model.
+			 */
+			onResultEdited: function() {
+
 				this.renderResultInfo();
 			},
 
@@ -146,7 +170,7 @@ define(
 			// Render the result template.
 			renderResultInfo: function() {
 
-				var result = this.model.get("selectedResult");
+				var result = this.selectedResult;
 				var context = result !== null ? result.getInfo() : {};
 				if (result instanceof AccuracyResult) {
 					context.isAccuracyResult = true;
@@ -286,7 +310,7 @@ define(
 			},
 
 			triggerNavigationEvent: function(eventType) {
-				this.trigger("result:" + eventType, this.model.get("selectedResult"));
+				this.trigger("result:" + eventType, this.selectedResult);
 			},
 
 			/**
@@ -315,9 +339,16 @@ define(
 				this.triggerCellLookup(true);
 			},
 
+			/**
+			 * Click handler for the "revert result position" button.
+			 */
+			onRevertPositionClicked: function() {
+				this.trigger("result:revertPosition", this.selectedResult);
+			},
+
 			triggerCellLookup: function(useRefCell) {
 
-				var result = this.model.get("selectedResult");
+				var result = this.selectedResult;
 				var sectorProps = result.getSectorProperties();
 
 				var params = null;
@@ -380,7 +411,7 @@ define(
 			/* Updates toolbar button (enabled/visibility) states on result change. */
 			updateResultsControls: function() {
 
-				var result = this.model.get("selectedResult");
+				var result = this.selectedResult;
 
 				var canNavigateBwd = result !== null && result.hasPrevious();
 				var canNavigateFwd = result !== null && result.hasNext();

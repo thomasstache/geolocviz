@@ -6,12 +6,14 @@ define(
 	["jquery", "underscore", "backbone",
 	 "views/mapview", "views/settingsview", "views/legendview", "views/infoview", "views/filterview",
 	 "views/searchview", "views/labelView", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
+	 "views/downloaddialog",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
-	 "types/searchquery", "FileLoader", "types/logger"],
+	 "types/searchquery", "FileLoader", "filewriter", "types/logger"],
 
 	function($, _, Backbone,
-			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView, SessionTableView, ResultTableView,
-			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, Logger) {
+			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView,
+			 SessionTableView, ResultTableView, DownloadDialog,
+			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, FileWriter, Logger) {
 
 		var AppView = Backbone.View.extend({
 
@@ -25,6 +27,8 @@ define(
 				"change #fileInput"      : "fileInputChanged",
 				"click #cmdClearAllData" : "clearData",
 				"click #cmdClearResults" : "clearResults",
+				"click #cmdDownloadAxf"  : "downloadResults",
+				"click #toggleResultsEditMode" : "toggleResultsEditMode",
 				"click #dropCancel"      : "hideDropZone",
 				"drop #fileDropZone"     : "dropHandler"
 			},
@@ -52,6 +56,7 @@ define(
 			filerepositoryview: null,
 			sessiontableview: null,
 			resulttableview: null,
+			downloadDialog: null,
 
 			initialize: function() {
 
@@ -70,6 +75,7 @@ define(
 
 				// listen to changes
 				this.model.on("change:busy", this.busyStateChanged, this);
+				this.listenTo(this.model, "change:resultsEdited", this.onResultsEdited);
 				this.sessions.on("add", this.sessionsUpdated, this);
 				this.siteList.on("add", this.networkUpdated, this);
 
@@ -109,6 +115,7 @@ define(
 				this.listenTo(this.infoview, "result:nav-prev", this.resultsNavigateToPrevious);
 				this.listenTo(this.infoview, "result:nav-next", this.resultsNavigateToNext);
 				this.listenTo(this.infoview, "result:nav-last", this.resultsNavigateToLast);
+				this.listenTo(this.infoview, "result:revertPosition", this.resultsRevertPosition);
 				this.listenTo(this.infoview, "result:lookupElement", this.resultsLookupElement);
 				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
 				this.listenTo(this.infoview, "site:unselected", this.clearNetworkSelections);
@@ -127,6 +134,8 @@ define(
 				// update app state (selections et al)
 				this.model.resetResultsData();
 				this.clearFileForm();
+				this.showFileDownloadView(false);
+				this.enableEditModeControls(false);
 
 				// update statistics
 				if (this.model.has("statistics")) {
@@ -153,8 +162,58 @@ define(
 
 				this.searchview.clearSearchField();
 				this.clearFileForm();
+				this.showFileDownloadView(false);
+				this.enableEditModeControls(false);
 
 				this.model.set("busy", false);
+			},
+
+			toggleResultsEditMode: function() {
+				var oldMode = this.model.get("resultsEditMode");
+				this.model.set("resultsEditMode", !oldMode);
+
+				this.$("#toggleResultsEditMode").toggleClass("active");
+			},
+
+			/**
+			 * Enable the download button.
+			 */
+			onResultsEdited: function(event) {
+
+				var enableDownload = event.changed.resultsEdited;
+				this.showFileDownloadView(enableDownload);
+				this.$("#cmdDownloadAxf").prop("disabled", enableDownload === false);
+			},
+
+			/**
+			 * Generate a result file and offer it for download.
+			 */
+			downloadResults: function() {
+
+				// generate file contents
+				var url = FileWriter.createAxfFileAsURL(this.sessions);
+
+				if (url !== undefined && url !== null) {
+
+					var stats = this.model.get("statistics"),
+						axffiles = stats.getFileStatsForType(FileLoader.FileTypes.AXF);
+
+					var fileName = (axffiles.length === 1) ? axffiles[0].name : "result.axf";
+
+					// show the link
+					var dialog = new DownloadDialog({
+						url: url,
+						filename: fileName,
+					});
+					this.listenToOnce(dialog, "dialog:cancel", this.onDownloadDialogClosed);
+					this.downloadDialog = dialog;
+				}
+			},
+
+			/** remove all listeners from the dialog */
+			onDownloadDialogClosed: function() {
+				this.stopListening(this.downloadDialog);
+				this.downloadDialog = null;
 			},
 
 			// reset the form to clear old file names
@@ -270,6 +329,8 @@ define(
 
 					if (filestats.referenceCellsAvailable)
 						this.model.set("resultsReferenceCellsAvailable", true);
+
+					this.enableEditModeControls(true);
 				}
 
 				stats.trigger("change");
@@ -314,6 +375,23 @@ define(
 			},
 			hideDropZone: function() {
 				$("#fileDropVeil").fadeOut("fast");
+			},
+
+			// Show/hide file download controls.
+			showFileDownloadView: function(show) {
+
+				this.$("#cmdDownloadAxf").toggleClass("hidden", show === false);
+			},
+
+			// Enable/disable results edit controls.
+			enableEditModeControls: function(enable) {
+
+				var el = this.$("#toggleResultsEditMode");
+
+				if (!enable)
+					el.removeClass("active");
+
+				el.prop("disabled", !enable);
 			},
 
 			dropHandler: function (evt) {
@@ -557,7 +635,7 @@ define(
 			/*********************** Result Interaction ***********************/
 
 			/**
-			 * Handler for "results:lookupElement" event. Lookup site/sector
+			 * Handler for "result:lookupElement" event. Lookup site/sector
 			 * @param  {Object} query
 			 */
 			resultsLookupElement: function(query) {
@@ -591,6 +669,17 @@ define(
 				    query.netSegment !== undefined) {
 
 					this.mapview.filterResultsBySector(query);
+				}
+			},
+
+			/**
+			 * Handler for "result:revertPosition" event. Lookup site/sector
+			 * @param  {AxfResult} result
+			 */
+			resultsRevertPosition: function(result) {
+
+				if (result) {
+					result.revertGeoPosition();
 				}
 			},
 

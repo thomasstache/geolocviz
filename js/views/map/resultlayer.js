@@ -1,12 +1,12 @@
 define(
 	["underscore", "backbone",
 	 "views/map/baselayer", "views/map/markercolors",
-	 "models/session", "models/AccuracyResult", "models/axfresult", "models/site", "models/sector",
+	 "models/session", "models/AccuracyResult", "models/axfresult", "models/site", "models/sector", "models/resultoverlay",
 	 "types/position", "types/googlemapsutils", "types/colormapper"],
 
 	function(_, Backbone,
 			 BaseLayer, MarkerColors,
-			 Session, AccuracyResult, AxfResult, Site, Sector,
+			 Session, AccuracyResult, AxfResult, Site, Sector, ResultOverlay,
 			 Position, GoogleMapsUtils, ColorMapper) {
 
 		/**
@@ -55,6 +55,7 @@ define(
 				this.listenTo(this.appstate, "change:selectedSession", this.selectedSessionChanged);
 				this.listenTo(this.appstate, "change:selectedResult", this.selectedResultChanged);
 				this.listenTo(this.appstate, "change:focussedSessionId", this.focussedSessionChanged);
+				this.listenTo(this.appstate, "change:resultsEditMode", this.resultsEditModeChanged);
 			},
 
 			/**
@@ -104,6 +105,17 @@ define(
 					_.defer(this.updateMarkerColors.bind(this)); // deferred to allow call stack to unwind, e.g. Settings dialog to close.
 			},
 
+			/**
+			 * Change listener for AppState's "resultsEditMode" property
+			 * @param {AppState} appstate
+			 */
+			resultsEditModeChanged: function(appstate) {
+
+				if (appstate.changed.resultsEditMode !== undefined) {
+					_.defer(this.setOverlaysDraggable.bind(this), OverlayTypes.AXFMARKER, appstate.changed.resultsEditMode);
+				}
+			},
+
 			selectedSessionChanged: function(event) {
 
 				var session = event.changed.selectedSession;
@@ -121,12 +133,34 @@ define(
 				this.focusSession(session);
 			},
 
-			selectedResultChanged: function(event) {
+			/**
+			 * Handler for the "change:selectedResult" event on AppState.
+			 */
+			selectedResultChanged: function(appstate) {
 
-				var result = event.changed.selectedResult;
+				var result = appstate.changed.selectedResult;
+
+				var oldResult = appstate.previous("selectedResult");
+				if (oldResult)
+					this.stopListening(oldResult);
+
+				if (result !== null) {
+					this.listenTo(result, {
+						"position-reverted": this.selectedResultReverted,
+						"change:position": this.highlightResult
+					});
+				}
 
 				// this timeout is necessary to make the result marker doubleclick work
 				_.defer(this.highlightResult.bind(this, result));
+			},
+
+			/**
+			 * Handler for the "position-reverted" event on the selected result model.
+			 */
+			selectedResultReverted: function() {
+				// connect results along restored positions
+				this.updateSessionLines();
 			},
 
 			/**
@@ -169,11 +203,7 @@ define(
 
 				var thresholds = this.settings.getThresholdSettings();
 
-				var refLinesEnabled = this.settings.get("drawReferenceLines");
-
 				session.results.each(function(sample) {
-
-					var color = null, visible = true;
 
 					// check if the result sample matches the current filter
 					if (resultFilterFct !== null &&
@@ -184,83 +214,87 @@ define(
 						return;
 
 					if (sample instanceof AccuracyResult) {
-						var refLoc = GoogleMapsUtils.makeLatLng(sample.get('position'));
 
-						// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
-						if (isValidLatLng(refLoc)) {
-
-							view.bounds.extend(refLoc);
-
-							view.createMarker(OverlayTypes.REFERENCEMARKER,
-											  refLoc,
-											  "#" + sample.get('msgId'),
-											  MarkerColors.REFERENCE,
-											  view.settings.get("drawMarkers_R"),
-											  sample);
-						}
-
-						var bestCand = sample.getBestLocationCandidate();
-						var bestLoc = GoogleMapsUtils.makeLatLng(bestCand.get('position'));
-
-						switch (bestCand.category(thresholds)) {
-							case "S":
-								color = MarkerColors.STATIONARY;
-								visible = view.settings.get("drawMarkers_S");
-								break;
-							case "I":
-							case "IM":
-								color = MarkerColors.INDOOR;
-								visible = view.settings.get("drawMarkers_I");
-								break;
-							case "M":
-								/* falls through */
-							default:
-								color = MarkerColors.GEOLOCATED;
-								visible = view.settings.get("drawMarkers_M");
-								break;
-						}
-
-						view.createMarker(OverlayTypes.GEOLOCMARKER,
-										  bestLoc,
-										  "#" + sample.get('msgId'),
-										  color,
-										  visible,
-										  sample);
-
-						view.bounds.extend(bestLoc);
-
-						// connect measured and calculated points with lines
-						view.drawReferenceLine(refLoc, bestLoc, refLinesEnabled);
+						view.drawAccuracyResult(sample);
 					}
 					else if (sample instanceof AxfResult) {
 
-						var location = GoogleMapsUtils.makeLatLng(sample.get('position'));
-						switch (sample.category(thresholds)) {
-							case "S":
-								color = MarkerColors.STATIONARY;
-								visible = view.settings.get("drawMarkers_S");
-								break;
-							case "I":
-							case "IM":
-								color = MarkerColors.INDOOR;
-								visible = view.settings.get("drawMarkers_I");
-								break;
-							case "M":
-								color = MarkerColors.GEOLOCATED;
-								visible = view.settings.get("drawMarkers_M");
-								break;
-						}
-
-						view.createMarker(OverlayTypes.AXFMARKER,
-										  location,
-										  "#" + sample.get('msgId'),
-										  color,
-										  visible,
-										  sample);
-
-						view.bounds.extend(location);
+						view.drawResult(sample);
 					}
 				});
+			},
+
+			/**
+			 * Draw markers and line for accuracy results.
+			 * @param  {AccuracyResult} sample
+			 */
+			drawAccuracyResult: function(sample) {
+
+				var refLinesVisible = this.settings.get("drawReferenceLines"),
+					refLoc = GoogleMapsUtils.makeLatLng(sample.get('position'));
+
+				// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
+				if (isValidLatLng(refLoc)) {
+
+					this.bounds.extend(refLoc);
+
+					this.createMarker(OverlayTypes.REFERENCEMARKER,
+									  refLoc,
+									  "#" + sample.get('msgId'),
+									  MarkerColors.REFERENCE,
+									  this.settings.get("drawMarkers_R"),
+									  sample);
+				}
+
+				var bestCand = sample.getBestLocationCandidate();
+				var bestLoc = GoogleMapsUtils.makeLatLng(bestCand.get('position'));
+
+				this.drawResult(bestCand, OverlayTypes.GEOLOCMARKER, sample);
+
+				// connect measured and calculated points with lines
+				this.drawReferenceLine(refLoc, bestLoc, refLinesVisible);
+			},
+
+			/**
+			 * Draw a marker for an (AXF) result.
+			 * @param  {BaseResult} sample       the model for the marker
+			 * @param  {OverlayTypes} markerType controls the marker shape, if omitted the default is AXFMARKER
+			 * @param  {BaseResult} parent       (optional) the model of the parent, e.g. if sample is a LocationCandidate
+			 */
+			drawResult: function(sample, markerType, parent) {
+
+				markerType = markerType || OverlayTypes.AXFMARKER;
+				// for LocationCandidate a parent model should be provided
+				var model = parent || sample;
+
+				var color = null, visible = true,
+					thresholds = this.settings.getThresholdSettings();
+
+				var location = GoogleMapsUtils.makeLatLng(sample.get('position'));
+				switch (sample.category(thresholds)) {
+					case "S":
+						color = MarkerColors.STATIONARY;
+						visible = this.settings.get("drawMarkers_S");
+						break;
+					case "I":
+					case "IM":
+						color = MarkerColors.INDOOR;
+						visible = this.settings.get("drawMarkers_I");
+						break;
+					case "M":
+						color = MarkerColors.GEOLOCATED;
+						visible = this.settings.get("drawMarkers_M");
+						break;
+				}
+
+				this.createMarker(markerType,
+								  location,
+								  "#" + sample.get('msgId'),
+								  color,
+								  visible,
+								  model);
+
+				this.bounds.extend(location);
 			},
 
 			/**
@@ -304,7 +338,7 @@ define(
 
 			/**
 			 * Creates a marker and adds it to the map.
-			 * @param {OverlayTypes}      type      The type of the marker
+			 * @param {OverlayTypes}      type      The type of the marker (one of REFERENCEMARKER, GEOLOCMARKER, AXFMARKER, CANDIDATEMARKER)
 			 * @param {LatLng}            latlng    The geographical position for the marker
 			 * @param {String}            label     Tooltip for the marker
 			 * @param {MarkerColors}      colorDef  The color definition to use
@@ -316,11 +350,14 @@ define(
 			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
 
 				var view = this;
-				var letter = candidate ? candidate.category(this.settings.getThresholdSettings()) : colorDef.smb;
-				var icon;
+				var thresholds = this.settings.getThresholdSettings();
+				var letter = candidate ? candidate.category(thresholds) : colorDef.smb;
+				var icon,
+					draggable = false;
 
 				if (type === OverlayTypes.AXFMARKER) {
 
+					draggable = this.appstate.get("resultsEditMode");
 					if (this.settings.get("useDynamicMarkerColors")) {
 
 						var value = sample.get(this.settings.get("markerColorAttribute"));
@@ -329,7 +366,7 @@ define(
 						icon.fillColor = this.colorMapper.getColor(value);
 					}
 					else {
-						var cat = sample.category(this.settings.getThresholdSettings());
+						var cat = sample.category(thresholds);
 						icon = this.getMarkerIcon(IconTypes.DOT, cat);
 					}
 				}
@@ -351,6 +388,7 @@ define(
 						map: bVisible ? this.map : null,
 						icon: icon,
 						title: label,
+						draggable: draggable,
 						zIndex: Z_Index.RESULT
 					}
 				);
@@ -368,7 +406,12 @@ define(
 				// register the marker
 				if (type !== undefined) {
 					// use the symbol as a category
-					this.overlays.register(type, marker, colorDef.smb);
+					this.overlays.add(new ResultOverlay({
+						type: type,
+						category: colorDef.smb,
+						ref: marker,
+						result: md.model,
+					}));
 					md.type = type;
 				}
 
@@ -383,6 +426,11 @@ define(
 					function() {
 						// in here "this" is bound to the marker
 						view.onMarkerDblClick(this);
+					}
+				);
+				google.maps.event.addListener(marker, 'dragend',
+					function() {
+						view.onMarkerDragEnd(this);
 					}
 				);
 
@@ -522,6 +570,16 @@ define(
 						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled);
 					}
 				}
+			},
+
+			/**
+			 * Redraw the session lines, e.g. after positions changed.
+			 */
+			updateSessionLines: function() {
+				var selectedSession = this.appstate.get('selectedSession');
+				// force a redraw, even if "selectedSession.id == highlightedSessionId"
+				this.highlightedSessionId = -1;
+				this.drawSessionLines(selectedSession);
 			},
 
 			// create a circle shape for reuse for all result highlighting needs
@@ -730,6 +788,32 @@ define(
 			},
 
 			/**
+			 * Handler for drag end on map result markers.
+			 */
+			onMarkerDragEnd: function(marker) {
+
+				if (marker && marker.metaData) {
+
+					var md = marker.metaData;
+
+					if (md.type !== undefined &&
+						md.type === OverlayTypes.AXFMARKER &&
+						md.model !== undefined) {
+
+						// update position in AxfResult
+						var sample = md.model;
+						if (sample && sample instanceof AxfResult) {
+							var pos = GoogleMapsUtils.makePosition(marker.position);
+							sample.updateGeoPosition(pos);
+							this.appstate.set("resultsEdited", true);
+
+							this.updateSessionLines();
+						}
+					}
+				}
+			},
+
+			/**
 			 * Redraws result markers after settings changes.
 			 * E.g. toggles result markers between default and colored-by-value modes.
 			 */
@@ -866,6 +950,24 @@ define(
 					function(overlay) {
 						var marker = overlay.get('ref');
 						view.setMarkerVisible(marker, bVisible);
+					}
+				);
+			},
+
+			/**
+			 * Toggle the "draggable" property of AXF result markers
+			 * @param {OverlayTypes} type
+			 * @param {Boolean}      bDraggable True to drag
+			 */
+			setOverlaysDraggable: function(type, bDraggable) {
+
+				var overlays = this.overlays.byType(type);
+
+				_.each(
+					overlays,
+					function(overlay) {
+						var marker = overlay.get('ref');
+						marker.setDraggable(bDraggable);
 					}
 				);
 			},

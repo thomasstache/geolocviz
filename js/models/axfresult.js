@@ -1,8 +1,8 @@
 define(
 	["underscore", "backbone",
-	 "models/baseresult"],
+	 "models/baseresult", "types/position"],
 
-	function(_, Backbone, BaseResult) {
+	function(_, Backbone, BaseResult, Position) {
 
 		var AxfResult = BaseResult.extend({
 
@@ -37,6 +37,15 @@ define(
 				refControllerId: null,
 				// id of the reference cell (corresponds to "CI" or "WCDMA_CI")
 				referenceCellId: null,
+
+				// @type{Boolean} if the position was manually edited
+				edited: false,
+				originalPosition: null,
+
+				// just stored in case we write it back to file
+				driveSession: null,
+				indoor: null,
+				confScalingFactor: null
 			},
 
 			constructor: function AxfResult() {
@@ -53,6 +62,42 @@ define(
 				rv.num = this.getIndex() + 1;
 				rv.resultCount = this.collection.length;
 				return rv;
+			},
+
+			/**
+			 * Returns the geolocated position.
+			 * @param {Position} value the new position
+			 */
+			updateGeoPosition: function(value) {
+				if (!value instanceof Position)
+					return;
+
+				// retain original position
+				if (this.get('edited') === false) {
+
+					this.set({
+						edited: true,
+						originalPosition: this.get('position')
+					});
+				}
+
+				this.set('position', value);
+			},
+
+			/**
+			 * Revert changes to the position attribute.
+			 */
+			revertGeoPosition: function() {
+
+				if (this.get('edited') === false)
+					return;
+
+				this.set({
+					edited: false,
+					position: this.get('originalPosition'),
+				});
+
+				this.trigger("position-reverted");
 			},
 
 			/**

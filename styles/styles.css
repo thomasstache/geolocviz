@@ -235,6 +235,16 @@ header {
 	top: 0; right: 0;
 }
 
+/* Edit Mode Controls */
+
+#toggleResultsEditMode.active {
+	background-color: hsl(25, 100%, 90%);
+	border-color: hsl(27, 85%, 60%);
+	color: hsl(27, 85%, 60%);
+	box-shadow:
+}
+#cmdDownloadAxf { background-color: hsl(51, 100%, 70%) } /* gold */
+
 #searchInput, #searchHelp {
 	width: 160px;
 }
@@ -249,7 +259,7 @@ header {
 	border-color: rgb(214, 214, 214);
 }
 #loadButton:not([disabled]):hover,
-#loadButton:active { background-color: rgba(230, 235, 240, 0.5); }
+#loadButton:active, #loadButton.active { background-color: rgba(230, 235, 240, 0.5); }
 
 #fileRepositoryPanel {
 	margin-left: 2px;
@@ -348,6 +358,13 @@ input[type="checkbox"] {
 
 #viewportDialog li label { padding: 0 4px; }
 #viewportDialog li:first-of-type { margin-bottom: 5px; }
+
+#downloadDialog .downloadLink {
+	overflow: hidden;
+	text-align: center;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
 
 /* Overlays on top of map */
 
