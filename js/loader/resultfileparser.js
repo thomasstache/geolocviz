@@ -2,10 +2,11 @@ define(
 	["collections/sessions", "collections/results",
 	 "models/session", "models/AccuracyResult", "models/axfresult", "models/LocationCandidate",
 	 "types/position", "types/filestatistics", "types/filetypes",
+	 "types/csvfield", "loader/csvcolumnindex",
 	 "types/logger", "parsenumber"],
 
 	function(SessionList, ResultList, Session, AccuracyResult, AxfResult, LocationCandidate,
-			 Position, FileStatistics, FileTypes, Logger, parseNumber) {
+			 Position, FileStatistics, FileTypes, CSVField, CSVColumnIndex, Logger, parseNumber) {
 
 		var ResultFileParser = (function() {
 
@@ -24,8 +25,33 @@ define(
 				AXF_XT2: 16, /* with ref cells */
 			});
 
+			// definition of supported fields
+			var AXF_FIELDS = Object.freeze({
+				MSGID:          new CSVField("Message Number",                   CSVField.TYPE_INTEGER),
+				TIME:           new CSVField("Time",                             CSVField.TYPE_INTEGER),
+				GEO_LAT:        new CSVField("Latitude",                         CSVField.TYPE_FLOAT),
+				GEO_LON:        new CSVField("Longitude",                        CSVField.TYPE_FLOAT),
+				GPS_CONF:       new CSVField("GPS_Confidence",                   CSVField.TYPE_STRING),
+				CONF:           new CSVField("Data_Position_Confidence",         CSVField.TYPE_INTEGER),
+				PROB_MOB:       new CSVField("Mobility_Probability",             CSVField.TYPE_INTEGER),
+				MOBILE_YN:      new CSVField("Drive_Session",                    CSVField.TYPE_STRING),
+				INDOOR_YN:      new CSVField("IndoorOutdoor_Session",            CSVField.TYPE_STRING),
+				MEAS_REPORT:    new CSVField("MeasurementReport",                CSVField.TYPE_INTEGER),
+				PROB_INDOOR:    new CSVField("Indoor_Probability",               CSVField.TYPE_INTEGER),// 6.1+
+				IMSI:           new CSVField("IMSI",                             CSVField.TYPE_STRING),// 7.4+
+				SESSIONID:      new CSVField("SessionId",                        CSVField.TYPE_STRING, Session.ID_DUMMY),// XT, intentionally as String, as it gets very long
+				CONTROLLER:     new CSVField("Controller",                       CSVField.TYPE_INTEGER, NaN),// XT
+				PRIM_CELL_ID:   new CSVField("PrimaryCellId",                    CSVField.TYPE_INTEGER, NaN),// XT
+				REF_CONTROLLER: new CSVField("ReferenceController",              CSVField.TYPE_INTEGER, NaN),// XT2
+				REF_CELL_ID:    new CSVField("ReferenceCellId",                  CSVField.TYPE_INTEGER, NaN),// XT2
+				SCALEFACTOR:    new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, null),// XT2
+			});
+
 			/** @type {SessionList} reference to the Sessions collection */
 			var sessionList = null;
+
+			/** @type {CSVColumnIndex} indexer managing extracting result attributes from the row data */
+			var columnIndex = null;
 
 			// reference to the accuracy result while we parse the records with the location candidates
 			var currentAccuracyResult = null;
@@ -46,6 +72,8 @@ define(
 
 				currentAccuracyResult = null;
 
+				columnIndex = new CSVColumnIndex(",");
+
 				stats.numResults = 0;
 				stats.numResultsAndCandidates = 0;
 
@@ -57,11 +85,13 @@ define(
 					header.length >= LineLengths.ACCURACY_61) {
 
 					parsingFct = parseAccuracyRecordV3;
+					columnIndex.prepareForHeader(header, ACCURACY_FIELDS);
 				}
 				else if (currentFileType == FileTypes.AXF &&
 						 header.length >= LineLengths.AXF_60) {
 
 					parsingFct = parseAxfRecord;
+					columnIndex.prepareForHeader(header, AXF_FIELDS);
 				}
 				else if (currentFileType == FileTypes.ACCURACY &&
 						 header.length == LineLengths.ACCURACY_60) {
@@ -165,6 +195,13 @@ define(
 				stats.numResultsAndCandidates++;
 			}
 
+			function percent2Decimal(value) {
+				var parsedVal = parseInt(value, 10);
+				if (typeof parsedVal === "number")
+					value = parsedVal / 100.0;
+				return value;
+			}
+
 			/**
 			 * Parses a line from the new (v6.1) file format:
 			 * Headers:
@@ -195,48 +232,38 @@ define(
 					SCALEFACTOR: 16, // XT2
 				});
 
-				function percent2Decimal(value) {
-					var parsedVal = parseInt(value, 10);
-					if (typeof parsedVal === "number")
-						value = parsedVal / 100.0;
-					return value;
-				}
-
 				if (record.length < LineLengths.AXF_60) {
 					logger.warn("Incomplete record #" + (stats.numResults + 1) + " - skipped.");
 					return;
 				}
 
-				// TODO: replace with dynamic column index like for Cellref data
-				var isExtended = record.length >= LineLengths.AXF_XT;
-				var isExtended2 = record.length >= LineLengths.AXF_XT2;
+				var confidence = columnIndex.getValueFrom(record, AXF_FIELDS.CONF),
+					probMobile = columnIndex.getValueFrom(record, AXF_FIELDS.PROB_MOB),
+					probIndoor = columnIndex.getValueFrom(record, AXF_FIELDS.PROB_INDOOR);
 
-				// indoor probability only in 6.1+
-				var probIndoor    = (record.length >= LineLengths.AXF_61) ? record[IDX.PROB_INDOOR] : NaN;
-
-				// session id and primary cell only in extended (XT) files
-				var sessionId     = isExtended ? record[IDX.SESSIONID] : Session.ID_DUMMY;
-				var controllerId  = isExtended ? parseNumber(record[IDX.CONTROLLER]) : NaN;
-				var primaryCellId = isExtended ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
-				var refControllerId = isExtended2 ? parseNumber(record[IDX.REF_CONTROLLER]) : NaN;
-				var referenceCellId = isExtended2 ? parseNumber(record[IDX.REF_CELL_ID]) : NaN;
-				var confScalingFactor = isExtended2 ? record[IDX.SCALEFACTOR] : null;
+				// extended AXF file fields
+				var sessionId     = columnIndex.getValueFrom(record, AXF_FIELDS.SESSIONID);
+				var controllerId  = columnIndex.getValueFrom(record, AXF_FIELDS.CONTROLLER);
+				var primaryCellId = columnIndex.getValueFrom(record, AXF_FIELDS.PRIM_CELL_ID);
+				var refControllerId = columnIndex.getValueFrom(record, AXF_FIELDS.REF_CONTROLLER);
+				var referenceCellId = columnIndex.getValueFrom(record, AXF_FIELDS.REF_CELL_ID);
+				var confScalingFactor = columnIndex.getValueFrom(record, AXF_FIELDS.SCALEFACTOR);
 
 				var sessionProperties = {
 					sessionId: sessionId
 				};
 
 				var props = {
-					msgId: parseNumber(record[IDX.MSGID]),
-					sessionId: sessionId, // intentionally as String, as it gets very long
-					timestamp: parseNumber(record[IDX.TIMEOFFSET]),
-					position: new Position(parseNumber(record[IDX.GEO_LAT]),
-										   parseNumber(record[IDX.GEO_LON])),
-					driveSession: record[IDX.MOBILE_YN],
-					indoor: record[IDX.INDOOR_YN],
-					isMeasReport: (parseNumber(record[IDX.MEAS_REPORT]) == 1),
-					confidence: percent2Decimal(record[IDX.CONF]),
-					probMobility: percent2Decimal(record[IDX.PROB_MOB]),
+					msgId:     columnIndex.getValueFrom(record, AXF_FIELDS.MSGID),
+					sessionId: sessionId,
+					timestamp: columnIndex.getValueFrom(record, AXF_FIELDS.TIME),
+					position: new Position(columnIndex.getValueFrom(record, AXF_FIELDS.GEO_LAT),
+										   columnIndex.getValueFrom(record, AXF_FIELDS.GEO_LON)),
+					driveSession: columnIndex.getValueFrom(record, AXF_FIELDS.MOBILE_YN),
+					indoor:       columnIndex.getValueFrom(record, AXF_FIELDS.INDOOR_YN),
+					isMeasReport: (columnIndex.getValueFrom(record, AXF_FIELDS.MEAS_REPORT) == 1),
+					confidence:   percent2Decimal(confidence),
+					probMobility: percent2Decimal(probMobile),
 					probIndoor: percent2Decimal(probIndoor),
 					controllerId: controllerId,
 					primaryCellId: primaryCellId,
