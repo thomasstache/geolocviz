@@ -2,7 +2,7 @@ define(
 	["underscore",
 	 "collections/sessions", "collections/results",
 	 "types/filestatistics", "types/filetypes",
-	 "loader/resultfileparser", "CellrefParser",
+	 "loader/resultfileparser", "loader/cellrefparser",
 	 "types/logger", "jquery.csv"],
 
 	function(_, SessionList, ResultList, FileStatistics, FileTypes,
