@@ -47,6 +47,24 @@ define(
 				SCALEFACTOR:    new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, null),// XT2
 			});
 
+			var ACCURACY_FIELDS = Object.freeze({
+				FILEID:       new CSVField("FileId",                           CSVField.TYPE_STRING),
+				MSGID:        new CSVField("MessNum",                          CSVField.TYPE_INTEGER),
+				REF_LAT:      new CSVField("DTLatitude",                       CSVField.TYPE_FLOAT),
+				REF_LON:      new CSVField("DTLongitude",                      CSVField.TYPE_FLOAT),
+				GEO_LAT:      new CSVField("CTLatitude",                       CSVField.TYPE_FLOAT),
+				GEO_LON:      new CSVField("CTLongitude",                      CSVField.TYPE_FLOAT),
+				DIST:         new CSVField("Distance",                         CSVField.TYPE_FLOAT),
+				CONF:         new CSVField("PositionConfidence",               CSVField.TYPE_FLOAT),
+				PROB_MOB:     new CSVField("MobilityProbability",              CSVField.TYPE_FLOAT),
+				PROB_INDOOR:  new CSVField("IndoorProbability",                CSVField.TYPE_FLOAT),
+				SESSIONID:    new CSVField("SessionId",                        CSVField.TYPE_STRING, Session.ID_DUMMY),
+				CONTROLLER:   new CSVField("Controller",                       CSVField.TYPE_INTEGER, NaN),// 6.1.2+
+				PRIM_CELL_ID: new CSVField("PrimaryCellId",                    CSVField.TYPE_INTEGER, NaN),// 6.1.2+
+				TIME:         new CSVField("Time",                             CSVField.TYPE_INTEGER, NaN),// 6.4+
+				SCALEFACTOR:  new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, null),// ?
+			});
+
 			/** @type {SessionList} reference to the Sessions collection */
 			var sessionList = null;
 
@@ -123,31 +141,16 @@ define(
 			 */
 			function parseAccuracyRecordV3(record, stats) {
 
-				var IDX = Object.freeze({
-					FILEID: 0,
-					MSGID: 1,
-					REF_LAT: 2,
-					REF_LON: 3,
-					GEO_LAT: 4,
-					GEO_LON: 5,
-					DIST: 6,
-					CONF: 7,
-					PROB_MOB: 8,
-					PROB_INDOOR: 9,
-					SESSIONID: 10,
-					CONTROLLER: 11, // 6.1.2+
-					PRIM_CELL_ID: 12,
-					TIME: 13, // 6.4+
-				});
-
 				if (record.length < LineLengths.ACCURACY_61) {
 					logger.warn("Incomplete accuracy record #" + (stats.numResultsAndCandidates + 1) + " - skipped.");
 					return;
 				}
 
-				var fileId = record[IDX.FILEID];
-				var msgId = parseNumber(record[IDX.MSGID]);
-				var sessId = record[IDX.SESSIONID];
+				var fileId    = columnIndex.getValueFrom(record, ACCURACY_FIELDS.FILEID),
+				    msgId     = columnIndex.getValueFrom(record, ACCURACY_FIELDS.MSGID),
+				    timestamp = columnIndex.getValueFrom(record, ACCURACY_FIELDS.TIME);
+
+				var sessId = columnIndex.getValueFrom(record, ACCURACY_FIELDS.SESSIONID);
 				// the same SessionId can appear in multiple calltrace files, make unique.
 				var sessionUId = makeSessionUId(fileId, sessId);
 				// also store original identifiers
@@ -155,8 +158,6 @@ define(
 					fileId: fileId,
 					sessionId: sessId
 				};
-
-				var timestamp = (record.length >= LineLengths.ACCURACY_64) ? parseNumber(record[IDX.TIME]) : NaN;
 
 				// when the CT message ID changes, create a new AccuracyResult
 				if (currentAccuracyResult === null ||
@@ -169,24 +170,24 @@ define(
 						msgId: msgId,
 						timestamp: timestamp,
 						sessionId: sessionUId,
-						position: new Position(parseNumber(record[IDX.REF_LAT]),
-											   parseNumber(record[IDX.REF_LON]))
+						position: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LAT),
+											   columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LON))
 					});
 					session.results.add(currentAccuracyResult, OPT_SILENT);
 					stats.numResults++;
 				}
 
-				var controllerId  = (record.length >= LineLengths.ACCURACY_612) ? parseNumber(record[IDX.CONTROLLER]) : NaN;
-				var primaryCellId = (record.length >= LineLengths.ACCURACY_612) ? parseNumber(record[IDX.PRIM_CELL_ID]) : NaN;
+				var controllerId  = columnIndex.getValueFrom(record, ACCURACY_FIELDS.CONTROLLER),
+				    primaryCellId = columnIndex.getValueFrom(record, ACCURACY_FIELDS.PRIM_CELL_ID);
 
 				var props = {
 					msgId: msgId,
-					position: new Position(parseNumber(record[IDX.GEO_LAT]),
-										   parseNumber(record[IDX.GEO_LON])),
-					distance: parseNumber(record[IDX.DIST]),
-					confidence: parseNumber(record[IDX.CONF]),
-					probMobility: parseNumber(record[IDX.PROB_MOB]),
-					probIndoor: parseNumber(record[IDX.PROB_INDOOR]),
+					position: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.GEO_LAT),
+										   columnIndex.getValueFrom(record, ACCURACY_FIELDS.GEO_LON)),
+					distance:     columnIndex.getValueFrom(record, ACCURACY_FIELDS.DIST),
+					confidence:   columnIndex.getValueFrom(record, ACCURACY_FIELDS.CONF),
+					probMobility: columnIndex.getValueFrom(record, ACCURACY_FIELDS.PROB_MOB),
+					probIndoor:   columnIndex.getValueFrom(record, ACCURACY_FIELDS.PROB_INDOOR),
 					controllerId: controllerId,
 					primaryCellId: primaryCellId
 				};
@@ -244,8 +245,8 @@ define(
 					isMeasReport: (columnIndex.getValueFrom(record, AXF_FIELDS.MEAS_REPORT) == 1),
 					confidence:   percent2Decimal(confidence),
 					probMobility: percent2Decimal(probMobile),
-					probIndoor: percent2Decimal(probIndoor),
-					controllerId: controllerId,
+					probIndoor:   percent2Decimal(probIndoor),
+					controllerId:  controllerId,
 					primaryCellId: primaryCellId,
 					refControllerId: refControllerId,
 					referenceCellId: referenceCellId,
