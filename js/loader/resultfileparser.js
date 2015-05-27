@@ -211,26 +211,6 @@ define(
 			 * @param {FileStatistics} stats A reference to statistics about the current file
 			 */
 			function parseAxfRecord(record, stats) {
-				//to do: Replace column numbers by link related to col headings
-				var IDX = Object.freeze({
-					MSGID: 0,
-					TIMEOFFSET: 1,
-					GEO_LAT: 2,
-					GEO_LON: 3,
-					GPS_CONF: 4,
-					CONF: 5,
-					PROB_MOB: 6,
-					MOBILE_YN: 7,
-					INDOOR_YN: 8,
-					MEAS_REPORT: 9,
-					PROB_INDOOR: 10, // 6.1
-					SESSIONID: 11, // XT
-					CONTROLLER: 12, // XT
-					PRIM_CELL_ID: 13, // XT
-					REF_CONTROLLER: 14, // XT2
-					REF_CELL_ID: 15, // XT2
-					SCALEFACTOR: 16, // XT2
-				});
 
 				if (record.length < LineLengths.AXF_60) {
 					logger.warn("Incomplete record #" + (stats.numResults + 1) + " - skipped.");
