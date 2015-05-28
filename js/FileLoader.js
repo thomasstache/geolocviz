@@ -3,7 +3,7 @@ define(
 	 "collections/sessions", "collections/results",
 	 "types/filestatistics", "types/filetypes",
 	 "loader/resultfileparser", "loader/cellrefparser",
-	 "types/logger", "jquery.csv"],
+	 "types/logger"],
 
 	function(_, SessionList, ResultList, FileStatistics, FileTypes,
 			 ResultFileParser, CellrefParser, Logger) {
@@ -105,18 +105,13 @@ define(
 					logger.error("Could not recognize the type of file '" + filename + "'!");
 				}
 				else {
-					// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
-					var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
-
-					// decompose the blob
-					var rowData = jQuery.csv(separator)(filecontent);
 
 					try {
 						// parse the data
 						if (currentFileType === FileTypes.CELLREF)
-							bOk = CellrefParser.parse(siteList, rowData);
+							bOk = CellrefParser.parse(siteList, filecontent);
 						else
-							bOk = ResultFileParser.parse(sessionList, rowData, currentFileType, fileStatistics);
+							bOk = ResultFileParser.parse(sessionList, filecontent, currentFileType, fileStatistics);
 					}
 					catch (e) {
 						console.error(e.toString());

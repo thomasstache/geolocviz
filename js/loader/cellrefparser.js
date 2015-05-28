@@ -1,7 +1,7 @@
 define(
 	["underscore",
 	 "collections/sites",
-	 "models/site", "types/position", "types/logger", "parsenumber"],
+	 "models/site", "types/position", "types/logger", "parsenumber", "jquery.csv"],
 
 	function(_, SiteList, Site, Position, Logger, parseNumber) {
 
@@ -12,6 +12,9 @@ define(
 
 			// common Collection.add() options (add silently)
 			var OPT_SILENT = { silent: true };
+
+			// the column separators
+			var SEP_CELLREF = "\t";
 
 			//////////////////////////////////////////////////////////////////////////
 			// Definition of required fields for the various element types:
@@ -120,14 +123,17 @@ define(
 
 			/**
 			 * Parse the rows of a cellrefs file
-			 * @param {Array} rows Array of row records
-			 * @return {Boolean}   True if successful, false on error (i.e. unknown file format)
+			 * @param  {String} filecontent The text content of the file
+			 * @return {Boolean}            True if successful, false on error (i.e. unknown file format)
 			 */
-			function processCellrefs(rows) {
+			function processCellrefs(filecontent) {
 
 				logger = Logger.getLogger();
 
 				var bOk = true;
+
+				// decompose the blob
+				var rows = jQuery.csv(SEP_CELLREF)(filecontent);
 
 				try {
 					_.each(rows, function _prsRow(rowItems) {
@@ -445,15 +451,15 @@ define(
 				/**
 				 * Parse the row data from a cellref file
 				 * @param  {SiteList} targetCollection the site collection
-				 * @param  {Array}    rowdata          Array of row records
+				 * @param  {String}   filecontent      the text content of the file
 				 * @return {Boolean}                   true if successful
 				 */
-				parse: function(targetCollection, rowdata) {
+				parse: function(targetCollection, filecontent) {
 
 					if (targetCollection)
 						siteList = targetCollection;
 
-					return processCellrefs(rowdata);
+					return processCellrefs(filecontent);
 				}
 			};
 		})();

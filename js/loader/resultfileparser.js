@@ -3,10 +3,10 @@ define(
 	 "models/session", "models/AccuracyResult", "models/axfresult", "models/LocationCandidate",
 	 "types/position", "types/filestatistics", "types/filetypes",
 	 "types/csvfield", "loader/csvcolumnindex",
-	 "types/logger", "parsenumber"],
+	 "types/logger", "jquery.csv"],
 
 	function(SessionList, ResultList, Session, AccuracyResult, AxfResult, LocationCandidate,
-			 Position, FileStatistics, FileTypes, CSVField, CSVColumnIndex, Logger, parseNumber) {
+			 Position, FileStatistics, FileTypes, CSVField, CSVColumnIndex, Logger) {
 
 		var ResultFileParser = (function() {
 
@@ -24,6 +24,10 @@ define(
 				AXF_XT: 14, /* with primary cells */
 				AXF_XT2: 16, /* with ref cells */
 			});
+
+			// the column separators
+			var SEP_AXF = ",",
+				SEP_ACCURACY = "\t";
 
 			// definition of supported fields
 			var AXF_FIELDS = Object.freeze({
@@ -79,24 +83,30 @@ define(
 
 			/**
 			 * Parse the array of rows from the file
-			 * @param  {Array} rowData          array of row records
+			 * @param  {String} filecontent     The text content of the file
 			 * @param  {String} currentFileType see FileTypes
 			 * @param  {FileStatistics} stats   reference to statistics about the current file
 			 * @return {Boolean} true if successful, false on error (i.e. unknown file format)
 			 */
-			function processCSV(rowData, currentFileType, stats) {
+			function processResultFile(filecontent, currentFileType, stats) {
 
 				logger = Logger.getLogger();
 
 				currentAccuracyResult = null;
 
-				columnIndex = new CSVColumnIndex(",");
-
 				stats.numResults = 0;
 				stats.numResultsAndCandidates = 0;
 
+				// comma for AXF files, TAB for accuracy results
+				var separator = (currentFileType === FileTypes.AXF) ? SEP_AXF : SEP_ACCURACY;
+
+				// decompose the blob
+				var rowData = jQuery.csv(separator)(filecontent);
+
+				columnIndex = new CSVColumnIndex(separator);
+
 				var parsingFct = null;
-				// identify file format (rudimentary by no. columns)
+
 				var header = rowData[0];
 
 				if (currentFileType == FileTypes.ACCURACY &&
@@ -302,12 +312,20 @@ define(
 			// return public API
 			return {
 
-				parse: function(targetCollection, rowData, fileType, fileStatistics) {
+				/**
+				 * Parse the file content from a result file
+				 * @param  {SessionList} targetCollection the site collection
+				 * @param  {String}      filecontent      the text content of the file
+				 * @param  {String}      currentFileType  see FileTypes
+				 * @param  {FileStatistics} stats         reference to statistics about the current file
+				 * @return {Boolean}                      true if successful
+				 */
+				parse: function(targetCollection, filecontent, fileType, fileStatistics) {
 
 					if (targetCollection)
 						sessionList = targetCollection;
 
-					return processCSV(rowData, fileType, fileStatistics);
+					return processResultFile(filecontent, fileType, fileStatistics);
 				}
 			};
 		})();
