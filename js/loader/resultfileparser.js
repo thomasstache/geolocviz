@@ -127,6 +127,8 @@ define(
 				}
 
 				currentAccuracyResult = null; // release
+				columnIndex = null;
+
 				sessionList.trigger('add');
 				return true;
 			}
