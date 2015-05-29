@@ -1,8 +1,8 @@
 // jshint esnext:true
 define(
-	["types/csvfield", "types/logger", "parsenumber"],
+	["underscore", "types/csvfield", "types/logger", "parsenumber"],
 
-	function(CSVField, Logger, parseNumber) {
+	function(_, CSVField, Logger, parseNumber) {
 
 		/*
 		 * API design:
@@ -43,6 +43,31 @@ define(
 					}
 				}
 			}
+
+			return this.validateHeader();
+		};
+
+		/**
+		 * Check that all required fields have been identified in the file header.
+		 * @return {Boolean} True if file is valid.
+		 */
+		CSVColumnIndex.prototype.validateHeader = function() {
+
+			var requiredFields = _.where(this.knownFields, { required: true });
+
+			var allpresent = true,
+				missing = [];
+
+			for (var field of requiredFields) {
+				if (this.fieldIndex[field.name] === undefined) {
+					missing.push(field.name);
+					allpresent = false;
+				}
+			}
+			if (!allpresent)
+				this.logger.error("The file cannot be loaded, it's missing the following: " + missing.join(","));
+
+			return allpresent;
 		};
 
 		/**

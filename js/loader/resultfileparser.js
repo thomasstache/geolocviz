@@ -31,42 +31,44 @@ define(
 
 			// definition of supported fields
 			var AXF_FIELDS = Object.freeze({
-				MSGID:          new CSVField("Message Number",                   CSVField.TYPE_INTEGER),
-				TIME:           new CSVField("Time",                             CSVField.TYPE_INTEGER),
-				GEO_LAT:        new CSVField("Latitude",                         CSVField.TYPE_FLOAT),
-				GEO_LON:        new CSVField("Longitude",                        CSVField.TYPE_FLOAT),
+				MSGID:          new CSVField("Message Number",                   CSVField.TYPE_INTEGER, { required: true }),
+				TIME:           new CSVField("Time",                             CSVField.TYPE_INTEGER, { required: true }),
+				GEO_LAT:        new CSVField("Latitude",                         CSVField.TYPE_FLOAT, { required: true }),
+				GEO_LON:        new CSVField("Longitude",                        CSVField.TYPE_FLOAT, { required: true }),
 				GPS_CONF:       new CSVField("GPS_Confidence",                   CSVField.TYPE_STRING),
-				CONF:           new CSVField("Data_Position_Confidence",         CSVField.TYPE_INTEGER),
-				PROB_MOB:       new CSVField("Mobility_Probability",             CSVField.TYPE_INTEGER),
+				CONF:           new CSVField("Data_Position_Confidence",         CSVField.TYPE_INTEGER, { required: true }),
+				PROB_MOB:       new CSVField("Mobility_Probability",             CSVField.TYPE_INTEGER, { required: true }),
 				MOBILE_YN:      new CSVField("Drive_Session",                    CSVField.TYPE_STRING),
 				INDOOR_YN:      new CSVField("IndoorOutdoor_Session",            CSVField.TYPE_STRING),
 				MEAS_REPORT:    new CSVField("MeasurementReport",                CSVField.TYPE_INTEGER),
-				PROB_INDOOR:    new CSVField("Indoor_Probability",               CSVField.TYPE_INTEGER),// 6.1+
+				PROB_INDOOR:    new CSVField("Indoor_Probability",               CSVField.TYPE_INTEGER, { required: true }),// 6.1+
 				IMSI:           new CSVField("IMSI",                             CSVField.TYPE_STRING),// 7.4+
-				SESSIONID:      new CSVField("SessionId",                        CSVField.TYPE_STRING, Session.ID_DUMMY),// XT, intentionally as String, as it gets very long
-				CONTROLLER:     new CSVField("Controller",                       CSVField.TYPE_INTEGER, NaN),// XT
-				PRIM_CELL_ID:   new CSVField("PrimaryCellId",                    CSVField.TYPE_INTEGER, NaN),// XT
-				REF_CONTROLLER: new CSVField("ReferenceController",              CSVField.TYPE_INTEGER, NaN),// XT2
-				REF_CELL_ID:    new CSVField("ReferenceCellId",                  CSVField.TYPE_INTEGER, NaN),// XT2
-				SCALEFACTOR:    new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, null),// XT2
+				// XT
+				SESSIONID:      new CSVField("SessionId",                        CSVField.TYPE_STRING,  { defaultValue: Session.ID_DUMMY }),// intentionally as String, as it gets very long
+				CONTROLLER:     new CSVField("Controller",                       CSVField.TYPE_INTEGER, { defaultValue: NaN }),
+				PRIM_CELL_ID:   new CSVField("PrimaryCellId",                    CSVField.TYPE_INTEGER, { defaultValue: NaN }),
+				// XT2
+				REF_CONTROLLER: new CSVField("ReferenceController",              CSVField.TYPE_INTEGER, { defaultValue: NaN }),
+				REF_CELL_ID:    new CSVField("ReferenceCellId",                  CSVField.TYPE_INTEGER, { defaultValue: NaN }),
+				SCALEFACTOR:    new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, null),
 			});
 
 			var ACCURACY_FIELDS = Object.freeze({
-				FILEID:       new CSVField("FileId",                           CSVField.TYPE_STRING),
-				MSGID:        new CSVField("MessNum",                          CSVField.TYPE_INTEGER),
-				REF_LAT:      new CSVField("DTLatitude",                       CSVField.TYPE_FLOAT),
-				REF_LON:      new CSVField("DTLongitude",                      CSVField.TYPE_FLOAT),
-				GEO_LAT:      new CSVField("CTLatitude",                       CSVField.TYPE_FLOAT),
-				GEO_LON:      new CSVField("CTLongitude",                      CSVField.TYPE_FLOAT),
-				DIST:         new CSVField("Distance",                         CSVField.TYPE_FLOAT),
+				FILEID:       new CSVField("FileId",                           CSVField.TYPE_STRING, { required: true }),
+				MSGID:        new CSVField("MessNum",                          CSVField.TYPE_INTEGER, { required: true }),
+				REF_LAT:      new CSVField("DTLatitude",                       CSVField.TYPE_FLOAT, { required: true }),
+				REF_LON:      new CSVField("DTLongitude",                      CSVField.TYPE_FLOAT, { required: true }),
+				GEO_LAT:      new CSVField("CTLatitude",                       CSVField.TYPE_FLOAT, { required: true }),
+				GEO_LON:      new CSVField("CTLongitude",                      CSVField.TYPE_FLOAT, { required: true }),
+				DIST:         new CSVField("Distance",                         CSVField.TYPE_FLOAT, { required: true }),
 				CONF:         new CSVField("PositionConfidence",               CSVField.TYPE_FLOAT),
 				PROB_MOB:     new CSVField("MobilityProbability",              CSVField.TYPE_FLOAT),
 				PROB_INDOOR:  new CSVField("IndoorProbability",                CSVField.TYPE_FLOAT),
-				SESSIONID:    new CSVField("SessionId",                        CSVField.TYPE_STRING, Session.ID_DUMMY),
-				CONTROLLER:   new CSVField("Controller",                       CSVField.TYPE_INTEGER, NaN),// 6.1.2+
-				PRIM_CELL_ID: new CSVField("PrimaryCellId",                    CSVField.TYPE_INTEGER, NaN),// 6.1.2+
-				TIME:         new CSVField("Time",                             CSVField.TYPE_INTEGER, NaN),// 6.4+
-				SCALEFACTOR:  new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, null),// ?
+				SESSIONID:    new CSVField("SessionId",                        CSVField.TYPE_STRING, { defaultValue: Session.ID_DUMMY }),
+				CONTROLLER:   new CSVField("Controller",                       CSVField.TYPE_INTEGER, { defaultValue: NaN }),// 6.1.2+
+				PRIM_CELL_ID: new CSVField("PrimaryCellId",                    CSVField.TYPE_INTEGER, { defaultValue: NaN }),// 6.1.2+
+				TIME:         new CSVField("Time",                             CSVField.TYPE_INTEGER, { defaultValue: NaN }),// 6.4+
+				SCALEFACTOR:  new CSVField("ConfidenceThresholdScalingFactor", CSVField.TYPE_STRING, { defaultValue: null }),// ?
 			});
 
 			/** @type {SessionList} reference to the Sessions collection */
@@ -105,7 +107,8 @@ define(
 
 				columnIndex = new CSVColumnIndex(separator);
 
-				var parsingFct = null;
+				var parsingFct = null,
+				    isValid = false;
 
 				var header = rowData[0];
 
@@ -113,17 +116,21 @@ define(
 					header.length >= LineLengths.ACCURACY_61) {
 
 					parsingFct = parseAccuracyRecordV3;
-					columnIndex.prepareForHeader(header, ACCURACY_FIELDS);
+					isValid = columnIndex.prepareForHeader(header, ACCURACY_FIELDS);
 				}
 				else if (currentFileType == FileTypes.AXF &&
 						 header.length >= LineLengths.AXF_60) {
 
 					parsingFct = parseAxfRecord;
-					columnIndex.prepareForHeader(header, AXF_FIELDS);
+					isValid = columnIndex.prepareForHeader(header, AXF_FIELDS);
 				}
 				else if (currentFileType == FileTypes.ACCURACY &&
 						 header.length == LineLengths.ACCURACY_60) {
 					alert("'Geotagging 1' accuracy results are not supported!");
+					return false;
+				}
+
+				if (!isValid) {
 					return false;
 				}
 
