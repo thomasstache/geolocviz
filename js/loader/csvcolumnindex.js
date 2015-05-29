@@ -58,12 +58,16 @@ define(
 			var allpresent = true,
 				missing = [];
 
-			for (var field of requiredFields) {
+			for (var i = 0; i < requiredFields.length; i++) {
+
+				var field = requiredFields[i];
+
 				if (this.fieldIndex[field.name] === undefined) {
 					missing.push(field.name);
 					allpresent = false;
 				}
 			}
+
 			if (!allpresent)
 				this.logger.error("The file cannot be loaded, it's missing the following: " + missing.join(","));
 
