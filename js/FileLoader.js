@@ -101,22 +101,16 @@ define(
 				var bOk = false,
 					fileStatistics = new FileStatistics(filename, currentFileType);
 
-				if (currentFileType === null) {
-					logger.error("Could not recognize the type of file '" + filename + "'!");
+				try {
+					// parse the data
+					if (currentFileType === FileTypes.CELLREF)
+						bOk = CellrefParser.parse(siteList, filecontent);
+					else
+						bOk = ResultFileParser.parse(sessionList, filecontent, currentFileType, fileStatistics);
 				}
-				else {
-
-					try {
-						// parse the data
-						if (currentFileType === FileTypes.CELLREF)
-							bOk = CellrefParser.parse(siteList, filecontent);
-						else
-							bOk = ResultFileParser.parse(sessionList, filecontent, currentFileType, fileStatistics);
-					}
-					catch (e) {
-						console.error(e.toString());
-						logger.error("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
-					}
+				catch (e) {
+					console.error(e.toString());
+					logger.error("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
 				}
 
 				// notify about completion of this file
