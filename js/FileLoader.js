@@ -3,7 +3,7 @@ define(
 	 "collections/sessions", "collections/results",
 	 "types/filestatistics", "types/filetypes",
 	 "loader/resultfileparser", "loader/cellrefparser",
-	 "types/logger", "jquery.csv"],
+	 "types/logger"],
 
 	function(_, SessionList, ResultList, FileStatistics, FileTypes,
 			 ResultFileParser, CellrefParser, Logger) {
@@ -101,27 +101,16 @@ define(
 				var bOk = false,
 					fileStatistics = new FileStatistics(filename, currentFileType);
 
-				if (currentFileType === null) {
-					logger.error("Could not recognize the type of file '" + filename + "'!");
+				try {
+					// parse the data
+					if (currentFileType === FileTypes.CELLREF)
+						bOk = CellrefParser.parse(siteList, filecontent);
+					else
+						bOk = ResultFileParser.parse(sessionList, filecontent, currentFileType, fileStatistics);
 				}
-				else {
-					// comma for AXF files, TAB for rest (accuracy results and Cellrefs)
-					var separator = (currentFileType === FileTypes.AXF) ? "," : "\t";
-
-					// decompose the blob
-					var rowData = jQuery.csv(separator)(filecontent);
-
-					try {
-						// parse the data
-						if (currentFileType === FileTypes.CELLREF)
-							bOk = CellrefParser.parse(siteList, rowData);
-						else
-							bOk = ResultFileParser.parse(sessionList, rowData, currentFileType, fileStatistics);
-					}
-					catch (e) {
-						console.error(e.toString());
-						logger.error("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
-					}
+				catch (e) {
+					console.error(e.toString());
+					logger.error("There was an error parsing the file '" + filename + "'. Please check the format of the lines for errors.");
 				}
 
 				// notify about completion of this file
