@@ -231,7 +231,7 @@ define(
 			drawAccuracyResult: function(sample) {
 
 				var refLinesVisible = this.settings.get("drawReferenceLines"),
-					refLoc = GoogleMapsUtils.makeLatLng(sample.get('position'));
+					refLoc = GoogleMapsUtils.makeLatLng(sample.getRefPosition());
 
 				// some sample files contain "NaN" coordinates. using them messes up the map and the bounding box.
 				if (isValidLatLng(refLoc)) {
@@ -247,7 +247,7 @@ define(
 				}
 
 				var bestCand = sample.getBestLocationCandidate();
-				var bestLoc = GoogleMapsUtils.makeLatLng(bestCand.get('position'));
+				var bestLoc = GoogleMapsUtils.makeLatLng(sample.getGeoPosition());
 
 				this.drawResult(bestCand, OverlayTypes.GEOLOCMARKER, sample);
 
@@ -270,7 +270,7 @@ define(
 				var color = null, visible = true,
 					thresholds = this.settings.getThresholdSettings();
 
-				var location = GoogleMapsUtils.makeLatLng(sample.get('position'));
+				var location = GoogleMapsUtils.makeLatLng(sample.getGeoPosition());
 				switch (sample.category(thresholds)) {
 					case "S":
 						color = MarkerColors.STATIONARY;
@@ -318,7 +318,7 @@ define(
 					for (var i = 1; i < sample.locationCandidates.length; i++) {
 
 						var candidate = sample.locationCandidates.at(i);
-						var latLng = GoogleMapsUtils.makeLatLng(candidate.get('position'));
+						var latLng = GoogleMapsUtils.makeLatLng(candidate.getGeoPosition());
 						this.createMarker(OverlayTypes.CANDIDATEMARKER,
 										  latLng,
 										  "#" + sample.get('msgId'),
@@ -556,12 +556,12 @@ define(
 						// extract the non-NaN locations
 						session.results.each(function(sample) {
 
-							var latLng = GoogleMapsUtils.makeLatLng(sample.get('position'));
-							GoogleMapsUtils.pushIfNew(refLocations, latLng);
+							var latLng = GoogleMapsUtils.makeLatLng(sample.getGeoPosition());
+							GoogleMapsUtils.pushIfNew(bestLocations, latLng);
 
 							if (sample instanceof AccuracyResult) {
-								latLng = GoogleMapsUtils.makeLatLng(sample.getBestLocationCandidate().get('position'));
-								GoogleMapsUtils.pushIfNew(bestLocations, latLng);
+								latLng = GoogleMapsUtils.makeLatLng(sample.getRefPosition());
+								GoogleMapsUtils.pushIfNew(refLocations, latLng);
 							}
 						});
 
@@ -870,12 +870,12 @@ define(
 
 				session.results.each(function(sample) {
 
-					var latLng = GoogleMapsUtils.makeLatLng(sample.get('position'));
+					var latLng = GoogleMapsUtils.makeLatLng(sample.getGeoPosition());
 					if (isValidLatLng(latLng))
 						sessionRect.extend(latLng);
 
 					if (sample instanceof AccuracyResult) {
-						latLng = GoogleMapsUtils.makeLatLng(sample.getBestLocationCandidate().get('position'));
+						latLng = GoogleMapsUtils.makeLatLng(sample.getRefPosition());
 						if (isValidLatLng(latLng))
 							sessionRect.extend(latLng);
 					}
