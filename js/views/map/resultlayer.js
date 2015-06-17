@@ -566,8 +566,8 @@ define(
 						});
 
 						var sessionLinesEnabled = this.settings.get("drawSessionLines");
-						this.createLine(refLocations, "#A0B1BC", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled);
-						this.createLine(bestLocations, "#B479FF", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled);
+						this.createLine(bestLocations, "hsl(204, 17%, 68%)", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled); // grey hsl(204, 17%, 68%)
+						this.createLine(refLocations, "hsl(245, 50%, 74%)", 6, 0.8, OverlayTypes.SESSIONLINE, sessionLinesEnabled); // violet hsl(266, 100%, 74%)
 					}
 				}
 			},
