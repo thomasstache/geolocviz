@@ -74,10 +74,12 @@ define(
 						zoomControl: true,
 						mapTypeControl: true,
 						scaleControl: this.appsettings.get("showScaleControl"),
+						styles: simpleMapStyles,
 						mapTypeControlOptions: {
 							mapTypeIds: [
 								STYLED_MAPTYPE_ID,
 								// google.maps.MapTypeId.ROADMAP,
+								google.maps.MapTypeId.TERRAIN,
 								google.maps.MapTypeId.SATELLITE,
 								google.maps.MapTypeId.HYBRID,
 							]
