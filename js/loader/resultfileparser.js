@@ -189,8 +189,8 @@ define(
 						msgId: msgId,
 						timestamp: timestamp,
 						sessionId: sessionUId,
-						position: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LAT),
-											   columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LON))
+						refPosition: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LAT),
+												  columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LON))
 					});
 					session.results.add(currentAccuracyResult, OPT_SILENT);
 					stats.numResults++;

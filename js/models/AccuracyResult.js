@@ -12,7 +12,7 @@ define(
 				// id of the "call" session
 				sessionId: -1,
 				// @type {Position} reference position
-				position: null,
+				refPosition: null,
 
 				// time offset
 				timestamp: 0,
@@ -47,7 +47,7 @@ define(
 			 * @return {Position}
 			 */
 			getRefPosition: function() {
-				return this.get('position');
+				return this.get('refPosition');
 			},
 
 			getInfo: function() {
