@@ -210,8 +210,9 @@ define(
 					controllerId: controllerId,
 					primaryCellId: primaryCellId
 				};
-				currentAccuracyResult.locationCandidates.add(
-					new LocationCandidate(props), OPT_SILENT);
+
+				currentAccuracyResult.addLocationCandidate(props, OPT_SILENT);
+
 				stats.numResultsAndCandidates++;
 			}
 

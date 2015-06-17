@@ -16,6 +16,17 @@ define(
 
 				// time offset
 				timestamp: 0,
+
+				// attributes of best LocationCandidate:
+				position: null,
+				distance: 0.0,
+
+				confidence: 0.0,
+				probMobility: 0.0,
+				probIndoor: 0.0,
+
+				controllerId: null,
+				primaryCellId: null,
 			},
 
 			/** @type {LocationCandidateList} collection of LocationCandidates */
@@ -28,6 +39,20 @@ define(
 			initialize: function() {
 				// the list of candidate locations from the algorithms
 				this.locationCandidates = new LocationCandidateList();
+			},
+
+			/**
+			 * Add a candidate for this result.
+			 * @param {Object} candidateProps Attribute hash, will be passed to Backbone.Collection.add()
+			 * @param {Object} addOptions     Options for Backbone.Collection.add()
+			 */
+			addLocationCandidate: function(candidateProps, addOptions) {
+
+				if (this.locationCandidates.length === 0) {
+					// first (best) candidate. Store properties on ourself, too.
+					this.set(candidateProps);
+				}
+				this.locationCandidates.add(candidateProps, addOptions);
 			},
 
 			getBestLocationCandidate: function() {
@@ -54,16 +79,10 @@ define(
 				var info = {
 					num: this.getIndex() + 1,
 					resultCount: this.collection.length,
-					msgId: this.get('msgId'),
-					timestamp: this.get('timestamp'),
-					refPosition: this.getRefPosition(),
 					candidateCount: this.locationCandidates.length,
 				};
 
-				// mix in the properties of the best candidate
-				var bestCandInfo = this.getBestLocationCandidate().getInfo();
-
-				info = _.defaults(info, bestCandInfo);
+				info = _.defaults(info, this.toJSON());
 
 				return info;
 			},
