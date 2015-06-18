@@ -46,6 +46,7 @@ body {
 }
 
 .flexbox .stretching { flex: 1; }
+.flexbox .dontshrink { flex-shrink: 0; }
 /* node is a flexbox for children */
 .flexbox .flexRow { display: flex; flex-direction: row; align-items: center; }
 .flexbox .flexColumn {display: flex; flex-direction: column; }
@@ -154,7 +155,7 @@ button:not([disabled]):active, button:not([disabled]).active {
 }
 .dialog h3 { margin-top: 0 }
 .dialog .content { flex: 1; }
-.dialog .toolbar { position: relative; flex-shrink: 0; }
+.dialog .toolbar { position: relative; flex-shrink: 0; margin-top: 15px; }
 .dialog .windowcontrols {
 	position: absolute;
 	top: 3px; right: 3px;
@@ -542,6 +543,7 @@ button.unselect-session:hover, button.unselect-site:hover { background-color: rg
 
 table {
 	width: 100%;
+	background: white;
 	border: 1px solid hsl(215, 25%, 83%);
 	border-collapse: collapse;
 	border-spacing: 0;
@@ -584,7 +586,6 @@ th.sorted.descending::after {
 td {
 	padding: 4px 10px;
 	overflow: hidden;
-	text-overflow: ellipsis;
 	text-align: center;
 }
 /* numbers should be right-aligned, centered in the column */
@@ -622,7 +623,6 @@ table.striped a:hover { text-decoration: underline; }
 	overflow: auto;
 	overflow: overlay; /* Chrome specific */
 	box-shadow: hsl(0, 0%, 85%) 0 3px 5px 0;
-	margin-bottom: 15px;
 }
 
 #sessionTableDialog .dialog {
