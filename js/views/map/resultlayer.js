@@ -246,10 +246,9 @@ define(
 									  sample);
 				}
 
-				var bestCand = sample.getBestLocationCandidate();
 				var bestLoc = GoogleMapsUtils.makeLatLng(sample.getGeoPosition());
 
-				this.drawResult(bestCand, OverlayTypes.GEOLOCMARKER, sample);
+				this.drawResult(sample, OverlayTypes.GEOLOCMARKER);
 
 				// connect measured and calculated points with lines
 				this.drawReferenceLine(refLoc, bestLoc, refLinesVisible);
@@ -259,13 +258,10 @@ define(
 			 * Draw a marker for an (AXF) result.
 			 * @param  {BaseResult} sample       the model for the marker
 			 * @param  {OverlayTypes} markerType controls the marker shape, if omitted the default is AXFMARKER
-			 * @param  {BaseResult} parent       (optional) the model of the parent, e.g. if sample is a LocationCandidate
 			 */
-			drawResult: function(sample, markerType, parent) {
+			drawResult: function(sample, markerType) {
 
 				markerType = markerType || OverlayTypes.AXFMARKER;
-				// for LocationCandidate a parent model should be provided
-				var model = parent || sample;
 
 				var color = null, visible = true,
 					thresholds = this.settings.getThresholdSettings();
@@ -292,7 +288,7 @@ define(
 								  "#" + sample.get('msgId'),
 								  color,
 								  visible,
-								  model);
+								  sample);
 
 				this.bounds.extend(location);
 			},

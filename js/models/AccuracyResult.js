@@ -55,16 +55,12 @@ define(
 				this.locationCandidates.add(candidateProps, addOptions);
 			},
 
-			getBestLocationCandidate: function() {
-				return this.locationCandidates.at(0);
-			},
-
 			/**
 			 * Returns the geolocated position.
 			 * @return {Position}
 			 */
 			getGeoPosition: function() {
-				return this.getBestLocationCandidate().get('position');
+				return this.get('position');
 			},
 
 			/**
@@ -92,10 +88,10 @@ define(
 			 * @return {Object} a property hash including "primaryCellId" and "controllerId"
 			 */
 			getSectorProperties: function() {
-				var bestCand = this.getBestLocationCandidate();
+
 				return {
-					controllerId: bestCand.get('controllerId'),
-					primaryCellId: bestCand.get('primaryCellId'),
+					controllerId: this.get('controllerId'),
+					primaryCellId: this.get('primaryCellId'),
 				};
 			}
 		});

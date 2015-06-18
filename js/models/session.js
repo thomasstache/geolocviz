@@ -46,12 +46,9 @@ define(
 
 						// for AccuracyResults we can compute the distance between all reference locations
 						rv.refDistance = Math.round(calculateDistance(this.results, true));
+					}
 
-						rv.probMobility = firstResult.getBestLocationCandidate().get("probMobility");
-					}
-					else {
-						rv.probMobility = firstResult.get("probMobility");
-					}
+					rv.probMobility = firstResult.get("probMobility");
 
 					// some files have no timestamp
 					if (firstResult.has("timestamp")) {
@@ -115,10 +112,6 @@ define(
 		 * @return {Number}            New aggregation result
 		 */
 		function sumAttribute(sum, result, attribute) {
-
-			if (result instanceof AccuracyResult) {
-				result = result.getBestLocationCandidate();
-			}
 
 			var data = result.has(attribute) ? result.get(attribute) : 0.0;
 			return sum + data;

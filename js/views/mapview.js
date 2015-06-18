@@ -383,10 +383,6 @@ define(
 
 				var rv = false; // excluded by default
 
-				// for AccuracyResults the properties are in the LocationCandidate models
-				if (result instanceof AccuracyResult)
-					result = result.getBestLocationCandidate();
-
 				if (query.topic === ResultsFilterQuery.TOPIC_PRIMARYCELL) {
 
 					if (result.has('controllerId') && result.has('primaryCellId')) {
