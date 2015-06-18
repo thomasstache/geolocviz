@@ -125,7 +125,6 @@ button:not([disabled]):active, button:not([disabled]).active {
 	position: relative;
 	left: 50%;
 	top: 50%;
-	-webkit-transform: translate(-50%, -50%);
 	transform: translate(-50%, -50%);
 }
 /* let an element occupy the right half of the parent (intended as analogy of .centered) */
@@ -134,7 +133,6 @@ button:not([disabled]):active, button:not([disabled]).active {
 	max-width: 40% !important;
 	left: inherit; right: 5%;
 	top: 50%;
-	-webkit-transform: translate(0, -50%);
 	transform: translate(0, -50%);
 }
 
@@ -242,7 +240,6 @@ header {
 	background-color: hsl(25, 100%, 90%);
 	border-color: hsl(27, 85%, 60%);
 	color: hsl(27, 85%, 60%);
-	box-shadow:
 }
 #cmdDownloadAxf { background-color: hsl(51, 100%, 70%) } /* gold */
 
