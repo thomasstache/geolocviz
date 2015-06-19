@@ -34,6 +34,10 @@ define(
 				// WCDMA sector attributes
 				scramblingCode: null,
 				uarfcn: null,
+
+				// LTE attributes
+				pci: null,
+				earfcn: null,
 			},
 
 			constructor: function Sector() {
@@ -41,6 +45,22 @@ define(
 			},
 
 			initialize: function() {
+			},
+
+			/**
+			 * Returns the logical channel of the cell, i.e. BCCH, SC, or PCI
+			 * @return {Number} "channel" number or -1
+			 */
+			getChannelNumber: function() {
+				var rv = -1;
+				if (this.has('bcch'))
+					rv = this.get('bcch');
+				else if (this.has('scramblingCode'))
+					rv = this.get('scramblingCode');
+				else if (this.has('pci'))
+					rv = this.get('pci');
+
+				return rv;
 			},
 
 			getTooltipText: function() {
