@@ -37,6 +37,7 @@ body {
 	/* should grow itself */
 	-webkit-flex: 1;
 	flex: 1;
+	min-height: 0;
 
 	/* flexbox for children */
 	display: -webkit-flex; /* Chrome uses new (2012) spec draft */
@@ -45,7 +46,7 @@ body {
 	flex-direction: row;
 }
 
-.flexbox .stretching { flex: 1; }
+.flexbox .stretching { flex: 1; min-height: 0; }
 .flexbox .dontshrink { flex-shrink: 0; }
 /* node is a flexbox for children */
 .flexbox .flexRow { display: flex; flex-direction: row; align-items: center; }
@@ -152,7 +153,7 @@ button:not([disabled]):active, button:not([disabled]).active {
 	z-index: 50;
 }
 .dialog h3 { margin-top: 0 }
-.dialog .content { flex: 1; }
+.dialog .content { flex: 1; min-height: 0; }
 .dialog .toolbar { position: relative; flex-shrink: 0; margin-top: 15px; }
 .dialog .windowcontrols {
 	position: absolute;
