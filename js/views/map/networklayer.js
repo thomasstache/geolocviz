@@ -2,12 +2,12 @@ define(
 	["underscore", "backbone",
 	 "views/map/baselayer",
 	 "models/site", "models/sector",
-	 "types/position", "types/googlemapsutils", "types/colormapper"],
+	 "types/position", "types/googlemapsutils", "types/distinctcolormapper"],
 
 	function(_, Backbone,
 			 BaseLayer,
 			 Site, Sector,
-			 Position, GoogleMapsUtils, ColorMapper) {
+			 Position, GoogleMapsUtils, DistinctColorMapper) {
 
 		var SectorColors = Object.freeze({
 			DEFAULT: { color: "#333", fillcolor: "#6AF" },
@@ -78,6 +78,9 @@ define(
 				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
 
 				this.setNetworkOnTop(this.settings.get("drawNetworkOnTop"));
+
+				if (this.colorMapper === null)
+					this.colorMapper = new DistinctColorMapper();
 			},
 
 			/**
@@ -135,9 +138,6 @@ define(
 			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
 			 */
 			drawSiteMarkers: function(bZoomToNetwork) {
-
-				if (this.settings.get('useDynamicSiteColors'))
-					this.configureColorMapper();
 
 				// capture the "this" scope
 				var view = this;
@@ -270,6 +270,11 @@ define(
 					colorDef = SectorColors.DEFAULT;
 				}
 
+				var fillColor = colorDef.fillcolor;
+				// TODO: add option
+				if (true)
+					fillColor = this.colorMapper.getColor(sector.getChannelNumber());
+
 				var marker = new google.maps.Marker({
 
 					icon: {
@@ -277,7 +282,7 @@ define(
 						// path: "M0,0 l-3,-9 a 9 9 0 0 1 6 0 z", // arc around origin forces big click target covering neighbors
 						path: "M0,0 l-3,-9 q3,-1 6,0 z", // bezier curve with smaller bounding box
 						rotation: azi,
-						fillColor: colorDef.fillcolor,
+						fillColor: fillColor,
 						fillOpacity: 1,
 						scale: _scale,
 						strokeColor: colorDef.color,
@@ -446,30 +451,6 @@ define(
 				IconCache[key] = icon;
 
 				return icon;
-			},
-
-			/**
-			 * Configures ColorMapper for the network symbols.
-			 */
-			configureColorMapper: function() {
-
-				var values = this.collection.pluck('netSegment');
-				// discard illegal values
-				values = _.filter(values, function(num){ return num !== -1; });
-
-				if (values.length > 0) {
-
-					var min = _.min(values),
-						max = _.max(values);
-
-					if (this.colorMapper === null)
-						this.colorMapper = new ColorMapper(min, max);
-					else
-						this.colorMapper.setLimits(min, max);
-				}
-				else {
-					this.colorMapper = null;
-				}
 			},
 
 
