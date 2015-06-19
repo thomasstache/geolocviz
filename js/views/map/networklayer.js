@@ -273,14 +273,16 @@ define(
 				var marker = new google.maps.Marker({
 
 					icon: {
-						path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
+						// path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
+						// path: "M0,0 l-3,-9 a 9 9 0 0 1 6 0 z", // arc around origin forces big click target covering neighbors
+						path: "M0,0 l-3,-9 q3,-1 6,0 z", // bezier curve with smaller bounding box
 						rotation: azi,
 						fillColor: colorDef.fillcolor,
 						fillOpacity: 1,
 						scale: _scale,
 						strokeColor: colorDef.color,
 						strokeOpacity: 0.6,
-						strokeWeight: 2,
+						strokeWeight: 1,
 					},
 					position: siteLatLng,
 					map: this.map,
