@@ -40,6 +40,8 @@ define(
 			/** @type {SessionList} */
 			sessions: null,
 
+			selectedSession: null,
+
 			events: {
 				"click .selectSession": "selectSessionClick",
 			},
@@ -54,6 +56,8 @@ define(
 					this.sessions = sessions;
 				}
 
+				this.selectedSession = options.selectedSession || null;
+
 				TableDialogView.prototype.initialize.apply(this);
 			},
 
@@ -62,8 +66,12 @@ define(
 			 */
 			fillCollection: function() {
 
+				var selectedSession = this.selectedSession;
+
 				var infos = this.sessions.map(function(session) {
-					return session.getInfo();
+					var rv = session.getInfo();
+					rv.selected = session === selectedSession;
+					return rv;
 				});
 
 				this.collection.reset(infos);

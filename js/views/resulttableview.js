@@ -42,6 +42,8 @@ define(
 			/** @type {Session} */
 			session: null,
 
+			selectedResult: null,
+
 			events: {
 				"click .selectItem": "selectResultClick",
 			},
@@ -56,6 +58,8 @@ define(
 
 					this.setSession(session);
 				}
+
+				this.selectedResult = options.selectedResult || null;
 
 				TableDialogView.prototype.initialize.apply(this);
 			},
@@ -76,9 +80,11 @@ define(
 			fillCollection: function() {
 
 				var previousTime = this.session.results.length > 0 ? this.session.results.first().get('timestamp') : 0;
+				var selectedResult = this.selectedResult;
 
 				var infos = this.session.results.map(function(result) {
 					var rv = result.getInfo();
+					rv.selected = result === selectedResult;
 					rv.timeDelta = rv.timestamp - previousTime;
 					previousTime = rv.timestamp;
 					return rv;

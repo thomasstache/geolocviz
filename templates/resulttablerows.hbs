@@ -1,5 +1,5 @@
 				{{#each tablerows}}
-					<tr>
+					<tr{{#if selected}} class="highlighted"{{/if}}>
 						<th scope="row"><a class="selectItem" href="">{{msgId}}</a></th>
 						<td>{{num}}</td>
 						<td><span class="decimalAlign">{{#if timestamp}}{{formattime timeDelta "ms" digits=2}}{{else}}&mdash;{{/if}}</span></td>

@@ -512,8 +512,10 @@ input[type="checkbox"] {
 	position: relative;
 }
 
-/* emphasize a sector in the list */
-.sectoritem.highlighted { font-weight: bold; font-style: italic; }
+/* emphasize an item:
+	sector in the InfoView list
+	result/session in TableView */
+.highlighted { font-weight: bold; font-style: italic; }
 
 /* per-sector result filter buttons */
 .filterButtons {
@@ -558,7 +560,10 @@ th {
 }
 th[scope="row"] {
 	padding: 4px;
-	font-weight: normal;
+	font-weight: normal; /* UA default is bold */
+}
+.highlighted th[scope="row"] {
+	font-weight: bold;
 }
 
 table.sortable th { cursor: pointer; }

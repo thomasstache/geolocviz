@@ -692,7 +692,11 @@ define(
 
 				if (this.sessiontableview === null) {
 
-					var dialog = new SessionTableView({ sessions: this.sessions });
+					var dialog = new SessionTableView({
+						sessions: this.sessions,
+						selectedSession: this.model.get('selectedSession'),
+					});
+
 					this.listenTo(dialog, "search", this.searchHandler);
 					this.listenToOnce(dialog, "dialog:cancel", function() {
 						view.stopListening(dialog);
@@ -716,7 +720,11 @@ define(
 
 				if (this.resulttableview === null) {
 
-					var dialog = new ResultTableView({ session: this.model.get("selectedSession") });
+					var dialog = new ResultTableView({
+						session: this.model.get("selectedSession"),
+						selectedResult: this.model.get('selectedResult'),
+					});
+
 					this.listenTo(dialog, "search", this.searchHandler);
 					this.listenToOnce(dialog, "dialog:cancel", function() {
 						view.stopListening(dialog);
