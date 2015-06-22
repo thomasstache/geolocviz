@@ -135,6 +135,34 @@ define(
 			},
 
 			/**
+			 * Remove highlight class from all rows.
+			 */
+			resetRowHighlights: function() {
+
+				var $rows = this.$(".highlighted");
+				$rows.removeClass("highlighted");
+			},
+
+			/**
+			 * Applies the highlight class to the row containing the given element.
+			 * @param  {Element} element The DOM node of the table child
+			 */
+			highlightParentRow: function(element) {
+
+				if (!element)
+					return;
+
+				// walk up the DOM tree and look for the table row (TR)
+				var rowElement = element.parentElement;
+				while (rowElement !== null && rowElement.tagName !== "TR") {
+					rowElement = rowElement.parentElement;
+				}
+
+				if (rowElement)
+					rowElement.classList.add("highlighted");
+			},
+
+			/**
 			 * Handler for clicks on the table column headers. Sort data accordingly.
 			 * @param  {Event} evt jQuery click event
 			 */

@@ -100,8 +100,13 @@ define(
 			selectResultClick: function(evt) {
 				evt.preventDefault();
 
-				var strResultId = evt.currentTarget.textContent;
+				var linkElement = evt.currentTarget,
+					strResultId = linkElement.textContent;
+
 				this.trigger("search", new SearchQuery(SearchQuery.TOPIC_RESULT, strResultId));
+
+				this.resetRowHighlights();
+				this.highlightParentRow(linkElement);
 			},
 		});
 

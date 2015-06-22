@@ -84,8 +84,13 @@ define(
 			selectSessionClick: function(evt) {
 				evt.preventDefault();
 
-				var strSessionId = evt.currentTarget.textContent;
+				var linkElement = evt.currentTarget,
+					strSessionId = linkElement.textContent;
+
 				this.trigger("search", new SearchQuery(SearchQuery.TOPIC_SESSION, strSessionId));
+
+				this.resetRowHighlights();
+				this.highlightParentRow(linkElement);
 			},
 		});
 
