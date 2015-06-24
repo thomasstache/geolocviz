@@ -1,3 +1,4 @@
+// jshint esnext:true
 define(
 	["types/color"],
 
@@ -16,9 +17,15 @@ define(
 		// value is constant
 		var V = 0.95;
 
-		function DistinctColorMapper() {}
+		function DistinctColorMapper() {
+			this.colorCache = new Map();
+		}
 
 		DistinctColorMapper.prototype.getColor = function(value) {
+
+			if (this.colorCache.has(value)) {
+				return this.colorCache.get(value);
+			}
 
 			var rv = "transparent";
 			var hash, hsv, color, hashFct;
@@ -48,6 +55,8 @@ define(
 				// console.log("HSV:   ", hsv);
 				// console.log("Color: ", color);
 			}
+
+			this.colorCache.set(value, rv);
 
 			return rv;
 		};
@@ -113,6 +122,10 @@ define(
 			// console.log("Hash:  ", value, "\tVal1: ", hi, "\tVal2: ", lo);
 
 			return {h: H, s: S, v: V};
+		};
+
+		DistinctColorMapper.prototype.resetCache = function() {
+			this.colorCache.clear();
 		};
 
 		return DistinctColorMapper;
