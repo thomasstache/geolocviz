@@ -22,10 +22,16 @@ define(
 		});
 
 		var Z_Index = Object.freeze({
+			SVG: -99, // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
 			HIGHLIGHT: -10, // TS: only negative values really put the highlight under the result markers
 			SITE: 10,
 			SECTOR: 20,
 			ONTOP: 200, // additional offset to bump markers to top
+		});
+
+		var SectorPaths = Object.freeze({
+			ARROW: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
+			PIE: "M0,0 l-3,-9 q3,-1 6,0 z", // bezier curve with smaller bounding box
 		});
 
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
@@ -175,7 +181,7 @@ define(
 					if (this.settings.get('useDynamicSiteColors') && this.colorMapper !== null) {
 						icon = this.getMarkerIcon("dynamic");
 						icon.fillColor = this.colorMapper.getColor(site.get('netSegment'));
-						zIndex = -99; // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
+						zIndex = Z_Index.SVG;
 					}
 					else {
 						icon = this.getMarkerIcon();
@@ -259,6 +265,9 @@ define(
 				var azi = sector.get('azimuth');
 
 				var colorDef;
+				var path = SectorPaths.ARROW;
+				var stroke = 2;
+
 				var cellType = sector.get('cellType');
 				if (cellType == Sector.TYPE_INDOOR) {
 					colorDef = SectorColors.INDOOR;
@@ -270,24 +279,27 @@ define(
 					colorDef = SectorColors.DEFAULT;
 				}
 
-				var fillColor = colorDef.fillcolor;
-				// TODO: add option
-				if (true)
-					fillColor = this.colorMapper.getColor(sector.getChannelNumber());
+				if (this.settings.get('useDynamicSectorColors') && this.colorMapper !== null) {
+
+					path = SectorPaths.PIE;
+					stroke = 1;
+					colorDef = {
+						color: colorDef.color,
+						fillcolor: this.colorMapper.getColor(sector.getChannelNumber()),
+					};
+				}
 
 				var marker = new google.maps.Marker({
 
 					icon: {
-						// path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
-						// path: "M0,0 l-3,-9 a 9 9 0 0 1 6 0 z", // arc around origin forces big click target covering neighbors
-						path: "M0,0 l-3,-9 q3,-1 6,0 z", // bezier curve with smaller bounding box
+						path: path,
 						rotation: azi,
-						fillColor: fillColor,
-						fillOpacity: 1,
+						fillColor: colorDef.fillcolor,
+						fillOpacity: 0.8,
 						scale: _scale,
 						strokeColor: colorDef.color,
 						strokeOpacity: 0.6,
-						strokeWeight: 1,
+						strokeWeight: stroke,
 					},
 					position: siteLatLng,
 					map: this.map,
