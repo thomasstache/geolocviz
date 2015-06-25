@@ -1,12 +1,12 @@
 define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult", "models/LocationCandidate",
-	 "types/resultsfilterquery",
+	 "types/resultsfilterquery", "types/elementfilterquery",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, LocationCandidate, ResultsFilterQuery,
+			 AccuracyResult, LocationCandidate, ResultsFilterQuery, ElementFilterQuery,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
 
 		/**
@@ -372,10 +372,7 @@ define(
 
 				if (params) {
 
-					var query = {
-						elementType: "sector",
-						properties: params
-					};
+					var query = new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, params);
 					this.trigger("result:lookupElement", query);
 				}
 			},

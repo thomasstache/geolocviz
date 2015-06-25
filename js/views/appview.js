@@ -636,7 +636,7 @@ define(
 
 			/**
 			 * Handler for "result:lookupElement" event. Lookup site/sector
-			 * @param  {Object} query
+			 * @param  {ElementFilterQuery} query
 			 */
 			resultsLookupElement: function(query) {
 
