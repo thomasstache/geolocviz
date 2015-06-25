@@ -15,7 +15,7 @@ define(
 
 		/** Convert a LatLng into a Position. */
 		GoogleMapsUtils.makePosition = function(latLng) {
-			if (!latLng instanceof google.maps.LatLng)
+			if (!(latLng instanceof google.maps.LatLng))
 				return;
 
 			return new Position(latLng.lat(), latLng.lng());
