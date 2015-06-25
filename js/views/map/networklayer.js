@@ -226,6 +226,11 @@ define(
 							var sector = sectors[i];
 							var azimuth = sector.get('azimuth');
 
+							if (isNaN(azimuth)) {
+								azimuth = 0.0;
+								console.warn("Sector '%s' with illegal azimuth value.", sector.get('id'));
+							}
+
 							// increase the symbol scale if the sector has the same azimuth as the one before
 							if (azimuth === lastAzimuth)
 								scale += 1.0;
