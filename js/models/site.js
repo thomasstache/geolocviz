@@ -55,19 +55,25 @@ define(
 
 			/**
 			 * Returns the Sector collection
+			 * @param  {Object} filters   (optional) Literal with key-value pairs that must match
 			 * @return {SectorList}
 			 */
-			getSectors: function() {
-				return this.get("sectors");
+			getSectors: function(filters) {
+
+				if (filters) {
+					return new SectorList(this.get('sectors').where(filters));
+				}
+				return this.get('sectors');
 			},
 
 			/**
 			 * Returns an array with all sectors sorted by the given attribute.
-			 * @param  {String} attribute
+			 * @param  {String} attribute Name of the attribute to sort by
+			 * @param  {Object} filters   (optional) Literal with key-value pairs that must match
 			 * @return {Array}
 			 */
-			getSectorsSortedBy: function(attribute) {
-				return this.getSectors().sortBy(
+			getSectorsSortedBy: function(attribute, filters) {
+				return this.getSectors(filters).sortBy(
 					function(sector) {
 						return sector.get(attribute);
 					}

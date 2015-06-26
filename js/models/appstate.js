@@ -42,6 +42,9 @@ define(
 				// @type {ElementFilterQuery} last element query (after results:lookupElement)
 				elementSearchQuery: null,
 
+				// @type {ElementFilterQuery} properties of sectors to highlight
+				sectorHighlightQuery: null,
+
 				// the model of the selected/active session
 				selectedSession: null,
 

@@ -13,20 +13,37 @@ define(
 
 			/**
 			 * Returns the first site whose sector list has a match for all the properties.
-			 * @param  {Object} sectorProps List of key-value pairs that should match
-			 * @return {Array}
+			 * @param  {Object} sectorProps Literal with key-value pairs that should match
+			 * @return {Site}
 			 */
 			findSiteWithSector: function(sectorProps) {
 
 				var site = this.find(function(site) {
-
-					var matchingSectors = site.getSectors().where(sectorProps);
-					return matchingSectors &&
-						   matchingSectors.length > 0;
+					return hasSectorWithProperties(site, sectorProps);
 				});
 				return site || null;
-			}
+			},
+
+			/**
+			 * Returns an array of sites whose sector lists have a match for all the properties.
+			 * @param  {Object} sectorProps Literal with key-value pairs that should match
+			 * @return {Array}
+			 */
+			filterSitesWithSectors: function(sectorProps) {
+
+				var sites = this.filter(function(site) {
+					return hasSectorWithProperties(site, sectorProps);
+				});
+				return sites || [];
+			},
 		});
+
+		function hasSectorWithProperties(site, sectorProps) {
+
+			var matchingSectors = site.getSectors(sectorProps);
+			return matchingSectors &&
+			       matchingSectors.length > 0;
+		}
 
 		return SiteList;
 	}
