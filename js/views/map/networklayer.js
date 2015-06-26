@@ -310,7 +310,7 @@ define(
 					colorDef = SectorColors.DEFAULT;
 				}
 
-				if (type === OverlayTypes.SECTORHIGHLIGHT && this.colorMapper !== null) {
+				if (type === OverlayTypes.SECTORHIGHLIGHT || this.settings.get('useDynamicSectorColors')) {
 
 					path = SectorPaths.PIE;
 					stroke = 1;

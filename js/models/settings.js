@@ -32,7 +32,7 @@ define(
 				// use attribute for dynamic site colors
 				useDynamicSiteColors: false,
 				// use channel number for dynamic sector colors
-				useDynamicSectorColors: true,
+				useDynamicSectorColors: false,
 
 				// use result attributes for dynamic marker colors
 				useDynamicMarkerColors: false,
