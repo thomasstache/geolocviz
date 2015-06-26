@@ -332,7 +332,7 @@ define(
 						path: path,
 						rotation: azi,
 						fillColor: colorDef.fillcolor,
-						fillOpacity: 0.8,
+						fillOpacity: 1.0,
 						scale: _scale,
 						strokeColor: colorDef.color,
 						strokeOpacity: 0.8,
