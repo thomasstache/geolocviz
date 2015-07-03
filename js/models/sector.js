@@ -27,6 +27,9 @@ define(
 				// CellType: calculated attribute (0: default, 1: isSmallCell, 2: isIndoor)
 				cellType: null,
 
+				// common mapping of channel numbers (bcch, pci or scramblingCode)
+				channelNumber: null,
+
 				// GSM sector attributes
 				bcch: null,
 				bsic: null,
@@ -45,6 +48,16 @@ define(
 			},
 
 			initialize: function() {
+
+				var channel = -1;
+				if (this.has('bcch'))
+					channel = this.get('bcch');
+				else if (this.has('scramblingCode'))
+					channel = this.get('scramblingCode');
+				else if (this.has('pci'))
+					channel = this.get('pci');
+
+				this.set('channelNumber', channel);
 			},
 
 			/**
@@ -52,15 +65,8 @@ define(
 			 * @return {Number} "channel" number or -1
 			 */
 			getChannelNumber: function() {
-				var rv = -1;
-				if (this.has('bcch'))
-					rv = this.get('bcch');
-				else if (this.has('scramblingCode'))
-					rv = this.get('scramblingCode');
-				else if (this.has('pci'))
-					rv = this.get('pci');
 
-				return rv;
+				return this.get('channelNumber');
 			},
 
 			getTooltipText: function() {
