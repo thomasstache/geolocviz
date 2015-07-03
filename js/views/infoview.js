@@ -1,13 +1,15 @@
+// jshint esnext:true
 define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult", "models/LocationCandidate",
 	 "types/resultsfilterquery", "types/elementfilterquery",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
-	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo"],
+	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo",
+	 "hbs!templates/highlightinfo"],
 
 	function($, _, Backbone,
 			 AccuracyResult, LocationCandidate, ResultsFilterQuery, ElementFilterQuery,
-			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate) {
+			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate, highlightsTemplate) {
 
 		/**
 		 * Info View.
@@ -50,6 +52,7 @@ define(
 				"click .listAllSessions" : "onListAllSessionsClicked",
 				"click .listAllResults" : "onListAllResultsClicked",
 				"click .unselect-site" : "onUnselectSiteClicked",
+				"click .clear-highlights" : "onClearHighlightsClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -69,6 +72,9 @@ define(
 			$lookupCellBtn: null,
 			$lookupRefCellBtn: null,
 
+			/** @type {Set} all channel numbers that were subsequently highlighted */
+			highlightedChannelNumbers: null,
+
 			initialize: function() {
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
@@ -80,6 +86,8 @@ define(
 				this.model.on("change:elementSearchQuery", this.onSiteChanged, this);
 				// indicates new Statistics model
 				this.model.on("change:statistics", this.onStatisticsRefChanged, this);
+
+				this.model.on("change:sectorHighlightQuery", this.onSectorHighlightChanged, this);
 
 				this.$tbSessionToolbar = this.$(".toolbar.sessionControls");
 				this.$tbResultsToolbar = this.$(".toolbar.resultControls");
@@ -93,6 +101,8 @@ define(
 
 				this.$lookupCellBtn = this.$("button.lookup-cell");
 				this.$lookupRefCellBtn = this.$("button.lookup-ref-cell");
+
+				this.highlightedChannelNumbers = new Set();
 			},
 
 			onSessionChanged: function() {
@@ -126,9 +136,35 @@ define(
 				this.renderResultInfo();
 			},
 
+			/**
+			 * Updates site block when the selected site changes.
+			 */
 			onSiteChanged: function() {
 
 				this.renderSiteInfo();
+			},
+
+			/**
+			 * Updates information about sector highlights.
+			 */
+			onSectorHighlightChanged: function(appstate) {
+
+				var highlightQuery = appstate.changed.sectorHighlightQuery;
+				if (highlightQuery === undefined)
+					return; // attribute of interest didn't change
+
+				if (highlightQuery === null) {
+					this.highlightedChannelNumbers.clear();
+				}
+				else {
+					var props = highlightQuery.properties,
+						channelNumber = props.channelNumber;
+
+					if (channelNumber !== undefined)
+						this.highlightedChannelNumbers.add(channelNumber);
+				}
+
+				this.renderSectorHighlightInfo();
 			},
 
 			onStatisticsRefChanged: function(event) {
@@ -220,6 +256,21 @@ define(
 				}
 
 				this.$("#siteInfo").html(siteTemplate(context));
+				return this;
+			},
+
+			renderSectorHighlightInfo: function() {
+
+				var context = {};
+
+				if (this.highlightedChannelNumbers.size > 0) {
+					var numArray = [];
+
+					for (var num of this.highlightedChannelNumbers) { numArray.push(num); }
+					context.values = numArray.join(",");
+				}
+
+				this.$("#sectorHighlightInfo").html(highlightsTemplate(context));
 				return this;
 			},
 
@@ -319,6 +370,10 @@ define(
 			onUnselectSiteClicked: function() {
 
 				this.trigger("site:unselected");
+			},
+
+			onClearHighlightsClicked: function() {
+				this.model.set("sectorHighlightQuery", null);
 			},
 
 			/**
