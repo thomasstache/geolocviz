@@ -144,12 +144,6 @@ define(
 				this.resetBounds();
 
 				this.drawSiteMarkers(true);
-
-				this.appstate.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, { scramblingCode: 454 }));
-				this.appstate.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, { scramblingCode: 128 }));
-				this.appstate.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, { bcch: 600 }));
-				this.appstate.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, { pci: 235 }));
-				this.appstate.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, { pci: 56 }));
 			},
 
 			/**
