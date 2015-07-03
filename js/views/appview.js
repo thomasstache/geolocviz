@@ -8,12 +8,15 @@ define(
 	 "views/searchview", "views/labelView", "views/filerepositoryview", "views/sessiontableview", "views/resulttableview",
 	 "views/downloaddialog",
 	 "collections/sessions", "collections/sites", "models/settings", "models/appstate", "models/statistics",
-	 "types/searchquery", "FileLoader", "filewriter", "types/logger"],
+	 "types/searchquery", "types/elementfilterquery", "FileLoader", "filewriter", "types/logger"],
 
 	function($, _, Backbone,
 			 MapView, SettingsView, LegendView, InfoView, FilterView, SearchView, LabelView, FileRepositoryView,
 			 SessionTableView, ResultTableView, DownloadDialog,
-			 SessionList, SiteList, Settings, AppState, Statistics, SearchQuery, FileLoader, FileWriter, Logger) {
+			 SessionList, SiteList, Settings, AppState, Statistics,
+			 SearchQuery, ElementFilterQuery, FileLoader, FileWriter, Logger) {
+
+		var PREFIX_CHANNELSEARCH = "ch:";
 
 		var AppView = Backbone.View.extend({
 
@@ -538,13 +541,7 @@ define(
 						break;
 
 					case SearchQuery.TOPIC_NETWORK:
-						// look for ID matches in sites/sectors
-						var site = this.siteList.get(query.searchterm) ||
-								   this.siteList.findSiteWithSector({ id: query.searchterm });
-
-						this.siteSelected(site);
-						if (site === null)
-							this.showNotification("No network element with this name...");
+						this.handleNetworkSearchRequest(query);
 						break;
 
 					case SearchQuery.TOPIC_RESULT:
@@ -554,6 +551,32 @@ define(
 						if (searchresult.result === null)
 							this.showNotification("No message with this ID...");
 						break;
+				}
+			},
+
+			/**
+			 * Handler for searches with the TOPIC_NETWORK topic.
+			 * @param  {SearchQuery} query
+			 */
+			handleNetworkSearchRequest: function(query) {
+
+				var searchterm = query.searchterm;
+
+				if (searchterm.indexOf(PREFIX_CHANNELSEARCH) === 0) {
+					// highlight sectors with the channelNumber
+					var channelNumber = parseInt(searchterm.slice(PREFIX_CHANNELSEARCH.length), 10),
+						props = { channelNumber: channelNumber };
+
+					this.model.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, props));
+				}
+				else {
+					// look for ID matches in sites/sectors
+					var site = this.siteList.get(searchterm) ||
+							   this.siteList.findSiteWithSector({ id: searchterm });
+
+					this.siteSelected(site);
+					if (site === null)
+						this.showNotification("No network element with this name...");
 				}
 			},
 

@@ -244,12 +244,33 @@ header {
 }
 #cmdDownloadAxf { background-color: hsl(51, 100%, 70%) } /* gold */
 
+/* Search */
+
+#searchView {
+	width: 210px;
+	position: relative;
+}
 #searchInput, #searchHelp {
-	width: 160px;
+	width: 100%;
 }
 
-#searchHelp ul { padding: 0.5em 1em; }
-#searchHelp ul b { font-family: Consolas, "Courier New", monospace; }
+#searchHelp dl { margin: 0; padding: 0.5em; }
+
+#searchHelp dt,
+#searchHelp dd {
+	display: inline-block;
+	margin: 0;
+}
+
+#searchHelp dt {
+	font-family: Consolas, "Courier New", monospace;
+	font-weight: bold;
+	width: 8%;
+}
+#searchHelp dd {
+	width: 90%;
+	vertical-align: top;
+}
 
 /* File Repository View */
 
