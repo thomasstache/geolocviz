@@ -266,7 +266,9 @@ define(
 				if (this.highlightedChannelNumbers.size > 0) {
 					var numArray = [];
 
-					for (var num of this.highlightedChannelNumbers) { numArray.push(num); }
+					this.highlightedChannelNumbers.forEach(function(num) {
+						numArray.push(num);
+					});
 					context.values = numArray.join(",");
 				}
 
