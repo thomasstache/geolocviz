@@ -35,6 +35,7 @@ define(
 		var SectorPaths = Object.freeze({
 			ARROW: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
 			PIE: "M0,0 l-3,-9 q3,-1 6,0 z", // bezier curve with smaller bounding box
+			CIRCLE: google.maps.SymbolPath.CIRCLE,
 		});
 
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
@@ -292,14 +293,24 @@ define(
 
 				var view = this;
 
+				var icon =  {
+					path: SectorPaths.ARROW,
+					rotation: sector.get('azimuth'),
+					scale: scale || DEFAULT_SECTOR_SCALE,
+					fillOpacity: 1.0,
+					strokeOpacity: 0.8,
+					strokeWeight: 2,
+				};
+				var markerOptions = {
+					icon: icon,
+					map: this.map,
+					position: siteLatLng,
+					title: sector.getTooltipText(),
+					zIndex: Z_Index.SECTOR,
+				};
+
 				var colorDef,
-				    stroke = 2,
-				    path = SectorPaths.ARROW,
-				    _scale = scale || DEFAULT_SECTOR_SCALE;
-
-				var azi = sector.get('azimuth');
-
-				var cellType = sector.get('cellType');
+					cellType = sector.get('cellType');
 				if (cellType == Sector.TYPE_INDOOR) {
 					colorDef = SectorColors.INDOOR;
 				}
@@ -312,31 +323,32 @@ define(
 
 				if (type === OverlayTypes.SECTORHIGHLIGHT || this.settings.get('useDynamicSectorColors')) {
 
-					path = SectorPaths.PIE;
-					stroke = 1;
+					if (sector.isOmni()) {
+						icon.path = SectorPaths.CIRCLE;
+
+						// factor 10 yields same scale increment as pie paths with same azimuth
+						// subtracting 0.5 reduces size of first circle
+						icon.scale = 10 * (icon.scale - 0.5);
+					}
+					else {
+						icon.path = SectorPaths.PIE;
+					}
+
 					colorDef = {
 						color: colorDef.color,
 						fillcolor: this.colorMapper.getColor(sector.getChannelNumber()),
 					};
+
+					icon.strokeWeight = 1;
+					markerOptions.zIndex = Z_Index.SVG;
 				}
 
-				var marker = new google.maps.Marker({
+				icon.fillColor = colorDef.fillcolor;
+				icon.strokeColor = colorDef.color;
 
-					icon: {
-						path: path,
-						rotation: azi,
-						fillColor: colorDef.fillcolor,
-						fillOpacity: 1.0,
-						scale: _scale,
-						strokeColor: colorDef.color,
-						strokeOpacity: 0.8,
-						strokeWeight: stroke,
-					},
-					position: siteLatLng,
-					map: this.map,
-					title: sector.getTooltipText(),
-					zIndex: Z_Index.SECTOR + this.networkMarkerZOffset - _scale // the bigger the symbol, the lower we place it
-				});
+				markerOptions.zIndex = markerOptions.zIndex + this.networkMarkerZOffset - icon.scale; // the bigger the symbol, the lower we place it
+
+				var marker = new google.maps.Marker(markerOptions);
 
 				marker.metaData = {
 					model: sector

@@ -69,6 +69,15 @@ define(
 				return this.get('channelNumber');
 			},
 
+			/**
+			 * Does this sector have an omni-directional antenna?
+			 * @return {Boolean}
+			 */
+			isOmni: function() {
+				return !this.has('beamwidth') ||
+				        this.get('beamwidth') > 180.0;
+			},
+
 			getTooltipText: function() {
 				var s = this.get('id') + " (";
 
