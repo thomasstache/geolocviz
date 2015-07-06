@@ -510,8 +510,8 @@ define(
 				}
 				else {
 					imagePath = 'images/site.png';
-					geometry.size = new google.maps.Size(9,9);
-					geometry.anchor = new google.maps.Point(4,4);
+					geometry.size = new google.maps.Size(7,7);
+					geometry.anchor = new google.maps.Point(3,3);
 				}
 
 				icon = new google.maps.MarkerImage(imagePath,
