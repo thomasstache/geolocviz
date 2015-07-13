@@ -22,6 +22,7 @@ define(
 			$probIndoorInput: null,
 			$confidenceThresholdInput: null,
 			$checkUseDotIcons: null,
+			$checkDynamicSectorColors: null,
 			$softHeatmapThresholdInput: null,
 			$hardHeatmapThresholdInput: null,
 
@@ -53,6 +54,7 @@ define(
 				this.$hardHeatmapThresholdInput = this.$("#hardHeatmapThresholdInput");
 
 				this.$checkUseDotIcons = this.$("#checkUseDotIcons");
+				this.$checkDynamicSectorColors = this.$("#checkDynamicSectorColors");
 
 				return this;
 			},
@@ -68,6 +70,7 @@ define(
 				this.$hardHeatmapThresholdInput.val(this.model.get("maxResultMarkers"));
 
 				this.$checkUseDotIcons.prop("checked", this.model.get("useDotAccuracyMarkers"));
+				this.$checkDynamicSectorColors.prop("checked", this.model.get("useDynamicSectorColors"));
 			},
 
 			/**
@@ -86,7 +89,8 @@ define(
 					confThreshold = parseFloat(this.$confidenceThresholdInput.val()),
 					heatmapSoftThreshold = parseInt(this.$softHeatmapThresholdInput.val(), 10),
 					heatmapHardThreshold = parseInt(this.$hardHeatmapThresholdInput.val(), 10),
-					useDotIcons = this.$checkUseDotIcons.prop("checked");
+					useDotIcons = this.$checkUseDotIcons.prop("checked"),
+					useDynamicSectorColors = this.$checkDynamicSectorColors.prop("checked");
 
 				this.model.set({
 					mobilityThreshold: fromPercent(probMobility),
@@ -95,6 +99,7 @@ define(
 					maxResultMarkers: heatmapHardThreshold,
 					heatmapSuggestionThreshold: heatmapSoftThreshold,
 					useDotAccuracyMarkers: useDotIcons,
+					useDynamicSectorColors: useDynamicSectorColors,
 				});
 
 				this.trigger("dialog:apply");

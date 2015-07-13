@@ -2,12 +2,14 @@ define(
 	["underscore", "backbone",
 	 "views/map/baselayer",
 	 "models/site", "models/sector",
-	 "types/position", "types/googlemapsutils", "types/colormapper"],
+	 "types/elementfilterquery",
+	 "types/position", "types/googlemapsutils", "types/distinctcolormapper"],
 
 	function(_, Backbone,
 			 BaseLayer,
 			 Site, Sector,
-			 Position, GoogleMapsUtils, ColorMapper) {
+			 ElementFilterQuery,
+			 Position, GoogleMapsUtils, DistinctColorMapper) {
 
 		var SectorColors = Object.freeze({
 			DEFAULT: { color: "#333", fillcolor: "#6AF" },
@@ -17,15 +19,23 @@ define(
 
 		var OverlayTypes = Object.freeze({
 			SITE: "siteSymbol",
-			SECTOR: "sectorSymbol",
+			SECTOR: "sectorSymbol", // sectors of the selected site
+			SECTORHIGHLIGHT: "highlightedSector", // sectors drawn for property visualization
 			SELECTIONVIZ: "selectionViz"
 		});
 
 		var Z_Index = Object.freeze({
+			SVG: -99, // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
 			HIGHLIGHT: -10, // TS: only negative values really put the highlight under the result markers
 			SITE: 10,
 			SECTOR: 20,
 			ONTOP: 200, // additional offset to bump markers to top
+		});
+
+		var SectorPaths = Object.freeze({
+			ARROW: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
+			PIE: "M0,0 l-3,-9 q3,-1 6,0 z", // bezier curve with smaller bounding box
+			CIRCLE: google.maps.SymbolPath.CIRCLE,
 		});
 
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
@@ -76,8 +86,12 @@ define(
 				this.listenTo(this.settings, "change:drawNetworkOnTop", this.onSettingsChanged);
 
 				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
+				this.listenTo(this.appstate, "change:sectorHighlightQuery", this.sectorHighlightChanged);
 
 				this.setNetworkOnTop(this.settings.get("drawNetworkOnTop"));
+
+				if (this.colorMapper === null)
+					this.colorMapper = new DistinctColorMapper();
 			},
 
 			/**
@@ -94,6 +108,22 @@ define(
 
 				var site = event.changed.selectedSite;
 				this.highlightSite(site);
+			},
+
+			/** Handler for changes to AppState's sectorHighlightQuery. */
+			sectorHighlightChanged: function(appstate) {
+
+				var highlightQuery = appstate.changed.sectorHighlightQuery;
+				if (highlightQuery === undefined)
+					return;
+
+				if (highlightQuery !== null) {
+					var props = highlightQuery.properties;
+					this.drawSectorsWithProperties(props);
+				}
+				else {
+					this.overlays.removeByType(OverlayTypes.SECTORHIGHLIGHT);
+				}
 			},
 
 			/**
@@ -125,6 +155,7 @@ define(
 				this.highlightSite(null);
 				this.overlays.removeByType(OverlayTypes.SITE);
 				this.overlays.removeByType(OverlayTypes.SECTOR);
+				this.overlays.removeByType(OverlayTypes.SECTORHIGHLIGHT);
 				this.resetBounds();
 
 				this.trigger("reset");
@@ -135,9 +166,6 @@ define(
 			 * @param  {Boolean} bZoomToNetwork Controls whether the current bounds should be updated
 			 */
 			drawSiteMarkers: function(bZoomToNetwork) {
-
-				if (this.settings.get('useDynamicSiteColors'))
-					this.configureColorMapper();
 
 				// capture the "this" scope
 				var view = this;
@@ -175,7 +203,7 @@ define(
 					if (this.settings.get('useDynamicSiteColors') && this.colorMapper !== null) {
 						icon = this.getMarkerIcon("dynamic");
 						icon.fillColor = this.colorMapper.getColor(site.get('netSegment'));
-						zIndex = -99; // magic value making SVG symbols comply (http://stackoverflow.com/a/12070508/103417)
+						zIndex = Z_Index.SVG;
 					}
 					else {
 						icon = this.getMarkerIcon();
@@ -207,9 +235,10 @@ define(
 			/**
 			 * Creates markers for all sectors in the site's SectorList.
 			 * The markers are drawn using SVG symbol paths.
-			 * @param  {Site} site
+			 * @param {Site}         site  The site model
+			 * @param {OverlayTypes} type  Highlight sectors by property filter or draw the selected sectors
 			 */
-			drawSectorsForSite: function(site) {
+			drawSectorsForSite: function(site, type) {
 
 				if (site &&
 					site.getSectors().length > 0) {
@@ -217,7 +246,15 @@ define(
 					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
 					if (isValidLatLng(latLng)) {
 
-						var sectors = site.getSectorsSortedBy('azimuth');
+						var filterProps;
+
+						if (type === OverlayTypes.SECTORHIGHLIGHT &&
+						    this.appstate.has('sectorHighlightQuery')) {
+
+							filterProps = this.appstate.get('sectorHighlightQuery').properties;
+						}
+
+						var sectors = site.getSectorsSortedBy('azimuth', filterProps);
 						var lastAzimuth = NaN;
 						var scale = DEFAULT_SECTOR_SCALE;
 
@@ -239,7 +276,7 @@ define(
 
 							lastAzimuth = azimuth;
 
-							this.drawSector(sector, latLng, scale);
+							this.drawSector(sector, latLng, scale, type);
 						}
 					}
 				}
@@ -250,16 +287,30 @@ define(
 			 * @param  {Sector} sector     The model with the sector's data
 			 * @param  {LatLng} siteLatLng The location of the parent site
 			 * @param  {Number} scale      (optional) Scaling factor for the symbol size
+			 * @param  {OverlayTypes} type Highlight sectors by property filter or draw the selected sectors
 			 */
-			drawSector: function(sector, siteLatLng, scale) {
+			drawSector: function(sector, siteLatLng, scale, type) {
 
 				var view = this;
 
-				var _scale = scale || DEFAULT_SECTOR_SCALE;
-				var azi = sector.get('azimuth');
+				var icon =  {
+					path: SectorPaths.ARROW,
+					rotation: sector.get('azimuth'),
+					scale: scale || DEFAULT_SECTOR_SCALE,
+					fillOpacity: 1.0,
+					strokeOpacity: 0.8,
+					strokeWeight: 2,
+				};
+				var markerOptions = {
+					icon: icon,
+					map: this.map,
+					position: siteLatLng,
+					title: sector.getTooltipText(),
+					zIndex: Z_Index.SECTOR,
+				};
 
-				var colorDef;
-				var cellType = sector.get('cellType');
+				var colorDef,
+					cellType = sector.get('cellType');
 				if (cellType == Sector.TYPE_INDOOR) {
 					colorDef = SectorColors.INDOOR;
 				}
@@ -270,23 +321,34 @@ define(
 					colorDef = SectorColors.DEFAULT;
 				}
 
-				var marker = new google.maps.Marker({
+				if (type === OverlayTypes.SECTORHIGHLIGHT || this.settings.get('useDynamicSectorColors')) {
 
-					icon: {
-						path: "M0,0 l0,-6 -1,0 1,-4 1,4 -1,0",
-						rotation: azi,
-						fillColor: colorDef.fillcolor,
-						fillOpacity: 1,
-						scale: _scale,
-						strokeColor: colorDef.color,
-						strokeOpacity: 0.6,
-						strokeWeight: 2,
-					},
-					position: siteLatLng,
-					map: this.map,
-					title: sector.getTooltipText(),
-					zIndex: Z_Index.SECTOR + this.networkMarkerZOffset - _scale // the bigger the symbol, the lower we place it
-				});
+					if (sector.isOmni()) {
+						icon.path = SectorPaths.CIRCLE;
+
+						// factor 10 yields same scale increment as pie paths with same azimuth
+						// subtracting 0.5 reduces size of first circle
+						icon.scale = 10 * (icon.scale - 0.5);
+					}
+					else {
+						icon.path = SectorPaths.PIE;
+					}
+
+					colorDef = {
+						color: colorDef.color,
+						fillcolor: this.colorMapper.getColor(sector.getChannelNumber()),
+					};
+
+					icon.strokeWeight = 1;
+					markerOptions.zIndex = Z_Index.SVG;
+				}
+
+				icon.fillColor = colorDef.fillcolor;
+				icon.strokeColor = colorDef.color;
+
+				markerOptions.zIndex = markerOptions.zIndex + this.networkMarkerZOffset - icon.scale; // the bigger the symbol, the lower we place it
+
+				var marker = new google.maps.Marker(markerOptions);
 
 				marker.metaData = {
 					model: sector
@@ -299,7 +361,7 @@ define(
 					}
 				);
 
-				this.overlays.register(OverlayTypes.SECTOR, marker);
+				this.overlays.register(type, marker);
 			},
 
 			/**
@@ -368,7 +430,21 @@ define(
 
 				// draw sectors for the site
 				this.overlays.removeByType(OverlayTypes.SECTOR);
-				this.drawSectorsForSite(site);
+				this.drawSectorsForSite(site, OverlayTypes.SECTOR);
+			},
+
+			/**
+			 * Draw symbols for sectors matching the given properties.
+			 * @param {Object} sectorProps  Literal with key-value pairs that should match
+			 */
+			drawSectorsWithProperties: function(sectorProps) {
+
+				var layer = this;
+				var sites = this.collection.filterSitesWithSectors(sectorProps);
+
+				_.each(sites, function(site) {
+					layer.drawSectorsForSite(site, OverlayTypes.SECTORHIGHLIGHT);
+				});
 			},
 
 			/**
@@ -434,8 +510,8 @@ define(
 				}
 				else {
 					imagePath = 'images/site.png';
-					geometry.size = new google.maps.Size(9,9);
-					geometry.anchor = new google.maps.Point(4,4);
+					geometry.size = new google.maps.Size(7,7);
+					geometry.anchor = new google.maps.Point(3,3);
 				}
 
 				icon = new google.maps.MarkerImage(imagePath,
@@ -444,30 +520,6 @@ define(
 				IconCache[key] = icon;
 
 				return icon;
-			},
-
-			/**
-			 * Configures ColorMapper for the network symbols.
-			 */
-			configureColorMapper: function() {
-
-				var values = this.collection.pluck('netSegment');
-				// discard illegal values
-				values = _.filter(values, function(num){ return num !== -1; });
-
-				if (values.length > 0) {
-
-					var min = _.min(values),
-						max = _.max(values);
-
-					if (this.colorMapper === null)
-						this.colorMapper = new ColorMapper(min, max);
-					else
-						this.colorMapper.setLimits(min, max);
-				}
-				else {
-					this.colorMapper = null;
-				}
 			},
 
 

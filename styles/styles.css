@@ -244,12 +244,33 @@ header {
 }
 #cmdDownloadAxf { background-color: hsl(51, 100%, 70%) } /* gold */
 
+/* Search */
+
+#searchView {
+	width: 210px;
+	position: relative;
+}
 #searchInput, #searchHelp {
-	width: 160px;
+	width: 100%;
 }
 
-#searchHelp ul { padding: 0.5em 1em; }
-#searchHelp ul b { font-family: Consolas, "Courier New", monospace; }
+#searchHelp dl { margin: 0; padding: 0.5em; }
+
+#searchHelp dt,
+#searchHelp dd {
+	display: inline-block;
+	margin: 0;
+}
+
+#searchHelp dt {
+	font-family: Consolas, "Courier New", monospace;
+	font-weight: bold;
+	width: 8%;
+}
+#searchHelp dd {
+	width: 90%;
+	vertical-align: top;
+}
 
 /* File Repository View */
 
@@ -530,14 +551,13 @@ button.lookup-cell:hover, button.filterByElement:hover { background-color: hsl(5
 button.lookup-ref-cell,       button.filterByRefcell       { background-color: hsl(89, 54%, 77%); }
 button.lookup-ref-cell:hover, button.filterByRefcell:hover { background-color: hsl(89, 73%, 75%); }
 
-button.unselect-session,
-button.unselect-site {
+button.unselect-button {
 	color: rgb(204, 131, 103);
 	border-color: rgba(110, 60, 20, 0.2);
 	background-color: rgba(190, 90, 23, 0.1);
 	font-size: 11px;
 }
-button.unselect-session:hover, button.unselect-site:hover { background-color: rgba(230, 170, 120, 0.3); }
+button.unselect-button:hover { background-color: rgba(230, 170, 120, 0.3); }
 
 /* Table Views */
 
