@@ -40,6 +40,8 @@ define(
 				LAC: "LAC",
 				CELLTYPE: "CellType",
 
+				HANDLE: "ElementHandle",
+
 				GSM_BCCH: "BCCH",
 				GSM_BSIC: "BSIC",
 				GSM_CI: "CI",
@@ -73,6 +75,7 @@ define(
 				"Beamwidth": true,
 				"Height": true,
 				"CellType": true,
+				"ElementHandle": true,
 			});
 
 			// "set" of sector fields applying to GSM
@@ -290,6 +293,8 @@ define(
 							tech = Site.TECH_UNKNOWN;
 					}
 
+					// Note: in Analyzer cellrefs SITE_ID equals SITE_NAME.
+					// We treat sites with the same name as duplicates, since sectors reference sites by name.
 					var strId = getAttr(record, SiteAttributes.SITE_ID),
 						strName = getAttr(record, SiteAttributes.SITE_NAME),
 						strLat = getAttr(record, SiteAttributes.GEO_LAT),
@@ -336,7 +341,8 @@ define(
 
 						// common properties
 						var props = {
-							id: sectorId,
+							name: sectorId,
+							id: getAttr(record, SectorAttributes.HANDLE, DataTypes.INTEGER),
 							azimuth: getAttr(record, SectorAttributes.AZIMUTH, DataTypes.INTEGER),
 							beamwidth: getAttr(record, SectorAttributes.BEAMWIDTH, DataTypes.FLOAT),
 						};

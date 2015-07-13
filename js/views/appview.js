@@ -571,8 +571,8 @@ define(
 				}
 				else {
 					// look for ID matches in sites/sectors
-					var site = this.siteList.get(searchterm) ||
-							   this.siteList.findSiteWithSector({ id: searchterm });
+					var site = this.siteList.findWhere({ name: searchterm }) ||
+							   this.siteList.findSiteWithSector({ name: searchterm });
 
 					this.siteSelected(site);
 					if (site === null)

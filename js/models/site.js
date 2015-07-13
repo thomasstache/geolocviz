@@ -8,7 +8,7 @@ define(
 
 			defaults: {
 				// SiteID
-				id: -1,
+				id: "",
 				// site name
 				name: "",
 				// @type {Position} geographical position

@@ -7,8 +7,11 @@ define(
 		var Sector = Backbone.Model.extend({
 
 			defaults: {
-				// SectorID
+				// ElementHandle
 				id: -1,
+				// sector name - not always unique!
+				name: "",
+
 				// antenna azimuth in RAD
 				azimuth: 0.0,
 				// antenna beamwidth
@@ -79,7 +82,7 @@ define(
 			},
 
 			getTooltipText: function() {
-				var s = this.get('id') + " (";
+				var s = this.get('name') + " (";
 
 				s += "CI: " + this.get('cellIdentity') +
 					 ", ↗" + this.get('azimuth') + "°";

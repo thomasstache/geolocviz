@@ -330,7 +330,7 @@ define(
 
 				var query = new ResultsFilterQuery(
 					ResultsFilterQuery.TOPIC_PRIMARYCELL,
-					sector.get('id'),
+					sector.get('name'),
 					sector.get('netSegment'),
 					sector.get('cellIdentity')
 				);

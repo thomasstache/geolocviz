@@ -9,8 +9,8 @@
 	<li><span class="label">Sectors:</span></li>
 	{{#each sectors}}
 		<li class="sectoritem{{#if highlight}} highlighted{{/if}}"
-			title="{{id}}{{#if uarfcn}}, f:{{uarfcn}}{{/if}}{{#if earfcn}}, f:{{earfcn}}{{/if}}{{#if netSegment}}, {{technologyterm technology 'netsegment'}}: {{netSegment}}{{/if}}{{#if isIndoor}}, Indoor{{/if}}" >
-			<span>{{id}}</span>
+			title="{{name}}{{#if uarfcn}}, f:{{uarfcn}}{{/if}}{{#if earfcn}}, f:{{earfcn}}{{/if}}{{#if netSegment}}, {{technologyterm technology 'netsegment'}}: {{netSegment}}{{/if}}{{#if isIndoor}}, Indoor{{/if}}" >
+			<span>{{name}}</span>
 			<span class="value">(CI:{{cellIdentity}}
 								{{#if scramblingCode}}SC:{{scramblingCode}}{{/if}}
 								{{#if bcch}}BCCH:{{bcch}}{{/if}}
@@ -23,12 +23,12 @@
 			{{#if ../enableFilterPrimaryCells}}
 				<button class="filterByElement translucent tiny symbolic"
 						title="Filter only serving sector results"
-						data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
+						data-sector="{{name}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
 			{{/if}}
 			{{#if ../enableFilterRefCells}}
 				<button class="filterByRefcell translucent tiny symbolic"
 						title="Filter only reference sector results"
-						data-sector="{{id}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
+						data-sector="{{name}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
 			{{/if}}
 			</span>
 		</li>

@@ -190,7 +190,7 @@ define(
 					var lines = site.getSectors().map(function(sector){
 						return sector.getTooltipText();
 					});
-					lines.unshift(site.get('id'));
+					lines.unshift(site.get('name'));
 					return lines.join("\n");
 				}
 
@@ -265,7 +265,7 @@ define(
 
 							if (isNaN(azimuth)) {
 								azimuth = 0.0;
-								console.warn("Sector '%s' with illegal azimuth value.", sector.get('id'));
+								console.warn("Sector '%s' with illegal azimuth value.", sector.get('name'));
 							}
 
 							// increase the symbol scale if the sector has the same azimuth as the one before
