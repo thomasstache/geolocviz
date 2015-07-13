@@ -27,14 +27,14 @@ define(
 
 				if (this.get('probIndoor') > thresholds.indoor) {
 					// indoor
-					if (probMobility <= thresholds.mobility) // stationary
+					if (probMobility < thresholds.mobility) // stationary
 						cat = "I";
 					else
 						cat = "IM";
 				}
 				else {
 					// outdoor
-					if (probMobility <= thresholds.mobility) // stationary
+					if (probMobility < thresholds.mobility) // stationary
 						cat = "S";
 					else
 						cat = "M";

@@ -27,6 +27,9 @@ define(
 				// CellType: calculated attribute (0: default, 1: isSmallCell, 2: isIndoor)
 				cellType: null,
 
+				// common mapping of channel numbers (bcch, pci or scramblingCode)
+				channelNumber: null,
+
 				// GSM sector attributes
 				bcch: null,
 				bsic: null,
@@ -34,6 +37,10 @@ define(
 				// WCDMA sector attributes
 				scramblingCode: null,
 				uarfcn: null,
+
+				// LTE attributes
+				pci: null,
+				earfcn: null,
 			},
 
 			constructor: function Sector() {
@@ -41,6 +48,34 @@ define(
 			},
 
 			initialize: function() {
+
+				var channel = -1;
+				if (this.has('bcch'))
+					channel = this.get('bcch');
+				else if (this.has('scramblingCode'))
+					channel = this.get('scramblingCode');
+				else if (this.has('pci'))
+					channel = this.get('pci');
+
+				this.set('channelNumber', channel);
+			},
+
+			/**
+			 * Returns the logical channel of the cell, i.e. BCCH, SC, or PCI
+			 * @return {Number} "channel" number or -1
+			 */
+			getChannelNumber: function() {
+
+				return this.get('channelNumber');
+			},
+
+			/**
+			 * Does this sector have an omni-directional antenna?
+			 * @return {Boolean}
+			 */
+			isOmni: function() {
+				return !this.has('beamwidth') ||
+				        this.get('beamwidth') > 180.0;
 			},
 
 			getTooltipText: function() {

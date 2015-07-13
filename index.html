@@ -50,11 +50,11 @@
 						<div class="menu-header">
 							<span>Prefixes to search:</span>
 						</div>
-						<ul>
-							<li><b>#</b>&nbsp;Message ID</li>
-							<li><b>:</b>&nbsp;Session ID</li>
-							<li><b>@</b>&nbsp;Site/Sector Name</li>
-						</ul>
+						<dl id="searchHelpDict">
+							<dt>#</dt><dd>Message ID</dd>
+							<dt>:</dt><dd>Session ID</dd>
+							<dt>@</dt><dd>Site/Sector Name<br/><b>ch: </b>Sectors with channel number</dd>
+						</dl>
 					</div>
 				</div>
 			</div>
@@ -91,6 +91,9 @@
 				</section>
 				<section class="infoBlock">
 					<output id="siteInfo"><!-- {{template}} --></output>
+				</section>
+				<section class="infoBlock">
+					<output id="sectorHighlightInfo"><!-- {{template}} --></output>
 				</section>
 				<section class="infoBlock">
 					<output id="statistics"><!-- {{template}} --></output>

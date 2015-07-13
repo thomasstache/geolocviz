@@ -36,11 +36,14 @@ define(
 
 				// if the results are currently filtered
 				resultsFilterActive: false,
-				// last result query (after results:filtered)
+				// @type {ResultsFilterQuery} last result query (after results:filtered)
 				resultsFilterQuery: null,
 
-				// last element query (after results:lookupElement)
+				// @type {ElementFilterQuery} last element query (after results:lookupElement)
 				elementSearchQuery: null,
+
+				// @type {ElementFilterQuery} properties of sectors to highlight
+				sectorHighlightQuery: null,
 
 				// the model of the selected/active session
 				selectedSession: null,
