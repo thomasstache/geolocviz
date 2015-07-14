@@ -256,7 +256,7 @@ define(
 
 						var sectors = site.getSectors(filterProps).sortBy(
 							function(sector) {
-								return sector.get('azimuth');
+								return sector.getEffectiveDirection();
 							}
 						);
 						var lastAzimuth = NaN;
@@ -265,7 +265,7 @@ define(
 						for (var i = 0; i < sectors.length; i++) {
 
 							var sector = sectors[i];
-							var azimuth = sector.get('azimuth');
+							var azimuth = sector.getEffectiveDirection();
 
 							if (isNaN(azimuth)) {
 								azimuth = 0.0;

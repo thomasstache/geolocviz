@@ -73,6 +73,15 @@ define(
 			},
 
 			/**
+			 * Returns the transmitting direction. This is used for drawing sectors of a site in the correct order.
+			 * @return {Number} the azimuth or -1
+			 */
+			getEffectiveDirection: function() {
+
+				return this.isOmni() ? -1 : this.get('azimuth');
+			},
+
+			/**
 			 * Does this sector have an omni-directional antenna?
 			 * @return {Boolean}
 			 */
