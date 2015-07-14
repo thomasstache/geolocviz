@@ -65,20 +65,6 @@ define(
 				}
 				return this.get('sectors');
 			},
-
-			/**
-			 * Returns an array with all sectors sorted by the given attribute.
-			 * @param  {String} attribute Name of the attribute to sort by
-			 * @param  {Object} filters   (optional) Literal with key-value pairs that must match
-			 * @return {Array}
-			 */
-			getSectorsSortedBy: function(attribute, filters) {
-				return this.getSectors(filters).sortBy(
-					function(sector) {
-						return sector.get(attribute);
-					}
-				);
-			}
 		},
 		{
 			// known technologies

@@ -254,7 +254,11 @@ define(
 							filterProps = this.appstate.get('sectorHighlightQuery').properties;
 						}
 
-						var sectors = site.getSectorsSortedBy('azimuth', filterProps);
+						var sectors = site.getSectors(filterProps).sortBy(
+							function(sector) {
+								return sector.get('azimuth');
+							}
+						);
 						var lastAzimuth = NaN;
 						var scale = DEFAULT_SECTOR_SCALE;
 
