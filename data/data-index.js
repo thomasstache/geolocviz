@@ -23,6 +23,7 @@ define(
 			{ name: "cellrefs-US_TMO_GPEH_SF2009.txt", title: "US TMO San Francisco 2009" },
 			{ name: "cellrefs-US_TMO_GPEH_SF2011.txt", title: "US TMO San Francisco 2011" },
 			{ name: "cellrefs-US_TMO_GPEH_SC2011.txt", title: "US TMO Sacramento 2011" },
+			{ name: "cellrefs-US_VRZ_LTE_TnNcSc2015.txt", title: "US Verizon NC LTE 2015" },
 		];
 
 		return DataIndex;
