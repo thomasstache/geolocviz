@@ -121,6 +121,7 @@ define(
 				this.listenTo(this.infoview, "result:revertPosition", this.resultsRevertPosition);
 				this.listenTo(this.infoview, "result:lookupElement", this.resultsLookupElement);
 				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
+				this.listenTo(this.infoview, "site:focus", this.focusSelectedSite);
 				this.listenTo(this.infoview, "site:unselected", this.clearNetworkSelections);
 
 				this.listenTo(this.filterview, "results:clear-filter", this.resultsClearFilter);
@@ -646,6 +647,12 @@ define(
 					this.model.set("elementSearchQuery", null);
 
 				this.model.set("selectedSite", site);
+			},
+
+			// Handler for "site:focus" event. Focus map on the selected site.
+			focusSelectedSite: function() {
+				var site = this.model.get('selectedSite');
+				this.mapview.zoomToSite(site);
 			},
 
 			// Handler for "site:unselected" event. Unselect sites and sectors.

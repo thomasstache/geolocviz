@@ -244,6 +244,16 @@ define(
 			},
 
 			/**
+			 * Center map on the site.
+			 * @param {Site} site
+			 */
+			zoomToSite: function(site) {
+
+				if (this.networkLayer)
+					this.networkLayer.zoomToSite(site);
+			},
+
+			/**
 			 * Returns the current filter function for result/heatmap layers.
 			 * @return {Function} the active function or {@code null}
 			 */

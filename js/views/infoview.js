@@ -26,6 +26,7 @@ define(
 		 *   result:revertPosition (Result model)
 		 *   result:filterByElement
 		 *   result:listAll
+		 *   site:focus
 		 *   site:unselected
 		 */
 		var InfoView = Backbone.View.extend({
@@ -47,12 +48,13 @@ define(
 				"click .lookup-cell": "onLookupCellClicked",
 				"click .lookup-ref-cell": "onLookupRefCellClicked",
 				"click .revert-position": "onRevertPositionClicked",
-				"click .filterByElement" : "onFilterByElementClicked",
-				"click .filterByRefcell" : "onFilterByElementClicked",
-				"click .listAllSessions" : "onListAllSessionsClicked",
+				"click .filterByElement": "onFilterByElementClicked",
+				"click .filterByRefcell": "onFilterByElementClicked",
+				"click .listAllSessions": "onListAllSessionsClicked",
 				"click .listAllResults" : "onListAllResultsClicked",
-				"click .unselect-site" : "onUnselectSiteClicked",
-				"click .clear-highlights" : "onClearHighlightsClicked",
+				"click .focus-site"   : "onFocusSiteClicked",
+				"click .unselect-site": "onUnselectSiteClicked",
+				"click .clear-highlights": "onClearSectorHighlightsClicked",
 			},
 
 			/** @type {AppState} the shared app state */
@@ -367,14 +369,23 @@ define(
 			},
 
 			/**
+			 * Click handler for the "Focus site" button.
+			 */
+			onFocusSiteClicked: function() {
+				this.trigger("site:focus");
+			},
+
+			/**
 			 * Click handler for the "(/)" button. Unselect site.
 			 */
 			onUnselectSiteClicked: function() {
-
 				this.trigger("site:unselected");
 			},
 
-			onClearHighlightsClicked: function() {
+			/**
+			 * Clear highlight of sectors with certain properties.
+			 */
+			onClearSectorHighlightsClicked: function() {
 				this.model.set("sectorHighlightQuery", null);
 			},
 

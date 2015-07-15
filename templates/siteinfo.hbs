@@ -2,9 +2,7 @@
 <h3 class="etched">Selected Site <button class="translucent tiny symbolic unselect-button unselect-site" title="Unselect">&#128683;</button></h3>
 <ul class="propertyList">
 	<li><span class="label">Name:</span>&nbsp;<span class="value">{{id}}</span></li>
-	{{#if technology}}
 	<li><span class="label">Tech:</span>&nbsp;<span class="value">{{technology}}</span></li>
-	{{/if}}
 {{#if sectors}}
 	<li><span class="label">Sectors:</span></li>
 	{{#each sectors}}
@@ -35,4 +33,7 @@
 	{{/each}}
 {{/if}}
 </ul>
+<div class="toolbar">
+	<button class="translucent tiny focus-site">{{!&#9678;}}Focus</button>
+</div>
 {{/if}}
