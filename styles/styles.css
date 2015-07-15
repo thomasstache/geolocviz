@@ -285,8 +285,19 @@ header {
 	margin-left: 2px;
 }
 
-#fileRepositoryList li { padding: 1ex 10px; }
-#fileRepositoryList li:hover { background-color: rgb(90, 189, 245); color: white; }
+#fileRepositoryList button {
+	padding: 1ex 10px;
+	width: 100%;
+	/* undo all button styles */
+	margin: 0;
+	color: #333333;
+	font: 14px "Segoe UI", Helvetica, Arial, sans-serif;
+	background: none;
+	border: none; border-radius: 0;
+	box-shadow: none; text-shadow: none;
+	text-align: left;
+}
+#fileRepositoryList button:hover { background-color: rgb(90, 189, 245); color: white; }
 
 /* Label View */
 
