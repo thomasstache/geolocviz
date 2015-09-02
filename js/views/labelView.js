@@ -15,6 +15,8 @@ define(
 
 			label: "",
 
+			defaultDocumentTitle: "",
+
 			historyAPI: false,
 
 			events: {
@@ -26,15 +28,15 @@ define(
 
 			initialize: function() {
 
+				this.defaultDocumentTitle = document.title;
+
 				this.checkHistoryAPI();
 
 				this.$labelInput = this.$("#labelInput");
 
 				this.initLabelFromHistory();
-
-				this.$labelInput.val(this.label);
-				if (this.label.length > 0)
-					this.$labelInput.show();
+				this.updateEditControl();
+				this.updatePageTitle();
 			},
 
 			checkHistoryAPI: function() {
@@ -57,7 +59,30 @@ define(
 
 				this.label = this.$labelInput.val();
 				this.stopEditing();
+				this.updatePageTitle();
 				this.saveLabelInHistory();
+			},
+
+			/**
+			 * Display the custom label in the edit control.
+			 */
+			updateEditControl: function() {
+
+				this.$labelInput.val(this.label);
+				if (this.label.length > 0)
+					this.$labelInput.show();
+			},
+
+			/**
+			 * Displays the custom label in the page title.
+			 */
+			updatePageTitle: function() {
+				if (this.label && this.label.length > 0) {
+					document.title = this.label + " | " + this.defaultDocumentTitle;
+				}
+				else {
+					document.title = this.defaultDocumentTitle;
+				}
 			},
 
 			labelInputKeyUp: function(evt) {
@@ -96,7 +121,7 @@ define(
 
 				if (this.label.length > 0) {
 					var hash = "#l=" + this.label;
-					history.replaceState({label: this.label}, window.title, hash);
+					history.replaceState({label: this.label}, document.title, hash);
 				}
 				else {
 					this.clearLabelFromHistory();
