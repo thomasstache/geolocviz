@@ -36,7 +36,6 @@ define(
 				if (this.appstate) {
 					this.listenTo(this.appstate, "change:resultsAvailable", this.onResultsChanged);
 					this.listenTo(this.appstate, "change:referenceLocationsAvailable", this.onStateChanged);
-					this.listenTo(this.appstate, "change:candidateLocationsAvailable", this.onStateChanged);
 					this.listenTo(this.appstate, "change:markerColorMapper", this.onColorMapperChanged);
 					this.listenTo(this.appstate, "change:heatmapActive", this.onHeatmapChanged);
 				}
@@ -71,7 +70,6 @@ define(
 				this.renderColorScale();
 
 				this.showLegendItem("R", this.appstate.get("referenceLocationsAvailable"));
-				this.showLegendItem("C", this.appstate.get("candidateLocationsAvailable"));
 
 				this.toggleLegendMode(this.settings.get("useDynamicMarkerColors"));
 				return this;
@@ -137,9 +135,6 @@ define(
 					if (bReferenceLocations)
 						this.toggleLegendMode(false);
 					this.showLegendItem("R", bReferenceLocations);
-				}
-				if (event.changed.candidateLocationsAvailable !== undefined) {
-					this.showLegendItem("C", event.changed.candidateLocationsAvailable);
 				}
 			},
 
