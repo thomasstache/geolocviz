@@ -28,8 +28,6 @@ define(
 
 				// if there are AccuracyResults
 				referenceLocationsAvailable: false,
-				// if there are LocationCandidates
-				candidateLocationsAvailable: false,
 
 				// if the application is in heatmap rendering mode
 				heatmapActive: false,
@@ -76,7 +74,6 @@ define(
 					resultsAvailable: false,
 					resultsReferenceCellsAvailable: false,
 					referenceLocationsAvailable: false,
-					candidateLocationsAvailable: false,
 					resultsEditMode: false,
 					resultsEdited: false,
 					heatmapActive: false,
