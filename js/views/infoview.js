@@ -1,14 +1,14 @@
 // jshint esnext:true
 define(
 	["jquery", "underscore", "backbone",
-	 "models/AccuracyResult", "models/LocationCandidate",
+	 "models/AccuracyResult",
 	 "types/resultsfilterquery", "types/elementfilterquery",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo",
 	 "hbs!templates/highlightinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, LocationCandidate, ResultsFilterQuery, ElementFilterQuery,
+			 AccuracyResult, ResultsFilterQuery, ElementFilterQuery,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate, highlightsTemplate) {
 
 		/**
@@ -210,12 +210,6 @@ define(
 
 				var result = this.selectedResult;
 				var context = result !== null ? result.getInfo() : {};
-				if (result instanceof AccuracyResult) {
-					context.isAccuracyResult = true;
-				}
-				if (result instanceof LocationCandidate) {
-					context.isCandidate = true;
-				}
 
 				this.$("#resultInfo").html(resultTemplate(context));
 				return this;
@@ -285,10 +279,6 @@ define(
 				var context = stats !== null ? stats.toJSON() : {};
 
 				// add some flags to be used in template
-				if (context.numResultsAndCandidates &&
-					context.numResultsAndCandidates > 0)
-					context.hasCandidates = true;
-
 				if (context.numSites && context.numSites > 0)
 					context.hasNetwork = true;
 
