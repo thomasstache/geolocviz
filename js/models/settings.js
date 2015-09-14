@@ -20,8 +20,6 @@ define(
 				drawMarkers_S: true,
 				// markers for indoor
 				drawMarkers_I: true,
-				// markers for candidates
-				drawMarkers_C: true,
 
 				// show or hide the map scale control
 				showScaleControl: false,

@@ -33,9 +33,6 @@ define(
 			// id of the currently highlighted session (see drawSessionLines())
 			highlightedSessionId: -1,
 
-			// cid of the sample/result for which candidate markers are drawn (see drawCandidateMarkers())
-			highlightedCandidateSampleCid: -1,
-
 			// maps result values to colors
 			colorMapper: null,
 
@@ -75,9 +72,6 @@ define(
 
 				if (event.changed.drawMarkers_R !== undefined) {
 					this.showOverlaysForType(OverlayTypes.REFERENCEMARKER, event.changed.drawMarkers_R);
-				}
-				if (event.changed.drawMarkers_C !== undefined) {
-					this.showOverlaysForType(OverlayTypes.CANDIDATEMARKER, event.changed.drawMarkers_C);
 				}
 
 				// mobile/stationary/indoor are "categories" of AXF/GEOLOCMARKER markers
@@ -294,60 +288,20 @@ define(
 			},
 
 			/**
-			 * Draws markers for all candidate locations for the AccuracyResult.
-			 * @param {AccuracyResult} sample
-			 */
-			drawCandidateMarkers: function(sample) {
-
-				if (!(sample instanceof AccuracyResult))
-					return;
-
-				if (this.highlightedCandidateSampleCid != sample.cid) {
-
-					// remove old markers
-					this.deleteCandidateMarkers();
-
-					this.highlightedCandidateSampleCid = sample.cid;
-
-					var visible = this.settings.get("drawMarkers_C");
-					// start at "1" to skip best candidate
-					for (var i = 1; i < sample.locationCandidates.length; i++) {
-
-						var candidate = sample.locationCandidates.at(i);
-						var latLng = GoogleMapsUtils.makeLatLng(candidate.getGeoPosition());
-						this.createMarker(OverlayTypes.CANDIDATEMARKER,
-										  latLng,
-										  "#" + sample.get('msgId'),
-										  MarkerColors.CANDIDATE,
-										  visible,
-										  sample,
-										  candidate);
-					}
-				}
-			},
-
-			deleteCandidateMarkers: function() {
-
-				this.overlays.removeByType(OverlayTypes.CANDIDATEMARKER);
-				this.highlightedCandidateSampleCid = -1;
-			},
-
-			/**
 			 * Creates a marker and adds it to the map.
-			 * @param {OverlayTypes}      type      The type of the marker (one of REFERENCEMARKER, GEOLOCMARKER, AXFMARKER, CANDIDATEMARKER)
+			 * @param {OverlayTypes}      type      The type of the marker (one of REFERENCEMARKER, GEOLOCMARKER, AXFMARKER)
 			 * @param {LatLng}            latlng    The geographical position for the marker
 			 * @param {String}            label     Tooltip for the marker
 			 * @param {MarkerColors}      colorDef  The color definition to use
 			 * @param {Boolean}           bVisible  Controls whether the marker is shown or hidden
 			 * @param {BaseResult}        sample    Reference to the result for which the marker is created
-			 * @param {LocationCandidate} candidate (optional) reference to the subresult/locationCandidate for which the marker is created
 			 * @return {Marker}           The created marker
 			 */
-			createMarker: function(type, latlng, label, colorDef, bVisible, sample, candidate) {
+			createMarker: function(type, latlng, label, colorDef, bVisible, sample) {
 
 				var view = this;
 				var thresholds = this.settings.getThresholdSettings();
-				var letter = candidate ? candidate.category(thresholds) : colorDef.smb;
+				var letter = colorDef.smb;
 				var icon,
 					draggable = false;
 
@@ -392,8 +346,7 @@ define(
 				// store some extra data on the marker
 				var md = marker.metaData = {};
 				if (sample) {
-					md.model = candidate ? candidate
-										 : sample;
+					md.model = sample;
 
 					if (sample.get('sessionId') !== undefined)
 						md.sessionId = sample.get('sessionId');
@@ -524,7 +477,7 @@ define(
 			},
 
 			/**
-			 * Draws polylines connecting all reference locations and best-candidate locations in a session.
+			 * Draws polylines connecting all reference locations and calculated locations in a session.
 			 * @param  {Session} session The session model.
 			 */
 			drawSessionLines: function(session) {
@@ -764,22 +717,7 @@ define(
 
 				if (marker && marker.metaData) {
 
-					var md = marker.metaData;
-
-					if (md.type !== undefined &&
-						md.type === OverlayTypes.GEOLOCMARKER &&
-						md.model !== undefined) {
-
-						// draw location candidates
-						var sample = md.model;
-						if (sample && sample instanceof AccuracyResult) {
-							this.drawCandidateMarkers(sample);
-						}
-					}
-					else {
-						// type unknown or "not geoloc"
-						this.deleteCandidateMarkers();
-					}
+					// var md = marker.metaData;
 				}
 			},
 
@@ -823,7 +761,6 @@ define(
 				// remove markers to change
 				this.overlays.removeByType(OverlayTypes.GEOLOCMARKER);
 				this.overlays.removeByType(OverlayTypes.REFERENCEMARKER);
-				this.overlays.removeByType(OverlayTypes.CANDIDATEMARKER);
 				this.overlays.removeByType(OverlayTypes.AXFMARKER);
 
 				// redraw all the markers
@@ -892,7 +829,6 @@ define(
 					return (type === OverlayTypes.GEOLOCMARKER ||
 							type === OverlayTypes.AXFMARKER ||
 							type === OverlayTypes.REFERENCEMARKER ||
-							type === OverlayTypes.CANDIDATEMARKER ||
 							type === OverlayTypes.SESSIONLINE ||
 							type === OverlayTypes.REFERENCELINE);
 				}
@@ -901,7 +837,6 @@ define(
 				this.deleteOverlays(list);
 
 				this.highlightedSessionId = -1;
-				this.highlightedCandidateSampleCid = -1;
 
 				this.highlightResult(null);
 
@@ -915,10 +850,8 @@ define(
 
 				// remove old lines and markers
 				this.overlays.removeByType(OverlayTypes.SESSIONLINE);
-				this.overlays.removeByType(OverlayTypes.CANDIDATEMARKER);
 
 				this.highlightedSessionId = -1;
-				this.highlightedCandidateSampleCid = -1;
 			},
 
 			/**
@@ -1048,7 +981,6 @@ define(
 			REFERENCEMARKER: "refMarker",
 			GEOLOCMARKER: "geoMarker",
 			AXFMARKER: "axfMarker",
-			CANDIDATEMARKER: "candidateMarker",
 			REFERENCELINE: "refLine",
 			SESSIONLINE: "sessionLine",
 			SELECTIONVIZ: "selectionViz",
