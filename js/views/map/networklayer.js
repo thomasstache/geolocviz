@@ -85,6 +85,7 @@ define(
 
 				// listen for settings changes
 				this.listenTo(this.settings, "change:useDynamicSiteColors", this.updateSiteColors);
+				this.listenTo(this.settings, "change:useDynamicSectorColors", this.updateSectorSymbols);
 				this.listenTo(this.settings, "change:drawNetworkOnTop", this.onSettingsChanged);
 
 				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
@@ -99,16 +100,16 @@ define(
 			/**
 			 * Update map overlay visibility according to current settings.
 			 */
-			onSettingsChanged: function(event) {
+			onSettingsChanged: function(settings) {
 
-				if (event.changed.drawNetworkOnTop !== undefined) {
-					this.setNetworkOnTop(event.changed.drawNetworkOnTop);
+				if (settings.changed.drawNetworkOnTop !== undefined) {
+					this.setNetworkOnTop(settings.changed.drawNetworkOnTop);
 				}
 			},
 
-			selectedSiteChanged: function(event) {
+			selectedSiteChanged: function(appstate) {
 
-				var site = event.changed.selectedSite;
+				var site = appstate.changed.selectedSite;
 				this.highlightSite(site);
 			},
 
@@ -138,6 +139,17 @@ define(
 
 				// redraw all the markers
 				this.drawSiteMarkers(false);
+			},
+
+			/**
+			 * Redraws sector symbols e.g. after the "use attribute colors for sectors" setting changes.
+			 */
+			updateSectorSymbols: function() {
+
+				// remove markers to change
+				this.overlays.removeByType(OverlayTypes.SECTOR);
+
+				this.drawSectorsForSite(this.appstate.get('selectedSite'), OverlayTypes.SECTOR);
 			},
 
 			/****     Drawing     ****/
