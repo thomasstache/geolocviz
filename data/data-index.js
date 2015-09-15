@@ -20,6 +20,7 @@ define(
 			{ name: "cellrefs-CA_Telus_Otwa_LTE.txt",  title: "CA Telus Ottawa LTE 2014" },
 			{ name: "cellrefs-US_ATT-LTE-Houston.txt", title: "US ATT Houston LTE 2013" },
 			{ name: "cellrefs-US_ATT_LTE_PuertoRico.txt", title: "US ATT PuertoRico LTE 2014" },
+			{ name: "cellrefs-US_ATT_LTE_SF.txt",      title: "US ATT San Francisco LTE" },
 			{ name: "cellrefs-US_ATT_LTE_SF2014.txt",  title: "US ATT San Francisco LTE 2014" },
 			{ name: "cellrefs-US_TMO_GPEH_SF2009.txt", title: "US TMO San Francisco 2009" },
 			{ name: "cellrefs-US_TMO_GPEH_SF2011.txt", title: "US TMO San Francisco 2011" },
