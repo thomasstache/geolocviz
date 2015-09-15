@@ -12,8 +12,6 @@ define(
 
 			// Number of result records in type "ACCURACY" and "AXF" file
 			this.numResults = 0;
-			// Number of result records in accuracy file
-			this.numResultsAndCandidates = 0;
 
 			// Indicates that AXF file contains reference cell columns
 			this.referenceCellsAvailable = false;

@@ -12,8 +12,6 @@ define(
 				numSessions: 0,
 				// total number of results ("best candidates" for .distances files)
 				numResults: 0,
-				// total number of results (including candidates)
-				numResultsAndCandidates: 0,
 
 				// number of loaded sites
 				numSites: 0,
@@ -36,7 +34,6 @@ define(
 				this.set({
 					numSessions: this.defaults.numSessions,
 					numResults: this.defaults.numResults,
-					numResultsAndCandidates: this.defaults.numResultsAndCandidates,
 				},
 				OPT_SILENT);
 			},
@@ -49,8 +46,6 @@ define(
 
 				if (filestats.numResults != null)
 					this.addTo("numResults", filestats.numResults);
-				if (filestats.numResultsAndCandidates != null)
-					this.addTo("numResultsAndCandidates", filestats.numResultsAndCandidates);
 			},
 
 			/**

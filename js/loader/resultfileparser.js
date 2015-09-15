@@ -1,11 +1,11 @@
 define(
 	["collections/sessions", "collections/results",
-	 "models/session", "models/AccuracyResult", "models/axfresult", "models/LocationCandidate",
+	 "models/session", "models/AccuracyResult", "models/axfresult",
 	 "types/position", "types/filestatistics", "types/filetypes",
 	 "types/csvfield", "loader/csvcolumnindex",
 	 "types/logger", "jquery.csv"],
 
-	function(SessionList, ResultList, Session, AccuracyResult, AxfResult, LocationCandidate,
+	function(SessionList, ResultList, Session, AccuracyResult, AxfResult,
 			 Position, FileStatistics, FileTypes, CSVField, CSVColumnIndex, Logger) {
 
 		var ResultFileParser = (function() {
@@ -77,8 +77,8 @@ define(
 			/** @type {CSVColumnIndex} indexer managing extracting result attributes from the row data */
 			var columnIndex = null;
 
-			// reference to the accuracy result while we parse the records with the location candidates
-			var currentAccuracyResult = null;
+			// we check the msgId of accuracy results to suppress duplicate records in old files with location candidates
+			var currentAccuracyResultID = -1;
 
 			/** @type {Logger} */
 			var logger = null;
@@ -94,10 +94,9 @@ define(
 
 				logger = Logger.getLogger();
 
-				currentAccuracyResult = null;
+				currentAccuracyResultID = -1;
 
 				stats.numResults = 0;
-				stats.numResultsAndCandidates = 0;
 
 				// comma for AXF files, TAB for accuracy results
 				var separator = (currentFileType === FileTypes.AXF) ? SEP_AXF : SEP_ACCURACY;
@@ -108,14 +107,14 @@ define(
 				columnIndex = new CSVColumnIndex(separator);
 
 				var parsingFct = null,
-				    isValid = false;
+					isValid = false;
 
 				var header = rowData[0];
 
 				if (currentFileType == FileTypes.ACCURACY &&
 					header.length >= LineLengths.ACCURACY_61) {
 
-					parsingFct = parseAccuracyRecordV3;
+					parsingFct = parseAccuracyRecord;
 					isValid = columnIndex.prepareForHeader(header, ACCURACY_FIELDS);
 				}
 				else if (currentFileType == FileTypes.AXF &&
@@ -143,7 +142,6 @@ define(
 					parsingFct(rowData[ct], stats);
 				}
 
-				currentAccuracyResult = null; // release
 				columnIndex = null;
 
 				sessionList.trigger('add');
@@ -158,16 +156,22 @@ define(
 			 * @param {Array} record         array of data fields
 			 * @param {FileStatistics} stats reference to statistics about the current file
 			 */
-			function parseAccuracyRecordV3(record, stats) {
+			function parseAccuracyRecord(record, stats) {
 
 				if (record.length < LineLengths.ACCURACY_61) {
-					logger.warn("Incomplete accuracy record #" + (stats.numResultsAndCandidates + 1) + " - skipped.");
+					logger.warn("Incomplete accuracy record #" + (stats.numResults + 1) + " - skipped.");
 					return;
 				}
 
 				var fileId    = columnIndex.getValueFrom(record, ACCURACY_FIELDS.FILEID),
-				    msgId     = columnIndex.getValueFrom(record, ACCURACY_FIELDS.MSGID),
-				    timestamp = columnIndex.getValueFrom(record, ACCURACY_FIELDS.TIME);
+					msgId     = columnIndex.getValueFrom(record, ACCURACY_FIELDS.MSGID),
+					timestamp = columnIndex.getValueFrom(record, ACCURACY_FIELDS.TIME);
+
+				// suppress records with repeating msgId (location candidates for the same sample)
+				if (msgId == currentAccuracyResultID)
+					return;
+
+				currentAccuracyResultID = msgId;
 
 				var sessId = columnIndex.getValueFrom(record, ACCURACY_FIELDS.SESSIONID);
 				// the same SessionId can appear in multiple calltrace files, make unique.
@@ -178,42 +182,27 @@ define(
 					sessionId: sessId
 				};
 
-				// when the CT message ID changes, create a new AccuracyResult
-				if (currentAccuracyResult === null ||
-					currentAccuracyResult.get('msgId') != msgId) {
-
-					// get the session if existing
-					var session = getSession(sessionUId, additionalProps);
-
-					currentAccuracyResult = new AccuracyResult({
-						msgId: msgId,
-						timestamp: timestamp,
-						sessionId: sessionUId,
-						refPosition: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LAT),
-												  columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LON))
-					});
-					session.results.add(currentAccuracyResult, OPT_SILENT);
-					stats.numResults++;
-				}
-
-				var controllerId  = columnIndex.getValueFrom(record, ACCURACY_FIELDS.CONTROLLER),
-				    primaryCellId = columnIndex.getValueFrom(record, ACCURACY_FIELDS.PRIM_CELL_ID);
+				// get the session if existing
+				var session = getSession(sessionUId, additionalProps);
 
 				var props = {
 					msgId: msgId,
+					timestamp: timestamp,
+					sessionId: sessionUId,
+					refPosition: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LAT),
+											  columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LON)),
 					position: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.GEO_LAT),
 										   columnIndex.getValueFrom(record, ACCURACY_FIELDS.GEO_LON)),
 					distance:     columnIndex.getValueFrom(record, ACCURACY_FIELDS.DIST),
 					confidence:   columnIndex.getValueFrom(record, ACCURACY_FIELDS.CONF),
 					probMobility: columnIndex.getValueFrom(record, ACCURACY_FIELDS.PROB_MOB),
 					probIndoor:   columnIndex.getValueFrom(record, ACCURACY_FIELDS.PROB_INDOOR),
-					controllerId: controllerId,
-					primaryCellId: primaryCellId
+					controllerId: columnIndex.getValueFrom(record, ACCURACY_FIELDS.CONTROLLER),
+					primaryCellId: columnIndex.getValueFrom(record, ACCURACY_FIELDS.PRIM_CELL_ID)
 				};
 
-				currentAccuracyResult.addLocationCandidate(props, OPT_SILENT);
-
-				stats.numResultsAndCandidates++;
+				session.results.add(new AccuracyResult(props), OPT_SILENT);
+				stats.numResults++;
 			}
 
 			function percent2Decimal(value) {

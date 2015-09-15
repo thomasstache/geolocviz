@@ -1,7 +1,7 @@
 {{#if num}}
 <h3 class="etched">Selected Result</h3>
 <ul class="propertyList">
-	<li><span class="label">{{#if isCandidate}}Candidate{{else}}Result{{/if}}:</span>&nbsp;<span class="value">{{num}}/{{resultCount}}</span>
+	<li><span class="label">Result:</span>&nbsp;<span class="value">{{num}}/{{resultCount}}</span>
 		<button class="listAllResults translucent tiny symbolic"
 				title="List all results">&equiv;</button>
 		{{#if msgId}}&nbsp;<span class="label">Msg:</span>&nbsp;<span class="value">#{{msgId}}</span>{{/if}}
@@ -20,9 +20,7 @@
 	<li><span class="label">Time:</span>&nbsp;<span class="value">{{formattime timestamp "ms"}}</span></li>
 	{{/if}}
 {{#unless isAccuracyResult}}
-{{#unless isCandidate}}
 	<li><span class="label">Meas. Report:</span>&nbsp;<span class="value">{{yesno isMeasReport}}</span></li>
-{{/unless}}
 {{/unless}}
 	{{#if primaryCellId}}
 	<li><span class="label">Primary CI:</span>&nbsp;<span class="value">{{primaryCellId}}</span>
@@ -40,8 +38,5 @@
 	<li><span class="label">Confidence:</span>&nbsp;<span class="value">{{percent confidence}}</span></li>
 	<li><span class="label">P_mobile:</span>&nbsp;<span class="value">{{percent probMobility}}</span></li>
 	<li><span class="label">P_indoor:</span>&nbsp;<span class="value">{{percent probIndoor}}</span></li>
-	{{#if candidateCount}}
-	<li><span class="label">Candidates:</span>&nbsp;<span class="value">{{candidateCount}}</span></li>
-	{{/if}}
 </ul>
 {{/if}}
