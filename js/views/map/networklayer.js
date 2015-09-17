@@ -149,7 +149,7 @@ define(
 				// remove markers to change
 				this.overlays.removeByType(OverlayTypes.SECTOR);
 
-				this.drawSectorsForSite(this.appstate.get('selectedSite'), OverlayTypes.SECTOR);
+				this.drawSectorsForSite(this.appstate.get('selectedSite'));
 			},
 
 			/****     Drawing     ****/
@@ -250,12 +250,14 @@ define(
 			 * Creates markers for all sectors in the site's SectorList.
 			 * The markers are drawn using SVG symbol paths.
 			 * @param {Site}         site  The site model
-			 * @param {OverlayTypes} type  Highlight sectors by property filter or draw the selected sectors
+			 * @param {OverlayTypes} overlayType Highlight sectors by property filter or draw the selected sectors
 			 */
-			drawSectorsForSite: function(site, type) {
+			drawSectorsForSite: function(site, overlayType) {
 
 				if (site &&
 					site.getSectors().length > 0) {
+
+					var type = overlayType || OverlayTypes.SECTOR;
 
 					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
 					if (isValidLatLng(latLng)) {
