@@ -85,7 +85,7 @@ define(
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 				this.model.on("change:radioNetworkAvailable", this.updateResultsControls, this);
 				this.model.on("change:resultsAvailable", this.renderSiteInfo, this);
-				this.model.on("change:elementSearchQuery", this.onSiteChanged, this);
+				this.model.on("change:elementLookupQuery", this.onSiteChanged, this);
 				// indicates new Statistics model
 				this.model.on("change:statistics", this.onStatisticsRefChanged, this);
 
@@ -231,8 +231,8 @@ define(
 
 				// highlight sectors according to current lookup query
 				if (context.sectors &&
-				    this.model.has("elementSearchQuery")) {
-					var query = this.model.get("elementSearchQuery");
+				    this.model.has("elementLookupQuery")) {
+					var query = this.model.get("elementLookupQuery");
 					// TODO: check for query.elementType === "sector"
 					var sectorProps = query.properties || {};
 

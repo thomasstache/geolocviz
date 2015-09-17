@@ -38,7 +38,7 @@ define(
 				resultsFilterQuery: null,
 
 				// @type {ElementFilterQuery} last element query (after results:lookupElement)
-				elementSearchQuery: null,
+				elementLookupQuery: null,
 
 				// @type {ElementFilterQuery} properties of sectors to highlight
 				sectorHighlightQuery: null,
@@ -79,7 +79,7 @@ define(
 					heatmapActive: false,
 					resultsFilterActive: false,
 					resultsFilterQuery: null,
-					elementSearchQuery: null,
+					elementLookupQuery: null,
 					selectedSession: null,
 					selectedResult: null,
 					focussedSessionId: -1,

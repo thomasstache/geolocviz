@@ -643,7 +643,7 @@ define(
 			siteSelected: function(site) {
 
 				if (site === null)
-					this.model.set("elementSearchQuery", null);
+					this.model.set("elementLookupQuery", null);
 
 				this.model.set("selectedSite", site);
 			},
@@ -674,7 +674,7 @@ define(
 					var site = this.siteList.findSiteWithSector(query.properties);
 					if (site) {
 						// remember last query
-						this.model.set("elementSearchQuery", query);
+						this.model.set("elementLookupQuery", query);
 
 						this.siteSelected(site);
 					}
