@@ -90,6 +90,7 @@ define(
 
 				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
 				this.listenTo(this.appstate, "change:sectorHighlightQuery", this.sectorHighlightChanged);
+				this.listenTo(this.appstate, "change:elementLookupQuery", this.updateSectorSymbols);
 
 				this.setNetworkOnTop(this.settings.get("drawNetworkOnTop"));
 
@@ -113,7 +114,7 @@ define(
 				this.highlightSite(site);
 			},
 
-			/** Handler for changes to AppState's sectorHighlightQuery. */
+			/** Handler for changes to AppState's sectorHighlightQuery. Draw sectors matching the query on the map. */
 			sectorHighlightChanged: function(appstate) {
 
 				var highlightQuery = appstate.changed.sectorHighlightQuery;
@@ -260,44 +261,59 @@ define(
 					var type = overlayType || OverlayTypes.SECTOR;
 
 					var latLng = GoogleMapsUtils.makeLatLng(site.get('position'));
-					if (isValidLatLng(latLng)) {
+					if (!isValidLatLng(latLng))
+						return;
 
-						var filterProps;
+					var filterProps;
 
-						if (type === OverlayTypes.SECTORHIGHLIGHT &&
-						    this.appstate.has('sectorHighlightQuery')) {
+					if (type === OverlayTypes.SECTORHIGHLIGHT &&
+					    this.appstate.has('sectorHighlightQuery')) {
 
-							filterProps = this.appstate.get('sectorHighlightQuery').properties;
+						filterProps = this.appstate.get('sectorHighlightQuery').properties;
+					}
+
+					var sectors = site.getSectors(filterProps).sortBy(
+						function(sector) {
+							return sector.getEffectiveDirection();
+						}
+					);
+
+					// we want to draw sector-lookup matches differently
+					var sectorMatchingFct;
+
+					if (this.appstate.has('elementLookupQuery')) {
+
+						var lookupQuery = this.appstate.get('elementLookupQuery');
+						if (lookupQuery.elementType === ElementFilterQuery.ELEMENT_SECTOR)
+							sectorMatchingFct = _.matches(lookupQuery.properties);
+					}
+
+					var lastAzimuth = NaN;
+					var scale = DEFAULT_SECTOR_SCALE;
+					var additionalOptions = {};
+
+					for (var i = 0; i < sectors.length; i++) {
+
+						var sector = sectors[i];
+						var azimuth = sector.getEffectiveDirection();
+
+						if (isNaN(azimuth)) {
+							azimuth = 0.0;
+							console.warn("Sector '%s' with illegal azimuth value.", sector.get('name'));
 						}
 
-						var sectors = site.getSectors(filterProps).sortBy(
-							function(sector) {
-								return sector.getEffectiveDirection();
-							}
-						);
-						var lastAzimuth = NaN;
-						var scale = DEFAULT_SECTOR_SCALE;
+						// increase the symbol scale if the sector has the same azimuth as the one before
+						if (azimuth === lastAzimuth)
+							scale += 1.0;
+						else
+							scale = DEFAULT_SECTOR_SCALE;
 
-						for (var i = 0; i < sectors.length; i++) {
+						if (sectorMatchingFct !== undefined)
+							additionalOptions.drawAsSelected = sectorMatchingFct(sector.toJSON());
 
-							var sector = sectors[i];
-							var azimuth = sector.getEffectiveDirection();
+						lastAzimuth = azimuth;
 
-							if (isNaN(azimuth)) {
-								azimuth = 0.0;
-								console.warn("Sector '%s' with illegal azimuth value.", sector.get('name'));
-							}
-
-							// increase the symbol scale if the sector has the same azimuth as the one before
-							if (azimuth === lastAzimuth)
-								scale += 1.0;
-							else
-								scale = DEFAULT_SECTOR_SCALE;
-
-							lastAzimuth = azimuth;
-
-							this.drawSector(sector, latLng, scale, type);
-						}
+						this.drawSector(sector, latLng, scale, type, additionalOptions);
 					}
 				}
 			},
@@ -306,10 +322,11 @@ define(
 			 * Draw a symbol for the given sector.
 			 * @param  {Sector} sector     The model with the sector's data
 			 * @param  {LatLng} siteLatLng The location of the parent site
-			 * @param  {Number} scale      (optional) Scaling factor for the symbol size
+			 * @param  {Number} scale      Scaling factor for the symbol size
 			 * @param  {OverlayTypes} type Highlight sectors by property filter or draw the selected sectors
+			 * @param  {Object} options    Additional options
 			 */
-			drawSector: function(sector, siteLatLng, scale, type) {
+			drawSector: function(sector, siteLatLng, scale, type, options) {
 
 				var view = this;
 
@@ -341,7 +358,8 @@ define(
 					colorDef = SectorColors.DEFAULT;
 				}
 
-				if (type === OverlayTypes.SECTORHIGHLIGHT || this.settings.get('useDynamicSectorColors')) {
+				if (type === OverlayTypes.SECTORHIGHLIGHT ||
+					this.settings.get('useDynamicSectorColors')) {
 
 					if (sector.isOmni()) {
 						icon.path = SectorPaths.CIRCLE;
@@ -361,6 +379,12 @@ define(
 
 					icon.strokeWeight = 1;
 					markerOptions.zIndex = Z_Index.SVG;
+				}
+
+				if (type === OverlayTypes.SECTOR &&
+					options.drawAsSelected === true) {
+
+					icon.strokeWeight *= 2.0;
 				}
 
 				icon.fillColor = colorDef.fillcolor;
