@@ -56,6 +56,8 @@ define(
 				// number of pixels data points influence
 				heatmapSpreadRadius: 10,
 
+				// target zoom for "focus site"
+				focusSiteTargetZoom: 13,
 				// max. zoom for "focus session"
 				focusSessionMaxZoom: 14,
 			},

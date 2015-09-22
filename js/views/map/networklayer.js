@@ -41,8 +41,6 @@ define(
 		// The initial scale for sector symbols, basis for adaptive scaling of overlapping symbols.
 		var DEFAULT_SECTOR_SCALE = 2.0;
 
-		var DEFAULT_SITEHIGHLIGHT_ZOOM = 13;
-
 		// "map" of already created Marker icons by type
 		var IconCache = {};
 
@@ -492,9 +490,11 @@ define(
 					return;
 
 				this.map.panTo(latLng);
+
 				// ensure minimum zoom-in
-				if (this.map.getZoom() < DEFAULT_SITEHIGHLIGHT_ZOOM) {
-					this.map.setZoom(DEFAULT_SITEHIGHLIGHT_ZOOM);
+				var targetZoom = this.settings.get("focusSiteTargetZoom");
+				if (this.map.getZoom() < targetZoom) {
+					this.map.setZoom(targetZoom);
 				}
 			},
 
