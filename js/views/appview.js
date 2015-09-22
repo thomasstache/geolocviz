@@ -123,6 +123,7 @@ define(
 				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
 				this.listenTo(this.infoview, "site:focus", this.focusSelectedSite);
 				this.listenTo(this.infoview, "site:unselected", this.clearNetworkSelections);
+				this.listenTo(this.infoview, "network:clear-highlights", this.clearNetworkHighlights);
 
 				this.listenTo(this.filterview, "results:clear-filter", this.resultsClearFilter);
 				this.listenTo(this.searchview, "search", this.searchHandler);
@@ -137,6 +138,7 @@ define(
 
 				// update app state (selections et al)
 				this.model.resetResultsData();
+				this.searchview.clearSearchField();
 				this.clearFileForm();
 				this.showFileDownloadView(false);
 				this.enableEditModeControls(false);
@@ -567,7 +569,7 @@ define(
 					var channelNumber = parseInt(searchterm.slice(PREFIX_CHANNELSEARCH.length), 10),
 						props = { channelNumber: channelNumber };
 
-					this.model.set('sectorHighlightQuery', new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, props));
+					this.model.set("sectorHighlightQuery", new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, props));
 				}
 				else {
 					// look for ID matches in sites/sectors
@@ -660,6 +662,11 @@ define(
 				this.siteSelected(null);
 			},
 
+			// Handler for the InfoView's "network:clear-highlights" event.
+			clearNetworkHighlights: function() {
+
+				this.model.set("sectorHighlightQuery", null);
+			},
 
 			/*********************** Result Interaction ***********************/
 

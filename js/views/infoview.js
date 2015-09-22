@@ -28,6 +28,7 @@ define(
 		 *   result:listAll
 		 *   site:focus
 		 *   site:unselected
+		 *   network:clear-highlights
 		 */
 		var InfoView = Backbone.View.extend({
 
@@ -376,7 +377,7 @@ define(
 			 * Clear highlight of sectors with certain properties.
 			 */
 			onClearSectorHighlightsClicked: function() {
-				this.model.set("sectorHighlightQuery", null);
+				this.trigger("network:clear-highlights");
 			},
 
 			/**
