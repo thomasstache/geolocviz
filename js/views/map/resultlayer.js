@@ -814,8 +814,16 @@ define(
 					}
 				});
 
-				if (!sessionRect.isEmpty())
-					this.map.fitBounds(sessionRect);
+				if (sessionRect.isEmpty())
+					return;
+
+				this.map.fitBounds(sessionRect);
+
+				// we don't want to zoom in too much (e.g. stationary sessions)
+				var maxZoom = this.settings.get("focusSessionMaxZoom");
+				if (this.map.getZoom() > maxZoom) {
+					this.map.setZoom(maxZoom);
+				}
 			},
 
 			/**

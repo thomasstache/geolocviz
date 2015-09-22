@@ -55,6 +55,9 @@ define(
 				heatmapMaxIntensity: 15,
 				// number of pixels data points influence
 				heatmapSpreadRadius: 10,
+
+				// max. zoom for "focus session"
+				focusSessionMaxZoom: 14,
 			},
 
 			constructor: function Settings() {
