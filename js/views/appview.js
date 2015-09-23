@@ -16,8 +16,6 @@ define(
 			 SessionList, SiteList, Settings, AppState, Statistics,
 			 SearchQuery, ElementFilterQuery, FileLoader, FileWriter, Logger) {
 
-		var PREFIX_CHANNELSEARCH = "ch:";
-
 		var AppView = Backbone.View.extend({
 
 			constructor: function AppView() {
@@ -525,6 +523,15 @@ define(
 			searchHandler: function(query) {
 
 				switch (query.topic) {
+
+					case SearchQuery.TOPIC_NETWORK:
+						this.handleNetworkSearchRequest(query);
+						break;
+
+					case SearchQuery.TOPIC_CHANNELNUMBER:
+						this.handleChannelSearchRequest(query);
+						break;
+
 					case SearchQuery.TOPIC_SESSION:
 						var session = this.sessions.findSession(query.searchterm);
 						if (session) {
@@ -540,10 +547,6 @@ define(
 							this.clearSelections();
 							this.showNotification("No session with this ID...");
 						}
-						break;
-
-					case SearchQuery.TOPIC_NETWORK:
-						this.handleNetworkSearchRequest(query);
 						break;
 
 					case SearchQuery.TOPIC_RESULT:
@@ -564,22 +567,29 @@ define(
 
 				var searchterm = query.searchterm;
 
-				if (searchterm.indexOf(PREFIX_CHANNELSEARCH) === 0) {
-					// highlight sectors with the channelNumber
-					var channelNumber = parseInt(searchterm.slice(PREFIX_CHANNELSEARCH.length), 10),
-						props = { channelNumber: channelNumber };
+				// look for ID matches in sites/sectors
+				var site = this.siteList.findWhere({ name: searchterm }) ||
+						   this.siteList.findSiteWithSector({ name: searchterm });
 
-					this.model.set("sectorHighlightQuery", new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, props));
-				}
-				else {
-					// look for ID matches in sites/sectors
-					var site = this.siteList.findWhere({ name: searchterm }) ||
-							   this.siteList.findSiteWithSector({ name: searchterm });
+				this.siteSelected(site);
+				if (site === null)
+					this.showNotification("No network element with this name...");
+			},
 
-					this.siteSelected(site);
-					if (site === null)
-						this.showNotification("No network element with this name...");
-				}
+			/**
+			 * Handler for searches with the TOPIC_CHANNELNUMBER topic. Highlight sectors with certain properties.
+			 * @param  {SearchQuery} query
+			 */
+			handleChannelSearchRequest: function(query) {
+
+				var channelNumber = parseInt(query.searchterm, 10);
+
+				// it could have been text input
+				if (isNaN(channelNumber))
+					return;
+
+				var props = { channelNumber: channelNumber };
+				this.model.set("sectorHighlightQuery", new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, props));
 			},
 
 			/*********************** Selection Handling ***********************/

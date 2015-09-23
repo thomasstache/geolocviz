@@ -49,13 +49,22 @@ define(
 				switch (prefix) {
 					case "@":
 						topic = SearchQuery.TOPIC_NETWORK; what = suffix;
+
+						// channel searches start with additional prefix
+						if (suffix.indexOf(PREFIX_CHANNELSEARCH) === 0) {
+							topic = SearchQuery.TOPIC_CHANNELNUMBER;
+							what = suffix.slice(PREFIX_CHANNELSEARCH.length);
+						}
 						break;
+
 					case ":":
 						topic = SearchQuery.TOPIC_SESSION; what = suffix;
 						break;
+
 					case "#":
 						topic = SearchQuery.TOPIC_RESULT; what = suffix;
 						break;
+
 					default:
 						topic = SearchQuery.TOPIC_RESULT; what = searchText;
 				}
@@ -87,6 +96,8 @@ define(
 				this.$helpPanel.fadeOut("fast");
 			}
 		});
+
+		var PREFIX_CHANNELSEARCH = "ch:";
 
 		return SearchView;
 	}
