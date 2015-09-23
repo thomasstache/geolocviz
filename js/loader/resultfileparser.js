@@ -42,7 +42,7 @@ define(
 				INDOOR_YN:      new CSVField("IndoorOutdoor_Session",            CSVField.TYPE_STRING),
 				MEAS_REPORT:    new CSVField("MeasurementReport",                CSVField.TYPE_INTEGER),
 				PROB_INDOOR:    new CSVField("Indoor_Probability",               CSVField.TYPE_INTEGER, { required: true }),// 6.1+
-				IMSI:           new CSVField("IMSI",                             CSVField.TYPE_STRING),// 7.4+
+				IMSI:           new CSVField("MsIMSI",                           CSVField.TYPE_STRING),// 7.4+, LTE only
 				// XT
 				SESSIONID:      new CSVField("SessionId",                        CSVField.TYPE_STRING,  { defaultValue: Session.ID_DUMMY }),// intentionally as String, as it gets very long
 				CONTROLLER:     new CSVField("Controller",                       CSVField.TYPE_INTEGER, { defaultValue: NaN }),
