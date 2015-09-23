@@ -544,6 +544,10 @@ input[type="checkbox"] {
 	position: relative;
 }
 
+.channelitem {
+	border-bottom: 3px solid black;
+}
+
 /* emphasize an item:
 	sector in the InfoView list
 	result/session in TableView */

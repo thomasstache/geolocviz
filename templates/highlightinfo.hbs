@@ -1,6 +1,8 @@
 {{#if values}}
 <h3 class="etched">Highlighted Sectors <button class="translucent tiny symbolic unselect-button clear-highlights" title="Clear">&#128683;</button></h3>
 <ul class="propertyList">
-	<li><span class="label">Channels:</span>&nbsp;<span class="value">{{values}}</span></li>
+	<li><span class="label">Channels:</span>
+{{#each values}}<span class="value channelitem" style="border-bottom-color: {{color}}">{{value}}</span>&nbsp;{{/each}}
+	</li>
 </ul>
 {{/if}}

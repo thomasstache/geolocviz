@@ -2,13 +2,13 @@
 define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult",
-	 "types/resultsfilterquery", "types/elementfilterquery",
+	 "types/resultsfilterquery", "types/elementfilterquery", "types/distinctcolormapper",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo",
 	 "hbs!templates/highlightinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, ResultsFilterQuery, ElementFilterQuery,
+			 AccuracyResult, ResultsFilterQuery, ElementFilterQuery, DistinctColorMapper,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate, highlightsTemplate) {
 
 		/**
@@ -78,6 +78,8 @@ define(
 			/** @type {Set} all channel numbers that were subsequently highlighted */
 			highlightedChannelNumbers: null,
 
+			colorMapper: null,
+
 			initialize: function() {
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
@@ -106,6 +108,12 @@ define(
 				this.$lookupRefCellBtn = this.$("button.lookup-ref-cell");
 
 				this.highlightedChannelNumbers = new Set();
+			},
+
+			initColorMapper: function() {
+
+				if (this.colorMapper === null)
+					this.colorMapper = new DistinctColorMapper();
 			},
 
 			onSessionChanged: function() {
@@ -262,11 +270,21 @@ define(
 
 				if (this.highlightedChannelNumbers.size > 0) {
 					var numArray = [];
+					context.values = [];
+					this.initColorMapper();
 
 					this.highlightedChannelNumbers.forEach(function(num) {
 						numArray.push(num);
 					});
-					context.values = numArray.join(",");
+
+					numArray.sort(numcomparator);
+
+					for (var num of numArray) {
+						context.values.push({
+							value: num,
+							color: this.colorMapper.getColor(num),
+						});
+					}
 				}
 
 				this.$("#sectorHighlightInfo").html(highlightsTemplate(context));
@@ -493,6 +511,13 @@ define(
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}
 		});
+
+		function numcomparator(a, b) {
+			if (a === b)
+				return 0;
+
+			return a < b ? -1 : 1;
+		}
 
 		return InfoView;
 	}
