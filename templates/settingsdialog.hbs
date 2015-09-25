@@ -1,7 +1,7 @@
 <div class="veilBackground" />
 
 <!-- the width/height is necessary to prevent blurry rendering in Chrome due to CSS centering -->
-<section class="dialog centered" style="width: 26em; height: 25em;">
+<section class="dialog centered" style="width: 26em; height: 27em;">
 	<div class="content">
 		<h3>Settings</h3>
 
@@ -12,6 +12,11 @@
 			</li>
 
 			<li><h4>Result Categorization</h4></li>
+			<li>
+				<label>
+					<input type="checkbox" id="checkCategorizeMarkers" />Categorize result markers
+				</label>
+			</li>
 			<li><label for="probMobilityInput">Mobility Probability Threshold [%]</label>
 				<input type="number" id="probMobilityInput" step="5" min="0" max="100" />
 			</li>

@@ -21,6 +21,9 @@ define(
 				// markers for indoor
 				drawMarkers_I: true,
 
+				// allows to suppress mobile/stationary/indoor/outdoor categorization
+				categorizeMarkers: true,
+
 				// show or hide the map scale control
 				showScaleControl: false,
 

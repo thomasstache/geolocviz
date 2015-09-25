@@ -46,6 +46,7 @@ define(
 				this.$el.html(dialogTemplate());
 				$(document.body).append(this.$el);
 
+				this.$checkCategorizeMarkers = this.$("#checkCategorizeMarkers");
 				this.$probMobilityInput = this.$("#probMobilityInput");
 				this.$probIndoorInput = this.$("#probIndoorInput");
 				this.$confidenceThresholdInput = this.$("#confidenceThresholdInput");
@@ -69,6 +70,7 @@ define(
 				this.$softHeatmapThresholdInput.val(this.model.get("heatmapSuggestionThreshold"));
 				this.$hardHeatmapThresholdInput.val(this.model.get("maxResultMarkers"));
 
+				this.$checkCategorizeMarkers.prop("checked", this.model.get("categorizeMarkers"));
 				this.$checkUseDotIcons.prop("checked", this.model.get("useDotAccuracyMarkers"));
 				this.$checkDynamicSectorColors.prop("checked", this.model.get("useDynamicSectorColors"));
 			},
@@ -100,6 +102,7 @@ define(
 					heatmapSuggestionThreshold: heatmapSoftThreshold,
 					useDotAccuracyMarkers: useDotIcons,
 					useDynamicSectorColors: useDynamicSectorColors,
+					categorizeMarkers: this.$checkCategorizeMarkers.prop("checked"),
 				});
 
 				this.trigger("dialog:apply");
