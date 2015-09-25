@@ -76,7 +76,7 @@ define(
 
 				// mobile/stationary/indoor are "categories" of AXF/GEOLOCMARKER markers
 				if (event.changed.drawMarkers_M !== undefined) {
-					this.showMarkersForCategory(MarkerColors.GEOLOCATED, event.changed.drawMarkers_M);
+					this.showMarkersForCategory(MarkerColors.MOBILE, event.changed.drawMarkers_M);
 				}
 				if (event.changed.drawMarkers_S !== undefined) {
 					this.showMarkersForCategory(MarkerColors.STATIONARY, event.changed.drawMarkers_S);
@@ -272,7 +272,7 @@ define(
 						visible = this.settings.get("drawMarkers_I");
 						break;
 					case "M":
-						color = MarkerColors.GEOLOCATED;
+						color = MarkerColors.MOBILE;
 						visible = this.settings.get("drawMarkers_M");
 						break;
 				}
