@@ -44,6 +44,7 @@ define(
 					this.listenTo(this.settings, "change:useDynamicMarkerColors", this.onScaleSettingsChanged);
 					this.listenTo(this.settings, "change:markerColorAttribute", this.onColorMapperChanged);
 					this.listenTo(this.settings, "change:heatmapMaxIntensity", this.renderColorScale);
+					this.listenTo(this.settings, "change:categorizeMarkers", this.renderCategorySwatches);
 				}
 
 				// translate the colors dictionary into an array for our templating
@@ -66,12 +67,27 @@ define(
 
 			render: function() {
 
-				this.$swatchList.html(legendTemplate(this.colorData));
+				this.renderCategorySwatches();
 				this.renderColorScale();
 
+				this.toggleLegendMode(this.settings.get("useDynamicMarkerColors"));
+				return this;
+			},
+
+			// Render only the legend for categorized marker colors.
+			renderCategorySwatches: function() {
+
+				this.$swatchList.html(legendTemplate(this.colorData));
 				this.showLegendItem("R", this.appstate.get("referenceLocationsAvailable"));
 
-				this.toggleLegendMode(this.settings.get("useDynamicMarkerColors"));
+				var showCategories = this.settings.get("categorizeMarkers");
+
+				if (showCategories === false) {
+					this.setLegendItemText("M", "Estimation");
+					this.showLegendItem("S", false);
+					this.showLegendItem("I", false);
+				}
+
 				return this;
 			},
 
@@ -169,13 +185,36 @@ define(
 				this.$colorScale.toggleClass("hidden", !bShowColorScale);
 			},
 
+			/**
+			 * Use an attribute selector to select item according to the "smb" property used in our template
+			 * @param  {String} symbol One of R, M, S, I
+			 * @return {jQuery}        jQuery object containing the matching elements
+			 */
+			getLegendItem: function(symbol) {
+
+				var selector = "li[data-markertype='" + symbol + "']";
+				return this.$(selector);
+			},
+
+			/**
+			 * Control the visibility of an individual legend item
+			 */
 			showLegendItem: function(symbol, bShow) {
 
-				// use an attribute selector to select item according to the "smb" property used in our template
-				var selector = "li[data-markertype='" + symbol + "']";
-				var $item = this.$(selector);
-				if ($item && $item.length === 1) {
+				var $item = this.getLegendItem(symbol);
+				if ($item) {
 					$item.toggleClass("hidden", !bShow);
+				}
+			},
+
+			/**
+			 * Change the text label of an individual legend item
+			 */
+			setLegendItemText: function(symbol, text) {
+
+				var $item = this.getLegendItem(symbol);
+				if ($item) {
+					$item.find(".categoryLabel").html(text);
 				}
 			},
 
