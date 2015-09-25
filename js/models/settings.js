@@ -62,7 +62,7 @@ define(
 				// target zoom for "focus site"
 				focusSiteTargetZoom: 13,
 				// max. zoom for "focus session"
-				focusSessionMaxZoom: 14,
+				focusSessionMaxZoom: 16,
 			},
 
 			constructor: function Settings() {
