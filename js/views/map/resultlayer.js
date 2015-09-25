@@ -74,6 +74,9 @@ define(
 					this.showOverlaysForType(OverlayTypes.REFERENCEMARKER, event.changed.drawMarkers_R);
 				}
 
+				if (event.changed.categorizeMarkers !== undefined) {
+					this.updateMarkerColors();
+				}
 				// mobile/stationary/indoor are "categories" of AXF/GEOLOCMARKER markers
 				if (event.changed.drawMarkers_M !== undefined) {
 					this.showMarkersForCategory(MarkerColors.MOBILE, event.changed.drawMarkers_M);
@@ -261,20 +264,27 @@ define(
 					thresholds = this.settings.getThresholdSettings();
 
 				var location = GoogleMapsUtils.makeLatLng(sample.getGeoPosition());
-				switch (sample.category(thresholds)) {
-					case "S":
-						color = MarkerColors.STATIONARY;
-						visible = this.settings.get("drawMarkers_S");
-						break;
-					case "I":
-					case "IM":
-						color = MarkerColors.INDOOR;
-						visible = this.settings.get("drawMarkers_I");
-						break;
-					case "M":
-						color = MarkerColors.MOBILE;
-						visible = this.settings.get("drawMarkers_M");
-						break;
+
+				if (this.settings.get("categorizeMarkers")) {
+					switch (sample.category(thresholds)) {
+						case "S":
+							color = MarkerColors.STATIONARY;
+							visible = this.settings.get("drawMarkers_S");
+							break;
+						case "I":
+						case "IM":
+							color = MarkerColors.INDOOR;
+							visible = this.settings.get("drawMarkers_I");
+							break;
+						case "M":
+							color = MarkerColors.MOBILE;
+							visible = this.settings.get("drawMarkers_M");
+							break;
+					}
+				}
+				else {
+					color = MarkerColors.MOBILE;
+					visible = this.settings.get("drawMarkers_M");
 				}
 
 				this.createMarker(markerType,
@@ -300,7 +310,7 @@ define(
 			createMarker: function(type, latlng, label, colorDef, bVisible, sample) {
 
 				var view = this;
-				var thresholds = this.settings.getThresholdSettings();
+
 				var letter = colorDef.smb;
 				var icon,
 					draggable = false;
@@ -316,8 +326,7 @@ define(
 						icon.fillColor = this.colorMapper.getColor(value);
 					}
 					else {
-						var cat = sample.category(thresholds);
-						icon = this.getMarkerIcon(IconTypes.DOT, cat);
+						icon = this.getMarkerIcon(IconTypes.DOT, letter);
 					}
 				}
 				else {
