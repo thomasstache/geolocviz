@@ -482,7 +482,7 @@ define(
 			 */
 			drawReferenceLine: function(startLatLng, endLatLng, visible) {
 
-				this.createLine([startLatLng, endLatLng], "#FF5050", 2, 0.3, OverlayTypes.REFERENCELINE, visible);
+				this.createLine([startLatLng, endLatLng], "#E08080", 2, 0.3, OverlayTypes.REFERENCELINE, visible);
 			},
 
 			/**
@@ -771,6 +771,7 @@ define(
 				this.overlays.removeByType(OverlayTypes.GEOLOCMARKER);
 				this.overlays.removeByType(OverlayTypes.REFERENCEMARKER);
 				this.overlays.removeByType(OverlayTypes.AXFMARKER);
+				this.overlays.removeByType(OverlayTypes.REFERENCELINE);
 
 				// redraw all the markers
 				this.drawResultMarkers();
