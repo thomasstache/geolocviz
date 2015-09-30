@@ -4,6 +4,8 @@ define(
 			{ name: "cellrefs-DE_VfGE_FFM2012.txt",    title: "DE Vf Frankfurt/Main 2012" },
 			{ name: "cellrefs-DE_VfGE_FFM2013.txt",    title: "DE Vf Frankfurt/Main 2013" },
 			{ name: "cellrefs-DE_VfGE_NRW.txt",        title: "DE Vf Bochum 2013" },
+			{ name: "cellrefs-DE_Vf_LTE_DD2015.txt",   title: "DE Vf Dresden LTE 2015" },
+			{ name: "cellrefs-DE_Vf_UMTS_DD2015.txt",  title: "DE Vf Dresden UMTS 2015" },
 			{ name: "cellrefs-DE_O2_LTE_2014.txt",     title: "DE o2 LTE 2014" },
 			{ name: "cellrefs-DE_O2_UMTS_2014.txt",    title: "DE o2 UMTS 2014" },
 			{ name: "cellrefs-NL_Vf_Amsterdam.txt",    title: "NL Vf Amsterdam 2012" },
