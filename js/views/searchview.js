@@ -5,7 +5,7 @@ define(
 	function($, _, Backbone, SearchQuery) {
 
 		/**
-		 * Info View.
+		 * Search Box View.
 		 * Emits the following events:
 		 *   search (SearchQuery)
 		 */
