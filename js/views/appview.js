@@ -121,6 +121,7 @@ define(
 				this.listenTo(this.infoview, "result:filterByElement", this.resultsFilterByElement);
 				this.listenTo(this.infoview, "site:focus", this.focusSelectedSite);
 				this.listenTo(this.infoview, "site:unselected", this.clearNetworkSelections);
+				this.listenTo(this.infoview, "network:highlight-elements", this.handleChannelSearchRequest);
 				this.listenTo(this.infoview, "network:clear-highlights", this.clearNetworkHighlights);
 
 				this.listenTo(this.filterview, "results:clear-filter", this.resultsClearFilter);

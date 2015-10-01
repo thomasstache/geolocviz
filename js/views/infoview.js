@@ -2,13 +2,13 @@
 define(
 	["jquery", "underscore", "backbone",
 	 "models/AccuracyResult",
-	 "types/resultsfilterquery", "types/elementfilterquery", "types/distinctcolormapper",
+	 "types/resultsfilterquery", "types/elementfilterquery", "types/searchquery", "types/distinctcolormapper",
 	 "hbs!templates/sessioninfo", "hbs!templates/resultinfo",
 	 "hbs!templates/statisticsinfo", "hbs!templates/siteinfo",
 	 "hbs!templates/highlightinfo"],
 
 	function($, _, Backbone,
-			 AccuracyResult, ResultsFilterQuery, ElementFilterQuery, DistinctColorMapper,
+			 AccuracyResult, ResultsFilterQuery, ElementFilterQuery, SearchQuery, DistinctColorMapper,
 			 sessionTemplate, resultTemplate, statisticsTemplate, siteTemplate, highlightsTemplate) {
 
 		/**
@@ -29,6 +29,7 @@ define(
 		 *   site:focus
 		 *   site:unselected
 		 *   network:clear-highlights
+		 *   network:highlight-elements (SearchQuery)
 		 */
 		var InfoView = Backbone.View.extend({
 
@@ -55,6 +56,7 @@ define(
 				"click .listAllResults" : "onListAllResultsClicked",
 				"click .focus-site"   : "onFocusSiteClicked",
 				"click .unselect-site": "onUnselectSiteClicked",
+				"click .highlight-element": "onHighlightElementClicked",
 				"click .clear-highlights": "onClearSectorHighlightsClicked",
 			},
 
@@ -451,6 +453,25 @@ define(
 
 					var query = new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, params);
 					this.trigger("result:lookupElement", query);
+				}
+			},
+
+			/**
+			 * Handler for clicks on sectors' highlight channel buttons. Triggers a "network:highlight-elements" event.
+			 * @param  {Event} evt jQuery click event
+			 */
+			onHighlightElementClicked: function(evt) {
+
+				var el = evt.currentTarget;
+
+				if (el.dataset &&
+					el.dataset.channel !== undefined) {
+
+					var searchQuery = new SearchQuery(
+						SearchQuery.TOPIC_CHANNELNUMBER,
+						el.dataset.channel
+					);
+					this.trigger("network:highlight-elements", searchQuery);
 				}
 			},
 

@@ -4,6 +4,11 @@ define(
 
 	function($, _, Backbone, SearchQuery) {
 
+		/**
+		 * Info View.
+		 * Emits the following events:
+		 *   search (SearchQuery)
+		 */
 		var SearchView = Backbone.View.extend({
 
 			constructor: function SearchView() {

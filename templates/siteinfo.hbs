@@ -19,15 +19,18 @@
 
 			<span class="filterButtons">
 			{{#if ../enableFilterPrimaryCells}}
-				<button class="filterByElement translucent tiny symbolic"
+				<button class="filterByElement tiny symbolic"
 						title="Filter only serving sector results"
 						data-sector="{{name}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
 			{{/if}}
 			{{#if ../enableFilterRefCells}}
-				<button class="filterByRefcell translucent tiny symbolic"
+				<button class="filterByRefcell tiny symbolic"
 						title="Filter only reference sector results"
 						data-sector="{{name}}" data-ci="{{cellIdentity}}" data-netsegment="{{netSegment}}">&#8981;</button>
 			{{/if}}
+				<button class="highlight-element tiny symbolic"
+						title="Highlight channel"
+						data-channel="{{channelNumber}}">&#9678;</button>
 			</span>
 		</li>
 	{{/each}}

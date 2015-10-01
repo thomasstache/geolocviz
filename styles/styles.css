@@ -558,6 +558,11 @@ input[type="checkbox"] {
 	display: none;
 	position: absolute;
 	top: 0; right: 0;
+	font-size: 4px; /* reduce whitespace due to line breaks in template */
+}
+.filterButtons button.symbolic {
+    font-size: 14px;
+    padding: 0 2px;
 }
 .sectoritem:hover > .filterButtons { display: inline-block; }
 
