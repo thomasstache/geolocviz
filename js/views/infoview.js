@@ -517,12 +517,10 @@ define(
 				this.$navLastBtn.prop("disabled", !canNavigateFwd);
 
 				var sectorProps = result !== null ? result.getSectorProperties() : {};
-				var hasPrimaryCell = this.model.get("radioNetworkAvailable") &&
-									sectorProps.primaryCellId !== undefined &&
-									!isNaN(sectorProps.primaryCellId);
-				var hasRefCell = this.model.get("radioNetworkAvailable") &&
-								 sectorProps.referenceCellId !== undefined &&
-								 !isNaN(sectorProps.referenceCellId);
+				var hasPrimaryCell = this.model.get("radioNetworkAvailable")
+								   && isValidCellId(sectorProps.primaryCellId);
+				var hasRefCell = this.model.get("radioNetworkAvailable")
+							   && isValidCellId(sectorProps.referenceCellId);
 
 				this.$lookupCellBtn.prop("disabled", !hasPrimaryCell);
 				this.$lookupCellBtn.toggleClass("hidden", !hasPrimaryCell);
@@ -532,6 +530,10 @@ define(
 				this.$tbResultsToolbar.toggleClass("hidden", result === null);
 			}
 		});
+
+		function isValidCellId(cellId) {
+			return cellId !== undefined && !isNaN(cellId) && cellId !== -1;
+		}
 
 		function numcomparator(a, b) {
 			if (a === b)
