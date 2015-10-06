@@ -1,5 +1,5 @@
 // configuration of jshint linting
-/* global Modernizr: false, Notification: false */
+/* global Notification: false */
 
 define(
 
@@ -229,7 +229,7 @@ define(
 			// Check for the various File API support.
 			checkFileAPIs: function() {
 
-				if (Modernizr.filereader) {
+				if (FileLoader.checkFileAPIs()) {
 					// Great success! All the File APIs are supported.
 					return true;
 				} else {

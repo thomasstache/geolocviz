@@ -174,6 +174,10 @@ define(
 			// return the external API
 			return {
 
+				checkFileAPIs: function() {
+					return (typeof FileReader === "function");
+				},
+
 				/**
 				 * Load all files in the array. Supported types are .axf and .distances
 				 * @param {FileList}    files    List of File objects (e.g. as retrieved from a input[type="file"])
