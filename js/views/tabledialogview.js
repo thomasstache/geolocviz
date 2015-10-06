@@ -75,14 +75,6 @@ define(
 				this.addKeyListeners();
 			},
 
-			addKeyListeners: function() {
-				Mousetrap.bind("esc", this.close.bind(this));
-			},
-
-			removeKeyListeners: function() {
-				Mousetrap.unbind("esc");
-			},
-
 			/**
 			 * Create a sortable collection with the extracted data.
 			 * Override in your child view.
@@ -246,7 +238,23 @@ define(
 				this.trigger("dialog:cancel");
 				this.remove();
 			},
+
+			addKeyListeners: function() {
+				Mousetrap.bind(KEY_CLOSE, this.close.bind(this));
+				Mousetrap.bind(KEY_MINI, this.hide.bind(this));
+				Mousetrap.bind(KEY_SNAP, this.toggleSnapToSide.bind(this));
+			},
+
+			removeKeyListeners: function() {
+				Mousetrap.unbind(KEY_CLOSE);
+				Mousetrap.unbind(KEY_MINI);
+				Mousetrap.unbind(KEY_SNAP);
+			},
 		});
+
+		var KEY_SNAP  = "s";
+		var KEY_MINI  = "m";
+		var KEY_CLOSE = "esc";
 
 		return TableDialogView;
 	}
