@@ -1,9 +1,9 @@
 define(
-	["jquery", "backbone",
+	["jquery", "backbone", "mousetrap",
 	 "types/viewport",
 	 "hbs!templates/viewportdialog"],
 
-	function($, Backbone, Viewport, dialogTemplate) {
+	function($, Backbone, Mousetrap, Viewport, dialogTemplate) {
 
 		var ViewportDialog = Backbone.View.extend({
 
@@ -21,8 +21,9 @@ define(
 			events: {
 				"click #btnApply": "applyClicked",
 				"click #btnCancel": "close",
-				"keyup #boundsInput": "boundsInputKeyUp",
 			},
+
+			keyboardHandler: null,
 
 			initialize: function(options) {
 
@@ -30,6 +31,8 @@ define(
 
 				this.render();
 				this.updateControls();
+
+				this.addKeyListeners();
 			},
 
 			// create the dialog nodes and insert into page DOM
@@ -53,15 +56,15 @@ define(
 				}
 			},
 
-			boundsInputKeyUp: function(evt) {
-				if (evt.keyCode == 13) {
-					// ENTER pressed, trigger commit
-					this.applyClicked();
-				}
-				else if (evt.keyCode == 27) {
-					// ESC pressed, trigger close
-					this.close();
-				}
+			addKeyListeners: function() {
+				this.keyboardHandler = new Mousetrap();
+				this.keyboardHandler.bind(KEY_ESC, this.close.bind(this));
+				this.keyboardHandler.bind(KEY_RET, this.applyClicked.bind(this));
+			},
+
+			removeKeyListeners: function() {
+				this.keyboardHandler.reset();
+				this.keyboardHandler = null;
 			},
 
 			applyClicked: function() {
@@ -78,7 +81,16 @@ define(
 				this.trigger("dialog:cancel");
 				this.remove();
 			},
+
+			remove: function() {
+
+				this.removeKeyListeners();
+				Backbone.View.prototype.remove.apply(this, arguments);
+			},
 		});
+
+		var KEY_ESC = "esc";
+		var KEY_RET = "enter";
 
 		return ViewportDialog;
 	}
