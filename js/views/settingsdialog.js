@@ -1,9 +1,9 @@
 define(
-	["jquery", "backbone",
+	["jquery", "backbone", "mousetrap",
 	 "models/settings",
 	 "hbs!templates/settingsdialog"],
 
-	function($, Backbone, Settings, dialogTemplate) {
+	function($, Backbone, Mousetrap, Settings, dialogTemplate) {
 
 		var SettingsDialog = Backbone.View.extend({
 
@@ -32,12 +32,18 @@ define(
 				"click #btnReset": "resetSettings",
 			},
 
+			keyboardHandler: null,
+
 			initialize: function() {
 
 				this.listenTo(this.model, "reset", this.updateControls);
 
 				this.render();
 				this.updateControls();
+
+				this.keyboardHandler = new Mousetrap();
+				this.keyboardHandler.bind("enter", this.applyClicked.bind(this));
+				this.keyboardHandler.bind("esc", this.close.bind(this));
 			},
 
 			// create the dialog nodes and insert into page DOM
@@ -56,6 +62,8 @@ define(
 
 				this.$checkUseDotIcons = this.$("#checkUseDotIcons");
 				this.$checkDynamicSectorColors = this.$("#checkDynamicSectorColors");
+
+				this.$("#btnApply").focus();
 
 				return this;
 			},
@@ -113,6 +121,12 @@ define(
 
 				this.trigger("dialog:cancel");
 				this.remove();
+			},
+
+			remove: function() {
+				this.keyboardHandler.reset();
+				this.keyboardHandler = null;
+				Backbone.View.prototype.remove.apply(this, arguments);
 			},
 		});
 
