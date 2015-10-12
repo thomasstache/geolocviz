@@ -1,10 +1,10 @@
 define(
 
-	["jquery", "underscore", "backbone",
+	["jquery", "underscore", "backbone", "mousetrap",
 	 "collections/sortablecollection",
 	 "hbs!templates/tabledialog"],
 
-	function($, _, Backbone,
+	function($, _, Backbone, Mousetrap,
 			 SortableCollection,
 			 tableDialogTemplate) {
 
@@ -71,6 +71,8 @@ define(
 				this.render();
 
 				this.listenTo(this.collection, "sort", this.updateTable);
+
+				this.addKeyListeners();
 			},
 
 			/**
@@ -203,6 +205,9 @@ define(
 				this.fillCollection();
 				this.updateTable();
 				this.renderCaption();
+
+				this.addKeyListeners();
+
 				this.$el.show();
 			},
 
@@ -211,6 +216,7 @@ define(
 			 */
 			hide: function() {
 
+				this.removeKeyListeners();
 				this.$el.hide();
 			},
 
@@ -228,10 +234,27 @@ define(
 			 */
 			close: function() {
 
+				this.removeKeyListeners();
 				this.trigger("dialog:cancel");
 				this.remove();
 			},
+
+			addKeyListeners: function() {
+				Mousetrap.bind(KEY_CLOSE, this.close.bind(this));
+				Mousetrap.bind(KEY_MINI, this.hide.bind(this));
+				Mousetrap.bind(KEY_SNAP, this.toggleSnapToSide.bind(this));
+			},
+
+			removeKeyListeners: function() {
+				Mousetrap.unbind(KEY_CLOSE);
+				Mousetrap.unbind(KEY_MINI);
+				Mousetrap.unbind(KEY_SNAP);
+			},
 		});
+
+		var KEY_SNAP  = "s";
+		var KEY_MINI  = "m";
+		var KEY_CLOSE = "esc";
 
 		return TableDialogView;
 	}
