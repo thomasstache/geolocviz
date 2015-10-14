@@ -51,7 +51,6 @@ define(
 
 				this.listenTo(this.appstate, "change:selectedSession", this.selectedSessionChanged);
 				this.listenTo(this.appstate, "change:selectedResult", this.selectedResultChanged);
-				this.listenTo(this.appstate, "change:focussedSessionId", this.focussedSessionChanged);
 				this.listenTo(this.appstate, "change:resultsEditMode", this.resultsEditModeChanged);
 			},
 
@@ -117,17 +116,6 @@ define(
 
 				var session = event.changed.selectedSession;
 				this.drawSessionLines(session);
-			},
-
-			focussedSessionChanged: function(event) {
-
-				var sessionId = event.changed.focussedSessionId;
-				if (sessionId < 0) {
-					return;
-				}
-
-				var session = this.collection.findSession(sessionId);
-				this.focusSession(session);
 			},
 
 			/**
@@ -797,7 +785,7 @@ define(
 			 * Focus on a session by zooming to its bounds.
 			 * @param {Session} session The session model.
 			 */
-			focusSession: function(session) {
+			zoomToSession: function(session) {
 
 				if ( this.highlightedSessionId >= 0 &&
 					(!session || session.id !== this.highlightedSessionId)) {

@@ -254,6 +254,16 @@ define(
 			},
 
 			/**
+			 * Center map on the session.
+			 * @param {Session} session
+			 */
+			zoomToSession: function(session) {
+
+				if (this.resultLayer)
+					this.resultLayer.zoomToSession(session);
+			},
+
+			/**
 			 * Returns the current filter function for result/heatmap layers.
 			 * @return {Function} the active function or {@code null}
 			 */

@@ -312,7 +312,7 @@ define(
 			 */
 			onFocusSessionClicked: function() {
 
-				this.trigger("session:focussed", this.model.get("selectedSession"));
+				this.trigger("session:focus");
 			},
 
 			/**

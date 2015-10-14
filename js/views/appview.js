@@ -107,7 +107,7 @@ define(
 				this.listenTo(this.mapview, "results:filtered", this.resultsFiltered);
 				this.listenTo(this.mapview, "site:selected", this.siteSelected);
 
-				this.listenTo(this.infoview, "session:focussed", this.sessionFocussed);
+				this.listenTo(this.infoview, "session:focus", this.focusSelectedSession);
 				this.listenTo(this.infoview, "session:unfocussed", this.sessionUnfocussed);
 				this.listenTo(this.infoview, "session:unselected", this.clearSelections);
 				this.listenTo(this.infoview, "session:listAll", this.showSessionTable);
@@ -537,7 +537,7 @@ define(
 						var session = this.sessions.findSession(query.searchterm);
 						if (session) {
 							this.sessionSelected(session);
-							this.sessionFocussed(session);
+							this.focusSelectedSession();
 							// select first result of session
 							if (session.results.length > 0) {
 								var firstResult = session.results.first();
@@ -639,10 +639,12 @@ define(
 				this.mapview.clearAllResultFilters();
 			},
 
-			// Handler for "session:focussed" event. Zoom the map view.
-			sessionFocussed: function(session) {
+			// Handler for "session:focus" event. Zoom the map view.
+			focusSelectedSession: function() {
 
+				var session = this.model.get('selectedSession');
 				this.model.set("focussedSessionId", session.id);
+				this.mapview.zoomToSession(session);
 			},
 
 			// Handler for "session:unfocussed" event. Zoom the map view.
