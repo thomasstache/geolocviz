@@ -13,11 +13,30 @@ require(['js/types/colormapper'],
 
 		let colorMapper = new ColorMapper(0, 100);
 
-		let imgCount = 20,
-			size = 20,
-			radius = (0.9 * size) / 2;
-
 		let container = document.getElementById('scale');
+
+		let startButton = document.getElementById('btnStart');
+		startButton.addEventListener('click', generate);
+
+		function getValueFromInput(id, defaultvalue) {
+			let rv = defaultvalue;
+			let input = document.getElementById(id);
+			if (input instanceof HTMLInputElement) {
+				if (input.valueAsNumber) {
+					rv = input.valueAsNumber;
+				}
+				else
+					rv = input.value;
+			}
+			return rv;
+		}
+
+		function removeExistingChildren(parent) {
+			let children = parent.children;
+			for (var i = children.length - 1; i >= 0; i--) {
+				children[i].remove();
+			}
+		}
 
 		function calculateSteps(num) {
 			let rv = [],
@@ -30,7 +49,7 @@ require(['js/types/colormapper'],
 			return rv;
 		}
 
-		function drawColorCircle(value) {
+		function drawColorCircle(value, size, radius, ctx) {
 
 			ctx.fillStyle = colorMapper.getColor(value);
 
@@ -70,20 +89,28 @@ require(['js/types/colormapper'],
 			return link;
 		}
 
-		let canvas, ctx;
+		let canvas = document.createElement('canvas');
 
-		canvas = document.createElement('canvas');
-		canvas.width = size;
-		canvas.height = size;
+		function generate() {
 
-		ctx = canvas.getContext('2d');
+			removeExistingChildren(container);
 
-		for (let step of calculateSteps(imgCount)) {
+			let imgCount = getValueFromInput('inputCount', 20),
+				size = getValueFromInput('inputSize', 20),
+				radius = (0.9 * size) / 2;
 
-			drawColorCircle(step);
+			canvas.width = size;
+			canvas.height = size;
 
-			let img = createImgWithDataUrl(canvas.toDataURL());
-			addImgToPage(img, step);
+			let ctx = canvas.getContext('2d');
+
+			for (let step of calculateSteps(imgCount)) {
+
+				drawColorCircle(step, size, radius, ctx);
+
+				let img = createImgWithDataUrl(canvas.toDataURL());
+				addImgToPage(img, step);
+			}
 		}
 	}
 );
