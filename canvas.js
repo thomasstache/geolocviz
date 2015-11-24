@@ -11,19 +11,17 @@ require(['js/types/colormapper'],
 
 	function(ColorMapper) {
 
-		let colorMapper = new ColorMapper(0, 1.0);
+		let colorMapper = new ColorMapper(0, 100);
 
-		let imgCount = 30,
+		let imgCount = 20,
 			size = 20,
 			radius = (0.9 * size) / 2;
 
-		let canvas, ctx;
-
-		let container = document.body;
+		let container = document.getElementById('scale');
 
 		function calculateSteps(num) {
 			let rv = [],
-				step = 1.0 / num;
+				step = 100 / num;
 
 			for (let i = 0; i <= num; i++) {
 				rv.push(i * step);
@@ -50,8 +48,29 @@ require(['js/types/colormapper'],
 
 			img.src = url;
 
-			container.appendChild(img);
+			return img;
 		}
+
+		function addImgToPage(img, step) {
+			let filename = `${Math.round(step * 1.0)}.png`;
+			let link = createDownloadLink(img.src, filename);
+			let item = document.createElement('li');
+
+			item.appendChild(img);
+			item.appendChild(link);
+
+			container.appendChild(item);
+		}
+
+		function createDownloadLink(url, name) {
+			let link = document.createElement('a');
+			link.href = url;
+			link.innerHTML = name;
+			link.download = name;
+			return link;
+		}
+
+		let canvas, ctx;
 
 		canvas = document.createElement('canvas');
 		canvas.width = size;
@@ -63,7 +82,8 @@ require(['js/types/colormapper'],
 
 			drawColorCircle(step);
 
-			createImgWithDataUrl(canvas.toDataURL());
+			let img = createImgWithDataUrl(canvas.toDataURL());
+			addImgToPage(img, step);
 		}
 	}
 );
