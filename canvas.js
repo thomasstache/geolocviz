@@ -17,15 +17,15 @@ require(['js/types/colormapper'],
 			size = 20,
 			radius = (0.9 * size) / 2;
 
-		var canvas, ctx;
+		let canvas, ctx;
 
-		var container = document.body;
+		let container = document.body;
 
 		function calculateSteps(num) {
 			let rv = [],
 				step = 1.0 / num;
 
-			for (var i = 0; i <= num; i++) {
+			for (let i = 0; i <= num; i++) {
 				rv.push(i * step);
 			}
 
@@ -46,7 +46,7 @@ require(['js/types/colormapper'],
 		}
 
 		function createImgWithDataUrl(url) {
-			var img = document.createElement('img');
+			let img = document.createElement('img');
 
 			img.src = url;
 
@@ -73,7 +73,7 @@ require(['js/types/colormapper'],
 
 		ctx = canvas.getContext('2d');
 
-		for (var step of calculateSteps(imgCount)) {
+		for (let step of calculateSteps(imgCount)) {
 
 			drawColorCircle(step);
 
