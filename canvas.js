@@ -53,20 +53,6 @@ require(['js/types/colormapper'],
 			container.appendChild(img);
 		}
 
-		function blobCallback(blob) {
-			let img = document.createElement('img');
-			let url = URL.createObjectURL(blob);
-
-			img.onload = function() {
-				// no longer need to read the blob so it's revoked
-				URL.revokeObjectURL(url);
-			};
-
-			img.src = url;
-
-			container.appendChild(img);
-		}
-
 		canvas = document.createElement('canvas');
 		canvas.width = size;
 		canvas.height = size;
@@ -77,10 +63,7 @@ require(['js/types/colormapper'],
 
 			drawColorCircle(step);
 
-			if (canvas.toBlob)
-				canvas.toBlob(blobCallback, "image/png");
-			else
-				createImgWithDataUrl(canvas.toDataURL());
+			createImgWithDataUrl(canvas.toDataURL());
 		}
 	}
 );
