@@ -45,7 +45,7 @@ define(
 				}
 				else {
 					// determine bounding colors
-					var relValue = (this.colorCount - 1) * (value - this.scaleMin) / (this.scaleMax - this.scaleMin);
+					var relValue = (this.colorCount - 1) * this.mapToScale(value);
 					var lower = Math.floor(relValue),
 						upper = Math.ceil(relValue),
 						delta = relValue - lower;
@@ -70,6 +70,19 @@ define(
 				console.log("ColorMapper: illegal value '" + value + "'.");
 			}
 
+			return rv;
+		};
+
+		/**
+		 * Maps the value on the range defined by min/max limits.
+		 * @param  {Number} value The natural value
+		 * @return {Number}       a relative value between 0.0 and 1.0
+		 */
+		ColorMapper.prototype.mapToScale = function(value) {
+			var rv = NaN;
+			if (typeof value === "number" && !isNaN(value)) {
+				rv = (value - this.scaleMin) / (this.scaleMax - this.scaleMin);
+			}
 			return rv;
 		};
 

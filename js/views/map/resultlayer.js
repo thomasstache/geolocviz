@@ -310,8 +310,10 @@ define(
 
 						var value = sample.get(this.settings.get("markerColorAttribute"));
 						label += ": " + value.toString();
-						icon = this.getMarkerIcon(IconTypes.DYNAMIC, letter);
-						icon.fillColor = this.colorMapper.getColor(value);
+
+						var mapped = Math.round(100 * this.colorMapper.mapToScale(value));
+						var quantized = 5 * Math.round(mapped / 5);
+						icon = this.getMarkerIcon(IconTypes.QUANTIZED, quantized);
 					}
 					else {
 						icon = this.getMarkerIcon(IconTypes.DOT, letter);
@@ -386,13 +388,10 @@ define(
 			/**
 			 * Return the Marker icon for the given type. Creates it on first request and caches it.
 			 * @param  {IconTypes} type General type of the marker - e.g. dot, pin, site...
-			 * @param  {String} option    (optional) parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
+			 * @param  {String} option  Parameters for the type (e.g. letters "M/S/I" for AXF dot markers)
 			 * @return {MarkerImage}
 			 */
 			getMarkerIcon: function(type, option) {
-
-				// option is optional
-				option = option || "";
 
 				var key = type + "_" + option;
 
@@ -440,7 +439,13 @@ define(
 						};
 						break;
 
-					case IconTypes.DYNAMIC:
+					// from prerendered scale
+					case IconTypes.QUANTIZED:
+						imagePath = `images/scale/${option}.png`;
+						break;
+
+					// SVG circle
+					case IconTypes.SVG:
 						icon = {
 							path: google.maps.SymbolPath.CIRCLE,
 							fillColor: "#000", // dummy color
@@ -977,10 +982,12 @@ define(
 
 		});
 
+		// Marker types for results
 		var IconTypes = Object.freeze({
 			PIN: "pin",
 			DOT: "dot",
-			DYNAMIC: "dynamic",
+			SVG: "svg",
+			QUANTIZED: "quantized",
 		});
 
 		var OverlayTypes = Object.freeze({
