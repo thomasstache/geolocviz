@@ -968,13 +968,16 @@ define(
 			configureColorMapperForAttribute: function(attributeName) {
 
 				var colorMapper = null;
+				// use the same range for all attributes for now
+				attributeName; // unused
+				colorMapper = new ColorMapper(0.0, 1.0);
 				// TODO: need to manage legend limits using a map by attribute
-				if (attributeName === "confidence")
-					colorMapper = new ColorMapper(0.0, 1.0);
-				else if (attributeName === "probMobility")
-					colorMapper = new ColorMapper(0.0, 1.0);
-				else if (attributeName === "probIndoor")
-					colorMapper = new ColorMapper(0.0, 1.0);
+				// if (attributeName === "confidence")
+				// 	colorMapper = new ColorMapper(0.0, 1.0);
+				// else if (attributeName === "probMobility")
+				// 	colorMapper = new ColorMapper(0.0, 1.0);
+				// else if (attributeName === "probIndoor")
+				// 	colorMapper = new ColorMapper(0.0, 1.0);
 
 				this.appstate.set("markerColorMapper", colorMapper);
 				this.colorMapper = colorMapper;
