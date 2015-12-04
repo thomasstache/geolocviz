@@ -524,7 +524,8 @@ define(
 		});
 
 		function isValidCellId(cellId) {
-			return cellId !== undefined && !isNaN(cellId) && cellId !== -1;
+			return cellId !== undefined && cellId !== null
+					&& !isNaN(cellId) && cellId !== -1;
 		}
 
 		function numcomparator(a, b) {
