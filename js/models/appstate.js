@@ -37,9 +37,6 @@ define(
 				// @type {ResultsFilterQuery} last result query (after results:filtered)
 				resultsFilterQuery: null,
 
-				// @type {ElementFilterQuery} last element query (after results:lookupElement)
-				elementLookupQuery: null,
-
 				// @type {ElementFilterQuery} properties of sectors to highlight
 				sectorHighlightQuery: null,
 
@@ -51,6 +48,9 @@ define(
 
 				// the model of the selected site
 				selectedSite: null,
+
+				// the model of the sector selected by Name Search or Element Lookup
+				selectedSector: null,
 
 				// id of the last focussed session
 				focussedSessionId: -1,
@@ -79,7 +79,6 @@ define(
 					heatmapActive: false,
 					resultsFilterActive: false,
 					resultsFilterQuery: null,
-					elementLookupQuery: null,
 					selectedSession: null,
 					selectedResult: null,
 					focussedSessionId: -1,

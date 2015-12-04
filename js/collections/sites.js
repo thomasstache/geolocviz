@@ -1,8 +1,8 @@
 define(
 	["backbone",
-	 "models/site"],
+	 "models/site", "types/searchnetworkresult"],
 
-	function(Backbone, Site) {
+	function(Backbone, Site, SearchNetworkResult) {
 
 		var SiteList = Backbone.Collection.extend({
 			model: Site,
@@ -22,6 +22,22 @@ define(
 					return hasSectorWithProperties(site, sectorProps);
 				});
 				return site || null;
+			},
+
+			/**
+			 * Finds the (first) sector matching the given properties.
+			 * @param  {Object} sectorProps Literal with key-value pairs that should match (preferably the sector name)
+			 * @return {SearchNetworkResult}
+			 */
+			findSector: function(sectorProps) {
+
+				var site = this.findSiteWithSector(sectorProps);
+				var sector = null;
+
+				if (site)
+					sector = site.get("sectors").findWhere(sectorProps);
+
+				return new SearchNetworkResult(site || null, sector);
 			},
 
 			/**

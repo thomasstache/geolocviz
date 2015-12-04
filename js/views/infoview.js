@@ -86,11 +86,10 @@ define(
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
 				this.model.on("change:selectedResult", this.onResultChanged, this);
-				this.model.on("change:selectedSite", this.onSiteChanged, this);
+				this.model.on("change:selectedSite change:selectedSector", this.onSiteChanged, this);
 				this.model.on("change:focussedSessionId", this.updateSessionControls, this);
 				this.model.on("change:radioNetworkAvailable", this.updateResultsControls, this);
 				this.model.on("change:resultsAvailable", this.renderSiteInfo, this);
-				this.model.on("change:elementLookupQuery", this.onSiteChanged, this);
 				// indicates new Statistics model
 				this.model.on("change:statistics", this.onStatisticsRefChanged, this);
 
@@ -232,26 +231,19 @@ define(
 				var site = this.model.get("selectedSite");
 				var context = site !== null ? site.getInfo() : {};
 
+				var selectedSectorId = this.model.has("selectedSector")
+									 ? this.model.get("selectedSector").id
+									 : undefined;
+
 				// decorate sectors according to celltype
 				if (context.sectors && context.sectors.length > 0) {
 					_.each(context.sectors, function(sector) {
 						sector.isSmall = sector.cellType == 1;
 						sector.isIndoor = sector.cellType == 2;
+
+						// highlight the selected sector
+						sector.highlight = sector.id === selectedSectorId;
 					});
-				}
-
-				// highlight sectors according to current lookup query
-				if (context.sectors &&
-				    this.model.has("elementLookupQuery")) {
-					var query = this.model.get("elementLookupQuery");
-					// TODO: check for query.elementType === "sector"
-					var sectorProps = query.properties || {};
-
-					var matching = _.where(context.sectors, sectorProps);
-					if (matching && matching.length > 0) {
-
-						_.each(matching, function(sector) {sector.highlight = true;});
-					}
 				}
 
 				// enable filter buttons

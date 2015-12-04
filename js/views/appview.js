@@ -569,12 +569,24 @@ define(
 				var searchterm = query.searchterm;
 
 				// look for ID matches in sites/sectors
-				var site = this.siteList.findWhere({ name: searchterm }) ||
-						   this.siteList.findSiteWithSector({ name: searchterm });
+				var site = this.siteList.findWhere({ name: searchterm });
+				if (site) {
+					this.siteSelected(site);
+				}
+				else {
+					// search for sector name
+					var searchResult = this.siteList.findSector({ name: searchterm });
 
-				this.siteSelected(site);
-				if (site === null)
-					this.showNotification("No network element with this name...");
+					if (searchResult.sector) {
+						this.model.set({
+							selectedSector: searchResult.sector,
+							selectedSite: searchResult.site,
+						});
+					}
+					else {
+						this.showNotification("No network element with this name...");
+					}
+				}
 			},
 
 			/**
@@ -658,7 +670,7 @@ define(
 			siteSelected: function(site) {
 
 				if (site === null)
-					this.model.set("elementLookupQuery", null);
+					this.model.set("selectedSector", null);
 
 				this.model.set("selectedSite", site);
 			},
@@ -672,7 +684,10 @@ define(
 			// Handler for "site:unselected" event. Unselect sites and sectors.
 			clearNetworkSelections: function() {
 
-				this.siteSelected(null);
+				this.model.set({
+					selectedSector: null,
+					selectedSite: null,
+				});
 			},
 
 			// Handler for the InfoView's "network:clear-highlights" event.
@@ -691,17 +706,18 @@ define(
 
 				if (query.elementType === "sector") {
 
-					var site = this.siteList.findSiteWithSector(query.properties);
-					if (site) {
-						// remember last query
-						this.model.set("elementLookupQuery", query);
+					var searchResult = this.siteList.findSector(query.properties);
 
-						this.siteSelected(site);
+					if (searchResult.sector) {
+						this.model.set({
+							selectedSector: searchResult.sector,
+							selectedSite: searchResult.site,
+						});
 					}
 					else {
-						// site not found
+						// element not found
 
-						var message = "No matching site found...";
+						var message = "No matching network element found...";
 
 						this.showNotification(message);
 					}

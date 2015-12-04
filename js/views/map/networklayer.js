@@ -88,7 +88,7 @@ define(
 
 				this.listenTo(this.appstate, "change:selectedSite", this.selectedSiteChanged);
 				this.listenTo(this.appstate, "change:sectorHighlightQuery", this.sectorHighlightChanged);
-				this.listenTo(this.appstate, "change:elementLookupQuery", this.updateSectorSymbols);
+				this.listenTo(this.appstate, "change:selectedSector", this.updateSectorSymbols);
 
 				this.setNetworkOnTop(this.settings.get("drawNetworkOnTop"));
 
@@ -115,6 +115,7 @@ define(
 			/** Handler for changes to AppState's sectorHighlightQuery. Draw sectors matching the query on the map. */
 			sectorHighlightChanged: function(appstate) {
 
+				/** @type {ElementFilterQuery} properties of elements to highlight */
 				var highlightQuery = appstate.changed.sectorHighlightQuery;
 				if (highlightQuery === undefined)
 					return;
@@ -276,14 +277,10 @@ define(
 						}
 					);
 
-					// we want to draw sector-lookup matches differently
-					var sectorMatchingFct;
+					var selectedSector;
 
-					if (this.appstate.has('elementLookupQuery')) {
-
-						var lookupQuery = this.appstate.get('elementLookupQuery');
-						if (lookupQuery.elementType === ElementFilterQuery.ELEMENT_SECTOR)
-							sectorMatchingFct = _.matches(lookupQuery.properties);
+					if (this.appstate.has('selectedSector')) {
+						selectedSector = this.appstate.get('selectedSector');
 					}
 
 					var lastAzimuth = NaN;
@@ -306,8 +303,8 @@ define(
 						else
 							scale = DEFAULT_SECTOR_SCALE;
 
-						if (sectorMatchingFct !== undefined)
-							additionalOptions.drawAsSelected = sectorMatchingFct(sector.toJSON());
+						if (selectedSector !== undefined)
+							additionalOptions.drawAsSelected = sector === selectedSector;
 
 						lastAzimuth = azimuth;
 
