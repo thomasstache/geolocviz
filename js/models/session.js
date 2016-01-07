@@ -67,8 +67,7 @@ define(
 
 				return rv;
 			},
-		},
-		{
+		}, {
 			// dummy session ID for records from files that don't provide it.
 			ID_DUMMY: 0
 		});

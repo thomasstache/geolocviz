@@ -121,8 +121,7 @@ define(
 				s += ")";
 				return s;
 			}
-		},
-		{
+		}, {
 			// known CellTypes
 			TYPE_DEFAULT: 0,
 			TYPE_SMALLCELL: 1,

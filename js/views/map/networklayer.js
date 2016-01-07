@@ -603,8 +603,8 @@ define(
 			updateZIndexForNetworkOverlays: function() {
 
 				var sites = this.overlays.byType(OverlayTypes.SITE),
-				    sectors = this.overlays.byType(OverlayTypes.SECTOR),
-				    overlays = sites.concat(sectors);
+					sectors = this.overlays.byType(OverlayTypes.SECTOR),
+					overlays = sites.concat(sectors);
 
 				var view = this;
 
@@ -612,7 +612,7 @@ define(
 					overlays,
 					function(overlay) {
 						var marker = overlay.get('ref'),
-						    zIndex = overlay.get('type') === OverlayTypes.SITE ? Z_Index.SITE : Z_Index.SECTOR;
+							zIndex = overlay.get('type') === OverlayTypes.SITE ? Z_Index.SITE : Z_Index.SECTOR;
 						view.setMarkerZIndex(marker, zIndex);
 					}
 				);

@@ -65,8 +65,7 @@ define(
 				}
 				return this.get('sectors');
 			},
-		},
-		{
+		}, {
 			// known technologies
 			TECH_UNKNOWN: "unknown",
 			TECH_GSM: "GSM",
