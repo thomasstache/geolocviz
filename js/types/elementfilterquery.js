@@ -2,9 +2,12 @@ define(
 
 	function() {
 		/**
-		 * Parameters for filtering network elements on the map.
+		 * Parameters for filtering or searching network elements.
 		 * @param {Enum}   elementType One of the types defined below
-		 * @param {Object} properties  Attributes and their values to find
+		 * @param {Object} properties  Object literal with attributes and their values to match. Or an array of such literals.
+		 *  Examples:
+		 *    { cellIdentity: sectorProps.primaryCellId, netSegment: sectorProps.controllerId }
+		 *    [{ channelNumber: 123 }, { channelNumber: 456 }, { channelNumber: 789 }]
 		 */
 		function ElementFilterQuery(elementType, properties) {
 			this.elementType = elementType;

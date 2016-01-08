@@ -161,19 +161,34 @@ define(
 			 */
 			onSectorHighlightChanged: function(appstate) {
 
+				/** @type {ElementFilterQuery} properties of elements being highlighted */
 				var highlightQuery = appstate.changed.sectorHighlightQuery;
 				if (highlightQuery === undefined)
 					return; // attribute of interest didn't change
 
+				var channelNumberSet = this.highlightedChannelNumbers;
+
+				function addToChannelNumberSet(props) {
+
+					if (props.channelNumber !== undefined)
+						channelNumberSet.add(props.channelNumber);
+				}
+
 				if (highlightQuery === null) {
-					this.highlightedChannelNumbers.clear();
+					channelNumberSet.clear();
 				}
 				else {
-					var props = highlightQuery.properties,
-						channelNumber = props.channelNumber;
+					var props = highlightQuery.properties;
 
-					if (channelNumber !== undefined)
-						this.highlightedChannelNumbers.add(channelNumber);
+					if (props instanceof Array) {
+
+						props.forEach(function(query) {
+							addToChannelNumberSet(query);
+						});
+					}
+					else {
+						addToChannelNumberSet(props);
+					}
 				}
 
 				this.renderSectorHighlightInfo();

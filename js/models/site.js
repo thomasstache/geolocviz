@@ -13,7 +13,7 @@ define(
 				name: "",
 				// @type {Position} geographical position
 				position: null,
-				// collection of sectors
+				// @type {SectorList} collection of sectors
 				sectors: null,
 				// network system/technology: GSM, WCDMA, LTE...
 				technology: "",
@@ -54,16 +54,33 @@ define(
 			},
 
 			/**
-			 * Returns the Sector collection
-			 * @param  {Object} filters   (optional) Literal with key-value pairs that must match
+			 * Returns the Sector collection, optionally filtered by given attribute values.
+			 * @param  {Object} filters   (optional) Literal with key-value pairs that must match. Or an array of such literals.
+			 *  Examples:
+			 *    { cellIdentity: sectorProps.primaryCellId, netSegment: sectorProps.controllerId }
+			 *    [{ channelNumber: 123 }, { channelNumber: 456 }, { channelNumber: 789 }]
 			 * @return {SectorList}
 			 */
 			getSectors: function(filters) {
 
+				var allSectors = this.get('sectors');
+
 				if (filters) {
-					return new SectorList(this.get('sectors').where(filters));
+
+					var matchingSectors = [];
+					if (filters instanceof Array) {
+
+						filters.forEach(function addMatchesForFilter(filter) {
+							matchingSectors = matchingSectors.concat(allSectors.where(filter));
+						});
+					}
+					else {
+						matchingSectors = allSectors.where(filters);
+					}
+
+					return new SectorList(matchingSectors);
 				}
-				return this.get('sectors');
+				return allSectors;
 			},
 		}, {
 			// known technologies

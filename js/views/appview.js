@@ -595,13 +595,36 @@ define(
 			 */
 			handleChannelSearchRequest: function(query) {
 
-				var channelNumber = parseInt(query.searchterm, 10);
+				var tokens = query.searchterm.split(',');
+				var channelNumbers = tokens.map(function toNumber(token) {
+					return parseInt(token, 10);
+				});
 
-				// it could have been text input
-				if (isNaN(channelNumber))
-					return;
+				function buildQueryLiteralFor(channelNumber) {
+					return { channelNumber: channelNumber };
+				}
 
-				var props = { channelNumber: channelNumber };
+				var props;
+				if (channelNumbers.length > 1) {
+					// array with one property hash per search item
+					props = [];
+
+					channelNumbers.forEach(function appendQueryFor(channelNumber) {
+						// it could have been text input
+						if (!isNaN(channelNumber))
+							props.push(buildQueryLiteralFor(channelNumber));
+					});
+				}
+				else {
+					// a single property hash
+					var channelNumber = channelNumbers[0];
+
+					// it could have been text input
+					if (isNaN(channelNumber))
+						return;
+					props = buildQueryLiteralFor(channelNumber);
+				}
+
 				this.model.set("sectorHighlightQuery", new ElementFilterQuery(ElementFilterQuery.ELEMENT_SECTOR, props));
 			},
 
