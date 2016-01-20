@@ -56,7 +56,7 @@ define(
 			/** @type {SessionList} collection of sessions */
 			collection: null,
 
-			/** @type {Function} filter function to run result models */
+			/** @type {Function} filter function to run against result models */
 			resultFilterFct: null,
 
 			initialize: function(options) {
