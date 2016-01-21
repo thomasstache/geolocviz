@@ -63,6 +63,9 @@ define(
 			/** @type {AppState} the shared app state */
 			model: null,
 
+			/** @type {Settings} the app settings */
+			settings: null,
+
 			/** @type {BaseResult} the currently displayed result model */
 			selectedResult: null,
 
@@ -82,7 +85,9 @@ define(
 
 			colorMapper: null,
 
-			initialize: function() {
+			initialize: function(options) {
+
+				this.settings = options.settings;
 
 				this.model.on("change:selectedSession", this.onSessionChanged, this);
 				this.model.on("change:selectedResult", this.onResultChanged, this);
@@ -309,6 +314,11 @@ define(
 				// add some flags to be used in template
 				if (context.numSites && context.numSites > 0)
 					context.hasNetwork = true;
+
+				if (stats !== null && stats.has("numResultsAfterFilter")) {
+					context.resultsFiltered = true;
+					context.confidenceThreshold = this.settings.get("confidenceThreshold");
+				}
 
 				this.$("#statistics").html(statisticsTemplate(context));
 				return this;

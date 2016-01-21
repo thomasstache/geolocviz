@@ -12,6 +12,8 @@ define(
 				numSessions: 0,
 				// total number of results ("best candidates" for .distances files)
 				numResults: 0,
+				// number of results if a filter is applied (e.g. confidence threshold)
+				numResultsAfterFilter: null,
 
 				// number of loaded sites
 				numSites: 0,
@@ -34,6 +36,7 @@ define(
 				this.set({
 					numSessions: this.defaults.numSessions,
 					numResults: this.defaults.numResults,
+					numResultsAfterFilter: this.defaults.numResultsAfterFilter,
 				},
 				OPT_SILENT);
 			},

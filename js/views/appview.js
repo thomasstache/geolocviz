@@ -84,7 +84,7 @@ define(
 				this.settings = new Settings();
 				this.settingsview = new SettingsView({ model: this.settings, appstate: this.model });
 
-				this.infoview = new InfoView({ model: this.model });
+				this.infoview = new InfoView({ settings: this.settings, model: this.model });
 				this.filterview = new FilterView({ model: this.model });
 				this.searchview = new SearchView();
 				this.labelview = new LabelView();
@@ -126,6 +126,8 @@ define(
 
 				this.listenTo(this.filterview, "results:clear-filter", this.resultsClearFilter);
 				this.listenTo(this.searchview, "search", this.searchHandler);
+
+				this.listenTo(this.settings, "change:confidenceThreshold", this.updateResultCount);
 
 				$("#fileInput").prop("disabled", false);
 			},
@@ -271,6 +273,8 @@ define(
 
 				if (this.model.get("sessionsDirty") === true) {
 
+					this.updateResultCount();
+
 					this.mapview.drawResults();
 
 					this.model.set({
@@ -338,6 +342,35 @@ define(
 				}
 
 				stats.trigger("change");
+			},
+
+			/**
+			 * Calculates the number of results after changes to the confidence threshold.
+			 */
+			updateResultCount: function() {
+
+				if (!this.model.has("statistics"))
+					return;
+
+				var numResultsAfterFilter = 0,
+					thresholds = this.settings.getThresholdSettings();
+
+				if (thresholds.confidence > 0.0) {
+
+					numResultsAfterFilter = this.sessions.reduce(
+						function countMatchingRecordsInSession(memo, session) {
+							var matchingResults = session.results.filter(
+								function(result) {
+									return result.get("confidence") > thresholds.confidence;
+								}
+							);
+
+							return memo + matchingResults.length;
+						}, 0);
+				}
+
+				var stats = this.model.get("statistics");
+				stats.set("numResultsAfterFilter", numResultsAfterFilter > 0 ? numResultsAfterFilter : null);
 			},
 
 			// set up file drag-and-drop event handlers

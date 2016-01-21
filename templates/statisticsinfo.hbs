@@ -5,11 +5,18 @@
 		<button class="listAllSessions translucent tiny symbolic"
 				title="List all sessions">&equiv;</button>
 	</li>
-	<li><span class="label">Geol. Results:</span>&nbsp;<span class="value">{{numResults}}</span></li>
-	{{#if hasNetwork}}
+	<li><span class="label" title="Geolocated Results">Geol. Results:</span>&nbsp;<span class="value">{{numResults}}</span></li>
+{{#if resultsFiltered}}
+	<li><span class="label" title="Displayed Results">Disp. Results:</span>&nbsp;<span class="value">{{numResultsAfterFilter}}</span>
+  	{{#if confidenceThreshold}}
+		<span class="value">(Confidence &gt; {{percent confidenceThreshold}})</span>
+  	{{/if}}
+	</li>
+{{/if}}
+{{#if hasNetwork}}
 	<li><span class="label">Sites:</span>&nbsp;<span class="value">{{numSites}}</span></li>
 	<li><span class="label">Sectors:</span>&nbsp;<span class="value">{{numSectors}}</span></li>
-	{{/if}}
+{{/if}}
 	<li><span class="label">Files:</span>&nbsp;{{#if files}}<span class="value">{{files.length}}</span>{{/if}}</li>
 	{{#each files}}
 		<li class="fileitem" title="{{name}}">{{name}}</li>
