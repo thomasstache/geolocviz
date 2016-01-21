@@ -484,10 +484,13 @@ define(
 			 */
 			drawResults: function() {
 
-				var stats = this.appstate.get("statistics"),
-					resultCount = stats !== undefined ? stats.get("numResults") : 0;
+				var useHeatmap = false,
+					resultCount = 0,
+					stats = this.appstate.get("statistics");
 
-				var useHeatmap = false;
+				if (stats !== undefined) {
+					resultCount = stats.has("numResultsAfterFilter") ? stats.get("numResultsAfterFilter") : stats.get("numResults");
+				}
 
 				if (resultCount > this.appsettings.get("maxResultMarkers")) {
 					// force heatmap above max. threshold
