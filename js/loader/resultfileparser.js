@@ -173,22 +173,15 @@ define(
 
 				currentAccuracyResultID = msgId;
 
-				var sessId = columnIndex.getValueFrom(record, ACCURACY_FIELDS.SESSIONID);
-				// the same SessionId can appear in multiple calltrace files, make unique.
-				var sessionUId = makeSessionUId(fileId, sessId);
-				// also store original identifiers
-				var additionalProps = {
-					fileId: fileId,
-					sessionId: sessId
-				};
+				var sessionId = columnIndex.getValueFrom(record, ACCURACY_FIELDS.SESSIONID);
 
 				// get the session if existing
-				var session = getSession(sessionUId, additionalProps);
+				var session = getSession(fileId, sessionId);
 
 				var props = {
 					msgId: msgId,
 					timestamp: timestamp,
-					sessionId: sessionUId,
+					sessionId: session.get("id"),
 					refPosition: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LAT),
 											  columnIndex.getValueFrom(record, ACCURACY_FIELDS.REF_LON)),
 					position: new Position(columnIndex.getValueFrom(record, ACCURACY_FIELDS.GEO_LAT),
@@ -239,9 +232,7 @@ define(
 				var referenceCellId = columnIndex.getValueFrom(record, AXF_FIELDS.REF_CELL_ID);
 				var confScalingFactor = columnIndex.getValueFrom(record, AXF_FIELDS.SCALEFACTOR);
 
-				var sessionProperties = {
-					sessionId: sessionId
-				};
+				var fileId = stats.name;
 
 				var props = {
 					msgId:     columnIndex.getValueFrom(record, AXF_FIELDS.MSGID),
@@ -262,7 +253,7 @@ define(
 					confScalingFactor: confScalingFactor,
 				};
 
-				var session = getSession(sessionId, sessionProperties);
+				var session = getSession(fileId, sessionId);
 				session.results.add(new AxfResult(props), OPT_SILENT);
 
 				stats.numResults++;
@@ -282,25 +273,26 @@ define(
 
 			/**
 			 * Returns the session with the given Id from the sessionList collection. If none exists yet, it is created.
-			 * @param  {String} sessionId       Unique Id of the session
-			 * @param  {Object} additionalProps Additional properties to store if a new session is created.
+			 * @param  {String} fileId       the calltrace file name
+			 * @param  {String} sessionId    Id of the session
 			 * @return {Session}
 			 */
-			function getSession(sessionId, additionalProps) {
+			function getSession(fileId, sessionId) {
+
+				// the same SessionId can appear in multiple calltrace files, make unique.
+				var sessionUId = makeSessionUId(fileId, sessionId);
 
 				// get the session if existing
-				var session = sessionList.get(sessionId);
+				var session = sessionList.get(sessionUId);
 				if (!session) {
 					// create missing session
 					sessionList.add({
-						id: sessionId
+						id: sessionUId,
+						sessionId: sessionId,
+						fileId: fileId
 					}, OPT_SILENT);
 
 					session = sessionList.at(sessionList.length - 1);
-
-					if (additionalProps !== undefined) {
-						session.set(additionalProps);
-					}
 				}
 				return session;
 			}
