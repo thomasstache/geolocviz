@@ -352,7 +352,7 @@ define(
 				if (!this.model.has("statistics"))
 					return;
 
-				var numResultsAfterFilter = 0,
+				var numResultsAfterFilter = null,
 					thresholds = this.settings.getThresholdSettings();
 
 				if (thresholds.confidence > 0.0) {
@@ -370,7 +370,7 @@ define(
 				}
 
 				var stats = this.model.get("statistics");
-				stats.set("numResultsAfterFilter", numResultsAfterFilter > 0 ? numResultsAfterFilter : null);
+				stats.set("numResultsAfterFilter", numResultsAfterFilter);
 			},
 
 			// set up file drag-and-drop event handlers
