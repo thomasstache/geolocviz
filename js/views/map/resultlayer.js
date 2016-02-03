@@ -14,6 +14,7 @@ define(
 		 * Emits the following events: event name (payload)
 		 *   result:selected (BaseResult model)
 		 *   session:selected (Session model)
+		 *   draw-complete
 		 *   reset
 		 */
 		var ResultLayer = BaseLayer.extend({
@@ -770,6 +771,7 @@ define(
 				this.drawResultMarkers();
 
 				this.appstate.set("busy", false);
+				this.trigger("draw-complete");
 
 				// TODO: filter somehow, as performance with dynamic colors gets bad > 1000 results.
 /*				// get the currently highlighted session

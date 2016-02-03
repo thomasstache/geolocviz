@@ -19,6 +19,14 @@ define(
 				   !isNaN(latLng.lng());
 		}
 
+		/**
+		 * Map View.
+		 * Emits the following events: event name (payload)
+		 *   results:filtered (ResultsFilterQuery)
+		 *   result:selected (BaseResult model)
+		 *   session:selected (Session model)
+		 *   site:selected (Site model)
+		 */
 		var MapView = Backbone.View.extend({
 
 			constructor: function MapView() {
@@ -155,7 +163,8 @@ define(
 					collection: this.collection
 				});
 
-				this.listenTo(this.resultLayer, "reset", this.onResultLayerReset);
+				// this.listenTo(this.resultLayer, "reset", this.onResultLayerReset);
+				this.listenTo(this.resultLayer, "draw-complete", this.onResultLayerDrawComplete);
 				this.listenTo(this.resultLayer, "result:selected", this.onResultSelected);
 				this.listenTo(this.resultLayer, "session:selected", this.onSessionSelected);
 			},
@@ -433,6 +442,14 @@ define(
 			 * Listener for "reset" on NetworkLayer.
 			 */
 			onNetworkLayerReset: function() {
+
+				this.enableZoomControls();
+			},
+
+			/**
+			 * Listener for "draw-complete" on ResultLayer.
+			 */
+			onResultLayerDrawComplete: function() {
 
 				this.enableZoomControls();
 			},
