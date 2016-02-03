@@ -1,6 +1,6 @@
 				{{#each tablerows}}
 					<tr{{#if selected}} class="highlighted"{{/if}}>
-						<th scope="row"><a class="selectSession" href="">{{sessionId}}</a></th>
+						<th scope="row"><a class="selectSession" href="" data-uid="{{id}}">{{sessionId}}</a></th>
 						<td><span class="decimalAlign">{{resultCount}}</span></td>
 						<td><span class="decimalAlign">{{percent confidence}}</span></td>
 						<td><span class="decimalAlign">{{percent probMobility}}</span></td>

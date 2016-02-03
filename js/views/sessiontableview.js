@@ -87,6 +87,11 @@ define(
 				var linkElement = evt.currentTarget,
 					strSessionId = linkElement.textContent;
 
+				if (linkElement.dataset &&
+					linkElement.dataset.uid !== undefined) {
+					strSessionId = linkElement.dataset.uid;
+				}
+
 				this.trigger("search", new SearchQuery(SearchQuery.TOPIC_SESSION, strSessionId));
 
 				this.resetRowHighlights();
