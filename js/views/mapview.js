@@ -80,9 +80,9 @@ define(
 						center: mapCenter,
 						disableDefaultUI: true,
 						zoomControl: true,
-						mapTypeControl: true,
 						scaleControl: this.appsettings.get("showScaleControl"),
 						styles: simpleMapStyles,
+						mapTypeControl: true,
 						mapTypeControlOptions: {
 							mapTypeIds: [
 								STYLED_MAPTYPE_ID,
@@ -95,7 +95,8 @@ define(
 						mapTypeId: STYLED_MAPTYPE_ID
 					};
 
-					google.maps.visualRefresh = true;
+					// fall back to pre-3.22 map controls that our custom buttons match
+					google.maps.controlStyle = 'azteca';
 
 					// (from https://developers.google.com/maps/documentation/javascript/styling)
 					// Create a new StyledMapType object, passing it the array of styles,
