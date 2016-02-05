@@ -25,6 +25,8 @@ define(
 			$checkDynamicSectorColors: null,
 			$softHeatmapThresholdInput: null,
 			$hardHeatmapThresholdInput: null,
+			$focusSessionMaxZoomInput: null,
+			$focusSiteTargetZoomInput: null,
 
 			events: {
 				"click #btnApply": "applyClicked",
@@ -62,6 +64,8 @@ define(
 
 				this.$checkUseDotIcons = this.$("#checkUseDotIcons");
 				this.$checkDynamicSectorColors = this.$("#checkDynamicSectorColors");
+				this.$focusSessionMaxZoomInput = this.$("#focusSessionMaxZoom");
+				this.$focusSiteTargetZoomInput = this.$("#focusSiteTargetZoom");
 
 				this.$("#btnApply").focus();
 
@@ -77,6 +81,9 @@ define(
 
 				this.$softHeatmapThresholdInput.val(this.model.get("heatmapSuggestionThreshold"));
 				this.$hardHeatmapThresholdInput.val(this.model.get("maxResultMarkers"));
+
+				this.$focusSessionMaxZoomInput.val(this.model.get("focusSessionMaxZoom"));
+				this.$focusSiteTargetZoomInput.val(this.model.get("focusSiteTargetZoom"));
 
 				this.$checkCategorizeMarkers.prop("checked", this.model.get("categorizeMarkers"));
 				this.$checkUseDotIcons.prop("checked", this.model.get("useDotAccuracyMarkers"));
@@ -99,8 +106,8 @@ define(
 					confThreshold = parseFloat(this.$confidenceThresholdInput.val()),
 					heatmapSoftThreshold = parseInt(this.$softHeatmapThresholdInput.val(), 10),
 					heatmapHardThreshold = parseInt(this.$hardHeatmapThresholdInput.val(), 10),
-					useDotIcons = this.$checkUseDotIcons.prop("checked"),
-					useDynamicSectorColors = this.$checkDynamicSectorColors.prop("checked");
+					focusSessionMaxZoom = parseInt(this.$focusSessionMaxZoomInput.val(), 10),
+					focusSiteTargetZoom = parseInt(this.$focusSiteTargetZoomInput.val(), 10);
 
 				this.model.set({
 					mobilityThreshold: fromPercent(probMobility),
@@ -108,8 +115,10 @@ define(
 					confidenceThreshold: fromPercent(confThreshold),
 					maxResultMarkers: heatmapHardThreshold,
 					heatmapSuggestionThreshold: heatmapSoftThreshold,
-					useDotAccuracyMarkers: useDotIcons,
-					useDynamicSectorColors: useDynamicSectorColors,
+					focusSessionMaxZoom: focusSessionMaxZoom,
+					focusSiteTargetZoom: focusSiteTargetZoom,
+					useDotAccuracyMarkers: this.$checkUseDotIcons.prop("checked"),
+					useDynamicSectorColors: this.$checkDynamicSectorColors.prop("checked"),
 					categorizeMarkers: this.$checkCategorizeMarkers.prop("checked"),
 				});
 

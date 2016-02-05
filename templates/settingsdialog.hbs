@@ -1,11 +1,22 @@
 <div class="veilBackground" />
 
 <!-- the width/height is necessary to prevent blurry rendering in Chrome due to CSS centering -->
-<section class="dialog centered" style="width: 26em; height: 27em;">
+<section class="dialog centered" style="width: 26em; height: 30em;">
 	<div class="content">
 		<h3>Settings</h3>
 
 		<ul>
+			<li>
+				<label>
+					<input type="checkbox" id="checkUseDotIcons" class="mousetrap" />Use dots for accuracy markers
+				</label>
+			</li>
+			<li>
+				<label>
+					<input type="checkbox" id="checkDynamicSectorColors" class="mousetrap" />Use attribute colors for sectors
+				</label>
+			</li>
+
 			<li><h4>Result Filtering</h4></li>
 			<li><label for="confidenceThresholdInput">Min. Confidence Threshold [%]</label>
 				<input type="number" id="confidenceThresholdInput" step="5" min="0" max="100" class="mousetrap" />
@@ -31,15 +42,14 @@
 			<li><label for="hardHeatmapThresholdInput">Threshold for automatic Heatmap</label>
 				<input type="number" id="hardHeatmapThresholdInput" step="1000" min="10000" class="mousetrap" />
 			</li>
+
+			<li><h4>Zoom</h4></li>
 			<li>
-				<label style="padding-top: 1.5ex;" >
-					<input type="checkbox" id="checkUseDotIcons" class="mousetrap" />Use dots for accuracy markers
-				</label>
-			</li>
-			<li>
-				<label>
-					<input type="checkbox" id="checkDynamicSectorColors" class="mousetrap" />Use attribute colors for sectors
-				</label>
+				<span class="stretching flexRow"><label for="focusSessionMaxZoom">Focus Session</label>
+				<input type="number" id="focusSessionMaxZoom" min="5" max="18" class="mousetrap" /></span>
+				&nbsp;
+				<span class="stretching flexRow"><label for="focusSiteTargetZoom">Focus Site</label>
+				<input type="number" id="focusSiteTargetZoom" min="5" max="18" class="mousetrap" /></span>
 			</li>
 		</ul>
 	</div>

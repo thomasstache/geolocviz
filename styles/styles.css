@@ -380,11 +380,11 @@ input[type="checkbox"] {
 	color: red;
 }
 
-#settingsdialog h4 { margin: 0.5ex 0; }
+#settingsdialog h4 { margin: 1ex 0 0.5ex -3px; }
 
-#settingsdialog ul { display: table; width: 100%; }
-#settingsdialog li { display: table-row; }
-#settingsdialog li label { display: table-cell; line-height: 1.5; }
+#settingsdialog ul { width: 100%; padding-left: 3px; }
+#settingsdialog li { display: flex; }
+#settingsdialog li label { flex: 1; line-height: 1.5; }
 #settingsdialog input[type="number"] { width: 10ex; }
 
 #viewportDialog li label { padding: 0 4px; }
