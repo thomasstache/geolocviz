@@ -234,9 +234,11 @@ define(
 
 				var fileId = stats.name;
 
+				var session = getSession(fileId, sessionId);
+
 				var props = {
 					msgId:     columnIndex.getValueFrom(record, AXF_FIELDS.MSGID),
-					sessionId: sessionId,
+					sessionId: session.get("id"),
 					timestamp: columnIndex.getValueFrom(record, AXF_FIELDS.TIME),
 					position: new Position(columnIndex.getValueFrom(record, AXF_FIELDS.GEO_LAT),
 										   columnIndex.getValueFrom(record, AXF_FIELDS.GEO_LON)),
@@ -253,7 +255,6 @@ define(
 					confScalingFactor: confScalingFactor,
 				};
 
-				var session = getSession(fileId, sessionId);
 				session.results.add(new AxfResult(props), OPT_SILENT);
 
 				stats.numResults++;
